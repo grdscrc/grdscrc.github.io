@@ -8,13 +8,16 @@ h2 {
 	margin-top: 0;
 }
 
-.personal-info {
+.personal-info, .web-presence, .content {
 	display: inline-block;
+}
+
+.personal-info
+{
 	float: left;
 }
 
 .web-presence {
-	display: inline-block;
 	font-style: italic;
 	float: right;
 	text-align: right;
