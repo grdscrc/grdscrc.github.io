@@ -47,7 +47,16 @@ em {
 	font-style: normal;
 }
 
-body {
+a {
+	text-decoration: none;
+	font-style: normal;
+	color: $strong-blue;
+	padding: 2px 1px;
+	border-radius: 3px;
+	text-shadow: 1px 1px 2px lighten($light-blue, 25%);
+	&:hover {
+		color: $light-blue;
+	}
 }
 
 .personal-info, .web-presence, .content {
@@ -70,8 +79,9 @@ body {
 	color: $very-light-gray;
 
 	font-size: 0.9em;
-	letter-spacing: -0.05em;
 	background-color: $light-blue;
 	padding: 2px;
 	border-radius: 3px;
+	box-shadow: inset 0 0 5px 0 $strong-blue;
+	text-shadow: 2px 2px 2px $strong-blue;
 }
