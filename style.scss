@@ -1,0 +1,53 @@
+h1 {
+	font: Superclarendon;
+	margin: 0 auto;
+	text-align: right;
+}
+
+h2 {
+	margin-top: 0;
+}
+
+h3 {
+	font-style: italic;
+	&::after {
+		content: ' ';
+		text-decoration: underline;
+	}
+}
+
+h4 {
+	color: blue;
+	margin-bottom: 0;
+
+	& + p {
+		margin-top: 0;
+	}
+}
+
+em {
+	color: blue;
+	font-style: normal;
+}
+
+body {
+	margin: 10px auto;
+	padding: 10px;
+	max-width: 900px;
+}
+
+.personal-info, .web-presence, .content {
+	display: inline-block;
+}
+
+.personal-info
+{
+	float: left;
+}
+
+.web-presence {
+	font-style: italic;
+	float: right;
+	text-align: right;
+	vertical-align: top;
+}
