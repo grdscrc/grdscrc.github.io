@@ -59,7 +59,7 @@ a {
 	}
 }
 
-.personal-info, .web-presence, .content {
+.personal-info, .web-presence, [class^='resume-'] {
 	display: inline-block;
 }
 
@@ -84,4 +84,23 @@ a {
 	border-radius: 3px;
 	box-shadow: inset 0 0 5px 0 $strong-blue;
 	text-shadow: 2px 2px 2px $strong-blue;
+}
+
+[class^="resume-"] {
+	width: 100%;
+
+	h3 {
+		width: 100%;
+		&:hover::after {
+			content: ' \A7';
+		}
+	}
+	input[id^="collapse-"] {
+		display: none;
+		&:checked ~ {
+			.content {
+				display: none;
+			}
+		}
+	}
 }

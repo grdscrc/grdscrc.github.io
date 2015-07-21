@@ -42,7 +42,7 @@ a {
   a:hover {
     color: #49D; }
 
-.personal-info, .web-presence, .content {
+.personal-info, .web-presence, [class^='resume-'] {
   display: inline-block; }
 
 .personal-info {
@@ -62,5 +62,16 @@ a {
   border-radius: 3px;
   box-shadow: inset 0 0 5px 0 #27B;
   text-shadow: 2px 2px 2px #27B; }
+
+[class^="resume-"] {
+  width: 100%; }
+  [class^="resume-"] h3 {
+    width: 100%; }
+    [class^="resume-"] h3:hover::after {
+      content: ' \A7'; }
+  [class^="resume-"] input[id^="collapse-"] {
+    display: none; }
+    [class^="resume-"] input[id^="collapse-"]:checked ~ .content {
+      display: none; }
 
 /*# sourceMappingURL=style.css.map */

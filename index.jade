@@ -21,73 +21,85 @@ body
     a(href="https://www.github.com/grdscrc") GitHub #[br]
     a(href="https://www.bitbucket.org/grdscrc") Bitbucket
 
-  .content
-    h3 Compétences
+  .resume-aptitudes
+    label(for="collapse-aptitudes") #[h3 Compétences]
+    input(type="checkbox" id="collapse-aptitudes" name="collapse-input")
 
-    p.
-      Langages : #[span.tag Ruby on Rails],
-      #[span.tag jQuery],
-      #[span.tag CoffeeScript],
-      #[span.tag Twitter Bootstrap] (Responsive design),
-      #[span.tag Java],
-      #[span.tag C++],
-      #[span.tag PHP]
-    p.
-      Logiciels :
-      #[span.tag Sublime Text],
-      #[span.tag SourceTree],
-      #[span.tag GitBox],
-      #[span.tag Vim],
-      #[span.tag Terminal] (Bash)
-    p.
-      Pratiques de développement :
-      #[span.tag Test Driven Development] (Développement piloté par les tests),
-      #[span.tag Continuous delivery] (Livraison continue)
+    .content
+      p.
+        Langages : #[span.tag Ruby on Rails],
+        #[span.tag jQuery],
+        #[span.tag CoffeeScript],
+        #[span.tag Twitter Bootstrap] (Responsive design),
+        #[span.tag Java],
+        #[span.tag C++],
+        #[span.tag PHP]
+      p.
+        Logiciels :
+        #[span.tag Sublime Text],
+        #[span.tag SourceTree],
+        #[span.tag GitBox],
+        #[span.tag Vim],
+        #[span.tag Terminal] (Bash)
+      p.
+        Pratiques de développement :
+        #[span.tag Test Driven Development] (Développement piloté par les tests),
+        #[span.tag Continuous delivery] (Livraison continue)
 
-  h3 Expérience
+  .resume-experience
+    label(for="collapse-experience") #[h3 Expérience]
+    input(type="checkbox" id="collapse-experience" name="collapse-input")
 
-  h4 Stage de six mois au Syadem (Système d’Aide à la Décision Médicale)
-  span.date Avril-Septembre 2014
-  p.
-    Développement de fonctionnalités pour les nouvelles versions mobile et
-    bureau de MesVaccins.net : modernisation du site, simplification de l’ajout
-    de vaccination et du diagnostic, amélioration des métriques et du SEO
-    (optimisation du référencement).
+    .content
+      h4 Stage de six mois au Syadem (Système d’Aide à la Décision Médicale)
+      span.date Avril-Septembre 2014
+      p.
+        Développement de fonctionnalités pour les nouvelles versions mobile et
+        bureau de MesVaccins.net : modernisation du site, simplification de l’ajout
+        de vaccination et du diagnostic, amélioration des métriques et du SEO
+        (optimisation du référencement).
 
-  h4 Stage de trois mois au sein du GEP (Groupe d’Études en Préventologie)
-  span.date Juin-Aout 2013
-  p.
-    Création de la version mobile de MesVaccins.net : adaptation des
-    fonctionnalités du site bureau aux mobiles, développement d’un système
-    d’authentification, refonte de plusieurs pages en responsive design.
+      h4 Stage de trois mois au sein du GEP (Groupe d’Études en Préventologie)
+      span.date Juin-Aout 2013
+      p.
+        Création de la version mobile de MesVaccins.net : adaptation des
+        fonctionnalités du site bureau aux mobiles, développement d’un système
+        d’authentification, refonte de plusieurs pages en responsive design.
 
-  h4 Stage de quatre semaines au sein de DEAL informatique
-  span.date Juin 2012
-  p.
-    Passage de progiciels de gestion à leur version 5, modernisation des
-    interfaces.
+      h4 Stage de quatre semaines au sein de DEAL informatique
+      span.date Juin 2012
+      p.
+        Passage de progiciels de gestion à leur version 5, modernisation des
+        interfaces.
 
-  h3 Formation
+  .resume-scholarship
+    label(for="collapse-scholarship") #[h3 Formation]
+    input(type="checkbox" id="collapse-scholarship" name="collapse-input")
 
-  h4 Master Génie logiciel, parcours conduite de projet à l’université de Bordeaux
-  p.
-    C++ (Frameworks OmNet++ et Qt), Java (Design patterns, interfaces graphiques),
-    OCaml, Haskell (Langages à inférence de type), Flex, Yacc (analyse syntaxique
-    et lexicale)
+    .content
+      h4 Master Génie logiciel, parcours conduite de projet à l’université de Bordeaux
+      p.
+        C++ (Frameworks OmNet++ et Qt), Java (Design patterns, interfaces graphiques),
+        OCaml, Haskell (Langages à inférence de type), Flex, Yacc (analyse syntaxique
+        et lexicale)
 
-  h4 Licence Informatique à l'université de Bordeaux
-  p C, Y86 (langage assembleur), Lisp (programmation fonctionnelle et symbolique)
+      h4 Licence Informatique à l'université de Bordeaux
+      p C, Y86 (langage assembleur), Lisp (programmation fonctionnelle et symbolique)
 
-  h4 IUT Gestion Logistique et Transport à l’université Bordeaux Montesquieu
-  p Étude du marché des transports, notions de comptabilité
+      h4 IUT Gestion Logistique et Transport à l’université Bordeaux Montesquieu
+      p Étude du marché des transports, notions de comptabilité
 
-  p.
-    #[em Bac S] spécialité biologie au lycée Michel Montaigne à Bordeaux #[br]
-    Anglais étudié et parlé (TOEIC : 980/990)
+      p.
+        #[em Bac S] spécialité biologie au lycée Michel Montaigne à Bordeaux #[br]
+        Anglais étudié et parlé (TOEIC : 980/990)
 
-  h3 Loisirs
-  p.
-    #[em Musique] (guitare basse, guitare électrique et classique) #[br]
-    #[em Nouvelles technologies] #[br]
-    #[em Cinéma] et #[em Séries télévisées] #[br]
-    #[em Course à pied]
+  .resume-hobbies
+    label(for="collapse-hobbies") #[h3 Loisirs]
+    input(type="checkbox" id="collapse-hobbies" name="collapse-input")
+
+    .content
+      p.
+        #[em Musique] (guitare basse, guitare électrique et classique) #[br]
+        #[em Nouvelles technologies] #[br]
+        #[em Cinéma] et #[em Séries télévisées] #[br]
+        #[em Course à pied]
