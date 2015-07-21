@@ -1,3 +1,20 @@
+@font-face {
+  font-family: 'Futura';
+  src: url("fonts/Futura.ttc"); }
+@font-face {
+  font-family: 'SuperClarendon';
+  src: url("fonts/SuperClarendon.ttc"); }
+body {
+  font-family: Futura;
+  background-color: #FBFBFB;
+  margin: 10px auto;
+  padding: 10px;
+  max-width: 900px; }
+
+h1, h2 {
+  font-family: SuperClarendon;
+  color: #057; }
+
 h1 {
   font: Superclarendon;
   margin: 0 auto;
@@ -13,13 +30,13 @@ h3 {
     text-decoration: underline; }
 
 h4 {
-  color: blue;
+  color: #27B;
   margin-bottom: 0; }
   h4 + p {
     margin-top: 0; }
 
 em {
-  color: blue;
+  color: #27B;
   font-style: normal; }
 
 body {
