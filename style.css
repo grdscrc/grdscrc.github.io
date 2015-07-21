@@ -71,8 +71,11 @@ a {
   width: 100%; }
   [class^="resume-"] h3 {
     width: 100%; }
-    [class^="resume-"] h3:hover::after {
-      content: ' \A7'; }
+    [class^="resume-"] h3:hover {
+      cursor: pointer;
+      background-color: #eeeeee; }
+      [class^="resume-"] h3:hover::after {
+        content: ' \A7'; }
   [class^="resume-"] input[id^="collapse-"] {
     display: none; }
     [class^="resume-"] input[id^="collapse-"]:checked ~ .content {

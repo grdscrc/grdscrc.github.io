@@ -96,8 +96,12 @@ a {
 
 	h3 {
 		width: 100%;
-		&:hover::after {
-			content: ' \A7';
+		&:hover {
+			cursor: pointer;
+			background-color: darken($very-light-gray, 5%);
+			&::after {
+				content: ' \A7';
+			}
 		}
 	}
 	input[id^="collapse-"] {
