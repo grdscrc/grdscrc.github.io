@@ -3,12 +3,17 @@ $dark-cyan: #057;
 $light-blue: #49D;
 $strong-blue: #27B;
 
+html {
+	background-color: white;
+}
+
 body {
 	font-family: 'Oxygen';
 	background-color: $very-light-gray;
-	margin: 10px auto;
+	margin: 0 auto;
 	padding: 10px;
 	max-width: 900px;
+	box-shadow: 0 0 10px 0 darken($very-light-gray, 10%);
 }
 
 h1, h2 {

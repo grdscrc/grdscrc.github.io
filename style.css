@@ -1,9 +1,13 @@
+html {
+  background-color: white; }
+
 body {
   font-family: 'Oxygen';
   background-color: #FBFBFB;
-  margin: 10px auto;
+  margin: 0 auto;
   padding: 10px;
-  max-width: 900px; }
+  max-width: 900px;
+  box-shadow: 0 0 10px 0 #e2e2e2; }
 
 h1, h2 {
   font-family: 'Oxygen Mono';
