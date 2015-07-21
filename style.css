@@ -1,5 +1,5 @@
 body {
-  font-family: Futura;
+  font-family: 'Oxygen';
   background-color: #FBFBFB;
   margin: 10px auto;
   padding: 10px;
@@ -32,10 +32,6 @@ em {
   color: #27B;
   font-style: normal; }
 
-body {
-  margin: 10px auto;
-  padding: 10px;
-  max-width: 900px; }
 
 .personal-info, .web-presence, .content {
   display: inline-block; }

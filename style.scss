@@ -4,7 +4,7 @@ $light-blue: #49D;
 $strong-blue: #27B;
 
 body {
-	font-family: Futura;
+	font-family: 'Oxygen';
 	background-color: $very-light-gray;
 	margin: 10px auto;
 	padding: 10px;
@@ -48,9 +48,6 @@ em {
 }
 
 body {
-	margin: 10px auto;
-	padding: 10px;
-	max-width: 900px;
 }
 
 .personal-info, .web-presence, .content {
