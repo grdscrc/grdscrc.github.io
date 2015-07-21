@@ -79,3 +79,13 @@ body {
 	text-align: right;
 	vertical-align: top;
 }
+
+.tag {
+	color: $very-light-gray;
+
+	font-size: 0.9em;
+	letter-spacing: -0.05em;
+	background-color: $light-blue;
+	padding: 2px;
+	border-radius: 3px;
+}

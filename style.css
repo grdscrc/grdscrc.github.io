@@ -56,4 +56,12 @@ body {
   text-align: right;
   vertical-align: top; }
 
+.tag {
+  color: #FBFBFB;
+  font-size: 0.9em;
+  letter-spacing: -0.05em;
+  background-color: #49D;
+  padding: 2px;
+  border-radius: 3px; }
+
 /*# sourceMappingURL=style.css.map */
