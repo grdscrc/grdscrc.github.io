@@ -3,16 +3,6 @@ $dark-cyan: #057;
 $light-blue: #49D;
 $strong-blue: #27B;
 
-@font-face {
-  font-family: 'Futura';
-  src: url('fonts/Futura.ttc');
-}
-
-@font-face {
-  font-family: 'SuperClarendon';
-  src: url('fonts/SuperClarendon.ttc');
-}
-
 body {
 	font-family: Futura;
 	background-color: $very-light-gray;
@@ -22,12 +12,11 @@ body {
 }
 
 h1, h2 {
-	font-family: SuperClarendon;
+	font-family: 'Oxygen Mono';
 	color: $dark-cyan;
 }
 
 h1 {
-	font: Superclarendon;
 	margin: 0 auto;
 	text-align: right;
 }
