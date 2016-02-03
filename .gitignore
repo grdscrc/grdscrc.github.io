@@ -1,0 +1,8 @@
+# Sass files
+.sass-cache/
+*.css.map
+
+# Jekyll stuff
+_site/
+.jekyll-metadata
+
