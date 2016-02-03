@@ -119,26 +119,3 @@ a {
 	color: darken($very-light-gray, 50%);
 	float: right;
 }
-
-[class^="resume-"] {
-	width: 100%;
-
-	h3 {
-		width: 100%;
-		&:hover {
-			cursor: pointer;
-			background-color: darken($very-light-gray, 5%);
-			&::after {
-				content: ' \A7';
-			}
-		}
-	}
-	input[id^="collapse-"] {
-		display: none;
-		&:checked ~ {
-			.content {
-				display: none;
-			}
-		}
-	}
-}
