@@ -1,4 +1,5 @@
-$very-light-gray: #FBFBFB;
+$gray: #7d7d7d;
+$very-light-gray: lighten($gray, 50%);
 $dark-cyan: #057;
 $light-blue: #49D;
 $strong-blue: #27B;
@@ -32,6 +33,8 @@ h2 {
 
 h3 {
 	font-style: italic;
+	padding: 2px;
+	border-radius: 2px;
 	&::after {
 		content: ' ';
 		text-decoration: underline;
@@ -40,11 +43,17 @@ h3 {
 
 h4 {
 	color: $strong-blue;
-	margin-bottom: 0;
+	display: inline-block;
+	margin: 0;
 
 	& + p {
 		margin-top: 0;
 	}
+}
+
+hr {
+	width: 70%;
+	margin-top: 1em;
 }
 
 em {
@@ -62,6 +71,13 @@ a {
 	&:hover {
 		color: $light-blue;
 	}
+}
+
+.portrait {
+	float: right;
+	border-radius: 100px;
+	height: 100px;
+	box-shadow: 0 0 7px rgba(0, 0, 0, .5);
 }
 
 .personal-info, .web-presence, [class^='resume-'] {
@@ -89,6 +105,19 @@ a {
 	border-radius: 3px;
 	box-shadow: inset 0 0 5px 0 $strong-blue;
 	text-shadow: 2px 2px 2px $strong-blue;
+}
+
+.current-job {
+	font-size: 1.2em;
+	background-color: darken($very-light-gray, 10%);
+	padding: 5px 7px;
+	border-radius: 5px;
+	box-shadow: inset 0 0 5px $gray;
+}
+
+.job-date {
+	color: darken($very-light-gray, 50%);
+	float: right;
 }
 
 [class^="resume-"] {
