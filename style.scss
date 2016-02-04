@@ -33,6 +33,9 @@ h2 {
 
 h3 {
 	font-style: italic;
+	color: $very-light-gray;
+	text-shadow: 1px 1px 5px $gray;
+	background-color: $strong-blue;
 	padding: 2px;
 	border-radius: 2px;
 	&::after {
@@ -74,22 +77,18 @@ a {
 }
 
 .portrait {
-	float: right;
+	float: left;
 	border-radius: 100px;
 	height: 100px;
 	box-shadow: 0 0 7px rgba(0, 0, 0, .5);
 }
 
-.personal-info, .web-presence, [class^='resume-'] {
+.web-presence, [class^='resume-'] {
 	display: inline-block;
 }
 
-.personal-info
-{
-	float: left;
-}
-
 .web-presence {
+	list-style: none;
 	font-style: italic;
 	float: right;
 	text-align: right;

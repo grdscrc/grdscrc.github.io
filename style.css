@@ -22,6 +22,9 @@ h2 {
 
 h3 {
   font-style: italic;
+  color: #fdfdfd;
+  text-shadow: 1px 1px 5px #7d7d7d;
+  background-color: #27B;
   padding: 2px;
   border-radius: 2px; }
   h3::after {
@@ -54,18 +57,16 @@ a {
     color: #49D; }
 
 .portrait {
-  float: right;
+  float: left;
   border-radius: 100px;
   height: 100px;
   box-shadow: 0 0 7px rgba(0, 0, 0, 0.5); }
 
-.personal-info, .web-presence, [class^='resume-'] {
+.web-presence, [class^='resume-'] {
   display: inline-block; }
 
-.personal-info {
-  float: left; }
-
 .web-presence {
+  list-style: none;
   font-style: italic;
   float: right;
   text-align: right;
