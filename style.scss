@@ -83,7 +83,7 @@ a {
 	box-shadow: 0 0 7px rgba(0, 0, 0, .5);
 }
 
-.web-presence, [class^='resume-'] {
+.web-presence, .experience, .scholarship, .hobbies {
 	display: inline-block;
 }
 
@@ -115,6 +115,10 @@ a {
 }
 
 .job-date {
-	color: darken($very-light-gray, 50%);
-	float: right;
+	display: inline-block;
+	font-size: .8em;
+	color: $gray;
+	&:before {
+		content: '\0000a0'; //non-breakable space
+	}
 }
