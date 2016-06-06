@@ -1,1 +1,2 @@
-jekyll serve ; ls -d *|entr make
+jekyll serve &
+ls -d *|entr make
