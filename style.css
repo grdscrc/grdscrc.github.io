@@ -21,13 +21,13 @@ h2 {
   margin-top: 0; }
 
 h3 {
-  font-style: italic;
   color: #fdfdfd;
   text-shadow: 1px 1px 5px #7d7d7d;
   background-color: #27B;
   padding: 2px;
-  border-radius: 2px; }
-  h3::after {
+  border-radius: 2px;
+  width: 100%; }
+  h3:after {
     content: ' ';
     text-decoration: underline; }
 
@@ -37,6 +37,16 @@ h4 {
   margin: 0; }
   h4 + p {
     margin-top: 0; }
+  h4 a {
+    color: #fdfdfd;
+    background-color: #27B;
+    padding: 2px;
+    border-radius: 2px; }
+    h4 a:hover {
+      color: #27B;
+      background-color: #fdfdfd; }
+    h4 a:after {
+      content: " " url(http://upload.wikimedia.org/wikipedia/commons/6/64/Icon_External_Link.png); }
 
 hr {
   width: 70%;
@@ -67,10 +77,21 @@ a {
 
 .web-presence {
   list-style: none;
-  font-style: italic;
   float: right;
   text-align: right;
-  vertical-align: top; }
+  margin-top: 0; }
+  .web-presence li {
+    margin: .2em 0; }
+  .web-presence a:before {
+    vertical-align: middle; }
+  .web-presence a[href*="https://www.twitter"]:before {
+    content: url(twitter.png); }
+  .web-presence a[href*="https://www.linkedin"]:before {
+    content: url(linkedin.png); }
+  .web-presence a[href*="https://www.github"]:before {
+    content: url(github.png); }
+  .web-presence a[href*="https://www.bitbucket"]:before {
+    content: url(bitbucket.png); }
 
 .tag {
   color: #fdfdfd;

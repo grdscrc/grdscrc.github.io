@@ -32,13 +32,13 @@ h2 {
 }
 
 h3 {
-	font-style: italic;
 	color: $very-light-gray;
 	text-shadow: 1px 1px 5px $gray;
 	background-color: $strong-blue;
 	padding: 2px;
 	border-radius: 2px;
-	&::after {
+	width: 100%;
+	&:after {
 		content: ' ';
 		text-decoration: underline;
 	}
@@ -51,6 +51,19 @@ h4 {
 
 	& + p {
 		margin-top: 0;
+	}
+	a {
+		color: $very-light-gray;
+		background-color: $strong-blue;
+		padding: 2px;
+		border-radius: 2px;
+		&:hover {
+			color: $strong-blue;
+			background-color: $very-light-gray;
+		}
+		&:after {
+			content: " " url(http://upload.wikimedia.org/wikipedia/commons/6/64/Icon_External_Link.png);	
+		}
 	}
 }
 
@@ -89,10 +102,28 @@ a {
 
 .web-presence {
 	list-style: none;
-	font-style: italic;
 	float: right;
 	text-align: right;
-	vertical-align: top;
+	margin-top: 0;
+
+	li {
+		margin: .2em 0;
+	}
+	a:before {
+		vertical-align: middle;
+	}
+	a[href*="https://www.twitter"]:before {
+		content: url(twitter.png);
+	}
+	a[href*="https://www.linkedin"]:before {
+		content: url(linkedin.png);
+	}
+	a[href*="https://www.github"]:before {
+		content: url(github.png);
+	}
+	a[href*="https://www.bitbucket"]:before {
+		content: url(bitbucket.png);
+	}
 }
 
 .tag {
