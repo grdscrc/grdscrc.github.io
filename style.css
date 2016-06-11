@@ -28,9 +28,6 @@ h3 {
   padding: 2px;
   border-radius: 2px;
   width: 100%; }
-  h3:after {
-    content: ' ';
-    text-decoration: underline; }
 
 h4 {
   color: #27B;

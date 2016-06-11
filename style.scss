@@ -38,10 +38,6 @@ h3 {
 	padding: 2px;
 	border-radius: 2px;
 	width: 100%;
-	&:after {
-		content: ' ';
-		text-decoration: underline;
-	}
 }
 
 h4 {
@@ -85,7 +81,7 @@ a {
 		color: $light-blue;
 	}
 	&:after {
-		content: "\a0" url(http://upload.wikimedia.org/wikipedia/commons/6/64/Icon_External_Link.png);	
+		content: '\a0' url(http://upload.wikimedia.org/wikipedia/commons/6/64/Icon_External_Link.png);	
 	}
 }
 
