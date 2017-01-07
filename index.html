@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="fr">
   <head>
-    <link rel="stylesheet" media="all" href="style.css" type="text/css">
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
-    <link href="http://fonts.googleapis.com/css?family=Oxygen+Mono" rel="stylesheet" type="text/css">
-    <link href="http://fonts.googleapis.com/css?family=Oxygen" rel="stylesheet" type="text/css">
+    <!-- Use bogus media attr to download stylesheets and apply later-->
+    <!-- https://codepen.io/tigt/post/async-css-without-javascript#do-we-have-a-standard-for-this-4-->
+    <link rel="stylesheet" type="text/css" media="wait" href="style.css">
+    <link rel="stylesheet" type="text/css" media="wait" href="http://fonts.googleapis.com/css?family=Oxygen+Mono">
+    <link rel="stylesheet" type="text/css" media="wait" href="http://fonts.googleapis.com/css?family=Oxygen">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no">
     <title>Igor Descayrac - A simple page for a simple man</title>
@@ -72,4 +74,7 @@
       </ul>
     </div>
   </body>
+  <link rel="stylesheet" type="text/css" media="all" href="style.css">
+  <link rel="stylesheet" type="text/css" media="all" href="http://fonts.googleapis.com/css?family=Oxygen+Mono">
+  <link rel="stylesheet" type="text/css" media="all" href="http://fonts.googleapis.com/css?family=Oxygen">
 </html>
