@@ -75,11 +75,31 @@ html(lang="fr")
     .hobbies
       h3 Ce que je fais aussi, mais qui rapporte nettement moins d'argent
       ul
-        li #[em Musique] (guitare basse, guitare électrique et classique)
-        li #[em Nouvelles technologies]
+        li #[em De la musique]
+        ul
+          li je dois archiver une partie de ma bibliothèque Spotify car mon mode d'écoute musical est relativement compulsif
+          li je joue de ma guitare basse
+          li je frise un peu avec ma guitare électrique
+          li je ne devrais pas approcher de ma guitare classique
+          li j'ai d'autres instruments #[small parceque sur ce plan-là il faut dire que je me cherche]
+        li #[em Nouvelles technologies] (Et aussi anciennement nouvelles)
+        ul
+          li en gros cet item-là c'est la version formelle de "j'endommage mes p'tits yeux à geeker sur les jeux #[a(href="http://www.nitrome.com") Nitrome]"
+          li ne culpabilisez pas si vous me jugez, on est là pour ça hein
         li #[em Cinéma] et #[em Séries télévisées]
+        ul
+          li les visionnages en boucle de Rick and Morty et de Archer
+          li les films d'Edgar Wright
+          li les Marvels pour soutenir les auteurs
         li #[em Course à pied]
+        ul
+          li principalement quand je vois le tram arriver à ma station
 
+    footer
+      small copyright © #[span#current-year]
+
+  script.
+    document.getElementById('current-year').innerHTML = (new Date()).getFullYear()
   link(rel="stylesheet" type="text/css" media="all" href="style.css")
   link(rel="stylesheet" type="text/css" media="all" href='http://fonts.googleapis.com/css?family=Oxygen+Mono')
   link(rel="stylesheet" type="text/css" media="all" href='http://fonts.googleapis.com/css?family=Oxygen')
