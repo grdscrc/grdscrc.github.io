@@ -13,93 +13,92 @@ html(lang="fr")
     title Igor Descayrac - A simple page for a simple man
 
   body
-    h1 Igor Descayrac
-    h2 Développeur web
+    header
+      h1 Igor Descayrac
+      h2 Développeur web
 
-    img.portrait(src='http://www.gravatar.com/avatar/78d1abd1fd2dd6d713f70bfcebaef9c3?s=100')(alt='My beautiful avatar')
+      img.portrait(src='http://www.gravatar.com/avatar/78d1abd1fd2dd6d713f70bfcebaef9c3?s=100')(alt='My beautiful avatar')
 
-    ul.web-presence
-      li #[a(href="https://www.linkedin.com/pub/igor-descayrac/64/120/6a9") Igor Descayrac]
-      li #[a(href="https://www.twitter.com/grdscrc") @grdscrc]
-      li #[a(href="https://www.github.com/grdscrc") grdscrc]
-      li #[a(href="https://www.bitbucket.org/grdscrc") grdscrc]
+      ul.web-presence
+        li #[a(href="https://www.linkedin.com/pub/igor-descayrac/64/120/6a9") Igor Descayrac]
+        li #[a(href="https://www.twitter.com/grdscrc") @grdscrc]
+        li #[a(href="https://www.github.com/grdscrc") grdscrc]
+        li #[a(href="https://www.bitbucket.org/grdscrc") grdscrc]
 
-    .experience
-      h3 Ce que je fais
-      h4.current-job.
-        Développeur web au #[a(href="https://www.syadem.fr")(target="blank") Syadem]
-        - #[a(href="https://www.mesvaccins.net")(target="blank") MesVaccins.net]
-        #[span.job-date Depuis 2015]
-      hr
+    div#main
+      .experience
+        h3 Ce que je fais
+        h4.current-job.
+          Développeur web au #[a(href="https://www.syadem.fr")(target="blank") Syadem]
+          - #[a(href="https://www.mesvaccins.net")(target="blank") MesVaccins.net]
+          #[span.job-date Depuis 2015]
+        hr
 
-      h4 Développeur web à Hélios NTIC
-        span.job-date 2014-2015
-      p.
-        Utilisation de Prestashop pour des sites de e-commerce, gestion et maintenance Drupal
-      hr
+        h4 Développeur web à Hélios NTIC
+          span.job-date 2014-2015
+        p.
+          Utilisation de Prestashop pour des sites de e-commerce, gestion et maintenance Drupal
+        hr
 
-      h4 Stage de six mois au Syadem (Système d’Aide à la Décision Médicale)
-        span.job-date 2014
-      p.
-        Développement de fonctionnalités pour les nouvelles versions mobile et
-        bureau de MesVaccins.net : modernisation du site, simplification de l’ajout
-        de vaccination et du diagnostic, amélioration des métriques et du SEO
-        (optimisation du référencement).
-      hr
+        h4 Stage de six mois au Syadem (Système d’Aide à la Décision Médicale)
+          span.job-date 2014
+        p.
+          Développement de fonctionnalités pour les nouvelles versions mobile et
+          bureau de MesVaccins.net : modernisation du site, simplification de l’ajout
+          de vaccination et du diagnostic, amélioration des métriques et du SEO
+          (optimisation du référencement).
+        hr
 
-      h4 Stage de trois mois au sein du GEP (Groupe d’Études en Préventologie)
-        span.job-date 2013
-      p.
-        Création de la version mobile de MesVaccins.net : adaptation des
-        fonctionnalités du site bureau aux mobiles, développement d’un système
-        d’authentification, refonte de plusieurs pages en responsive design.
+        h4 Stage de trois mois au sein du GEP (Groupe d’Études en Préventologie)
+          span.job-date 2013
+        p.
+          Création de la version mobile de MesVaccins.net : adaptation des
+          fonctionnalités du site bureau aux mobiles, développement d’un système
+          d’authentification, refonte de plusieurs pages en responsive design.
 
-    .scholarship
-      h3 Comment j'ai appris à faire ce que je fais (ou au moins essayé)
-      h4 Master Génie logiciel, parcours conduite de projet à l’université de Bordeaux
-      p.
-        C++ (Frameworks OmNet++ et Qt), Java (Design patterns, interfaces graphiques),
-        OCaml, Haskell (Langages à inférence de type), Flex, Yacc (analyse syntaxique
-        et lexicale)
+      .scholarship
+        h3 Comment j'ai appris à faire ce que je fais (ou au moins essayé)
+        h4 Master Génie logiciel, parcours conduite de projet à l’université de Bordeaux
+        p.
+          C++ (Frameworks OmNet++ et Qt), Java (Design patterns, interfaces graphiques),
+          OCaml, Haskell (Langages à inférence de type), Flex, Yacc (analyse syntaxique
+          et lexicale)
 
-      h4 Licence Informatique à l'université de Bordeaux
-      p C, Y86 (langage assembleur), Lisp (programmation fonctionnelle et symbolique)
+        h4 Licence Informatique à l'université de Bordeaux
+        p C, Y86 (langage assembleur), Lisp (programmation fonctionnelle et symbolique)
 
-      h4 IUT Gestion Logistique et Transport à l’université Bordeaux Montesquieu
-      p Étude du marché des transports, notions de comptabilité
+        h4 IUT Gestion Logistique et Transport à l’université Bordeaux Montesquieu
+        p Étude du marché des transports, notions de comptabilité
 
-      p.
-        #[em Bac S] spécialité biologie au lycée Michel Montaigne à Bordeaux #[br]
-        Anglais étudié et parlé (TOEIC : 980/990)
+        p.
+          #[em Bac S] spécialité biologie au lycée Michel Montaigne à Bordeaux #[br]
+          Anglais étudié et parlé (TOEIC : 980/990)
 
-    .hobbies
-      h3 Ce que je fais aussi, mais qui rapporte nettement moins d'argent
-      ul
-        li #[em De la musique]
+      .hobbies
+        h3 Ce que je fais aussi, mais qui rapporte nettement moins d'argent
         ul
-          li je dois archiver une partie de ma bibliothèque Spotify car mon mode d'écoute musical est relativement compulsif
-          li je joue de ma guitare basse
-          li je frise un peu avec ma guitare électrique
-          li je ne devrais pas approcher de ma guitare classique
-          li j'ai d'autres instruments #[small parceque sur ce plan-là il faut dire que je me cherche]
-        li #[em Nouvelles technologies] (Et aussi anciennement nouvelles)
-        ul
-          li en gros cet item-là c'est la version formelle de "j'endommage mes p'tits yeux à geeker sur les jeux #[a(href="http://www.nitrome.com") Nitrome]"
-          li ne culpabilisez pas si vous me jugez, on est là pour ça hein
-        li #[em Cinéma] et #[em Séries télévisées]
-        ul
-          li les visionnages en boucle de Rick and Morty et de Archer
-          li les films d'Edgar Wright
-          li les Marvels pour soutenir les auteurs
-        li #[em Course à pied]
-        ul
-          li principalement quand je vois le tram arriver à ma station
+          li #[em De la musique]
+          ul
+            li je dois archiver une partie de ma bibliothèque Spotify car mon mode d'écoute musical est relativement compulsif
+            li je joue de ma guitare basse
+            li je frise un peu avec ma guitare électrique
+            li je ne devrais pas approcher de ma guitare classique
+            li j'ai d'autres instruments #[small parceque sur ce plan-là il faut dire que je me cherche]
+          li #[em Nouvelles technologies] (Et aussi anciennement nouvelles)
+          ul
+            li en gros cet item-là c'est la version formelle de "j'endommage mes p'tits yeux à geeker sur les jeux #[a(href="http://www.nitrome.com") Nitrome]"
+            li ne culpabilisez pas si vous me jugez, on est là pour ça hein
+          li #[em Cinéma] et #[em Séries télévisées]
+          ul
+            li les visionnages en boucle de Rick and Morty et de Archer
+            li les films d'Edgar Wright
+            li les Marvels pour soutenir les auteurs
+          li #[em Course à pied]
+          ul
+            li principalement quand je vois le tram arriver à ma station
 
     footer
       small copyright © #[span#current-year]
 
-  script.
-    document.getElementById('current-year').innerHTML = (new Date()).getFullYear()
-  link(rel="stylesheet" type="text/css" media="all" href="style.css")
-  link(rel="stylesheet" type="text/css" media="all" href='http://fonts.googleapis.com/css?family=Oxygen+Mono')
-  link(rel="stylesheet" type="text/css" media="all" href='http://fonts.googleapis.com/css?family=Oxygen')
+      script.
+        document.getElementById('current-year').innerHTML = (new Date()).getFullYear()
