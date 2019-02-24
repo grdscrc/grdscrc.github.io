@@ -112,16 +112,16 @@ a {
     content: '';
   }
   a[href*="https://www.twitter"]:before {
-    content: url(assets/twitter.png);
+    content: url(twitter.png);
   }
   a[href*="https://www.linkedin"]:before {
-    content: url(assets/linkedin.png);
+    content: url(linkedin.png);
   }
   a[href*="https://www.github"]:before {
-    content: url(assets/github.png);
+    content: url(github.png);
   }
   a[href*="https://www.bitbucket"]:before {
-    content: url(assets/bitbucket.png);
+    content: url(bitbucket.png);
   }
 }
 
