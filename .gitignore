@@ -3,7 +3,7 @@
 *.css.map
 
 # Jekyll stuff
-_site/
+_build/
 .jekyll-metadata
 
 node_modules
