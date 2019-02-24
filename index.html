@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <!-- Use bogus media attr to download stylesheets and apply later-->
+    <!-- https://codepen.io/tigt/post/async-css-without-javascript#do-we-have-a-standard-for-this-4-->
+    <link rel="stylesheet" type="text/css" media="wait" href="style.css">
+    <link rel="stylesheet" type="text/css" media="wait" href="http://fonts.googleapis.com/css?family=Oxygen+Mono">
+    <link rel="stylesheet" type="text/css" media="wait" href="http://fonts.googleapis.com/css?family=Oxygen">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+    <title>Igor Descayrac - A simple page for a simple man</title>
+  </head>
+  <body>
+    <h1>Igor Descayrac</h1>
+    <h2>Développeur web</h2><img class="portrait" src="http://www.gravatar.com/avatar/78d1abd1fd2dd6d713f70bfcebaef9c3?s=100" alt="My beautiful avatar">
+    <ul class="web-presence">
+      <li><a href="https://www.linkedin.com/pub/igor-descayrac/64/120/6a9">Igor Descayrac</a></li>
+      <li><a href="https://www.twitter.com/grdscrc">@grdscrc</a></li>
+      <li><a href="https://www.github.com/grdscrc">grdscrc</a></li>
+      <li><a href="https://www.bitbucket.org/grdscrc">grdscrc</a></li>
+    </ul>
+    <div class="experience">
+      <h3>Ce que je fais</h3>
+      <h4 class="current-job">Développeur web au <a href="https://www.syadem.fr" target="blank">Syadem</a>
+        - <a href="https://www.mesvaccins.net" target="blank">MesVaccins.net</a>
+        <span class="job-date">Depuis 2015</span>
+      </h4>
+      <hr>
+      <h4>Développeur web à Hélios NTIC<span class="job-date">2014-2015</span></h4>
+      <p>Utilisation de Prestashop pour des sites de e-commerce, gestion et maintenance Drupal</p>
+      <hr>
+      <h4>Stage de six mois au Syadem (Système d’Aide à la Décision Médicale)<span class="job-date">2014</span></h4>
+      <p>
+        Développement de fonctionnalités pour les nouvelles versions mobile et
+        bureau de MesVaccins.net : modernisation du site, simplification de l’ajout
+        de vaccination et du diagnostic, amélioration des métriques et du SEO
+        (optimisation du référencement).
+      </p>
+      <hr>
+      <h4>Stage de trois mois au sein du GEP (Groupe d’Études en Préventologie)<span class="job-date">2013</span></h4>
+      <p>
+        Création de la version mobile de MesVaccins.net : adaptation des
+        fonctionnalités du site bureau aux mobiles, développement d’un système
+        d’authentification, refonte de plusieurs pages en responsive design.
+        
+      </p>
+    </div>
+    <div class="scholarship">
+      <h3>Comment j'ai appris à faire ce que je fais (ou au moins essayé)</h3>
+      <h4>Master Génie logiciel, parcours conduite de projet à l’université de Bordeaux</h4>
+      <p>
+        C++ (Frameworks OmNet++ et Qt), Java (Design patterns, interfaces graphiques),
+        OCaml, Haskell (Langages à inférence de type), Flex, Yacc (analyse syntaxique
+        et lexicale)
+        
+      </p>
+      <h4>Licence Informatique à l'université de Bordeaux</h4>
+      <p>C, Y86 (langage assembleur), Lisp (programmation fonctionnelle et symbolique)</p>
+      <h4>IUT Gestion Logistique et Transport à l’université Bordeaux Montesquieu</h4>
+      <p>Étude du marché des transports, notions de comptabilité</p>
+      <p><em>Bac S</em> spécialité biologie au lycée Michel Montaigne à Bordeaux <br>
+        Anglais étudié et parlé (TOEIC : 980/990)
+        
+      </p>
+    </div>
+    <div class="hobbies">
+      <h3>Ce que je fais aussi, mais qui rapporte nettement moins d'argent</h3>
+      <ul>
+        <li><em>De la musique</em></li>
+        <ul>
+          <li>je dois archiver une partie de ma bibliothèque Spotify car mon mode d'écoute musical est relativement compulsif</li>
+          <li>je joue de ma guitare basse</li>
+          <li>je frise un peu avec ma guitare électrique</li>
+          <li>je ne devrais pas approcher de ma guitare classique</li>
+          <li>j'ai d'autres instruments <small>parceque sur ce plan-là il faut dire que je me cherche</small></li>
+        </ul>
+        <li><em>Nouvelles technologies</em> (Et aussi anciennement nouvelles)</li>
+        <ul>
+          <li>en gros cet item-là c'est la version formelle de "j'endommage mes p'tits yeux à geeker sur les jeux <a href="http://www.nitrome.com">Nitrome</a>"</li>
+          <li>ne culpabilisez pas si vous me jugez, on est là pour ça hein</li>
+        </ul>
+        <li><em>Cinéma</em> et <em>Séries télévisées</em></li>
+        <ul>
+          <li>les visionnages en boucle de Rick and Morty et de Archer</li>
+          <li>les films d'Edgar Wright</li>
+          <li>les Marvels pour soutenir les auteurs</li>
+        </ul>
+        <li><em>Course à pied</em></li>
+        <ul>
+          <li>principalement quand je vois le tram arriver à ma station</li>
+        </ul>
+      </ul>
+    </div>
+    <footer><small>copyright © <span id="current-year"></span></small></footer>
+  </body>
+  <script>document.getElementById('current-year').innerHTML = (new Date()).getFullYear()</script>
+  <link rel="stylesheet" type="text/css" media="all" href="style.css">
+  <link rel="stylesheet" type="text/css" media="all" href="http://fonts.googleapis.com/css?family=Oxygen+Mono">
+  <link rel="stylesheet" type="text/css" media="all" href="http://fonts.googleapis.com/css?family=Oxygen">
+</html>
