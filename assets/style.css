@@ -85,13 +85,13 @@ a {
   .web-presence a:after {
     content: ''; }
   .web-presence a[href*="https://www.twitter"]:before {
-    content: url(twitter.png); }
+    content: url(assets/twitter.png); }
   .web-presence a[href*="https://www.linkedin"]:before {
-    content: url(linkedin.png); }
+    content: url(assets/linkedin.png); }
   .web-presence a[href*="https://www.github"]:before {
-    content: url(github.png); }
+    content: url(assets/github.png); }
   .web-presence a[href*="https://www.bitbucket"]:before {
-    content: url(bitbucket.png); }
+    content: url(assets/bitbucket.png); }
 
 .tag {
   color: #fdfdfd;
