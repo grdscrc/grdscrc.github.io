@@ -12,10 +12,14 @@ html(lang="fr")
     title Igor Descayrac - A simple page for a simple man
 
   body
-    h1 Igor Descayrac
-    h2 Développeur web
+    header
+      .name
+        h1 Igor Descayrac
+      .title
+        h2 Développeur web
 
-    img.portrait(src='http://www.gravatar.com/avatar/78d1abd1fd2dd6d713f70bfcebaef9c3?s=100')(alt='My beautiful avatar')
+    div.portrait-container
+      img(src='http://www.gravatar.com/avatar/78d1abd1fd2dd6d713f70bfcebaef9c3?s=100')(alt='My beautiful avatar')
 
     ul.web-presence
       li #[a(href="https://www.linkedin.com/pub/igor-descayrac/64/120/6a9") Igor Descayrac]

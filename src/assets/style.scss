@@ -3,93 +3,93 @@ $very-light-gray: lighten($gray, 50%);
 $dark-cyan: #057;
 $light-blue: #49D;
 $strong-blue: #27B;
+$height: 100px;
+$opening_animation_delay: 5s;
 
 html {
-  background-color: white;
+  box-sizing: border-box;
 }
 
 body {
-  font-family: 'Oxygen';
-  background-color: $very-light-gray;
-  margin: 0 auto;
-  padding: 10px;
-  max-width: 900px;
-  box-shadow: 0 0 10px 0 darken($very-light-gray, 10%);
-}
-
-h1, h2 {
-  font-family: 'Oxygen Mono';
-  color: $dark-cyan;
-}
-
-h1 {
-  margin: 0 auto;
-  text-align: right;
-}
-
-h2 {
-  margin-top: 0;
-}
-
-h3 {
-  color: $very-light-gray;
-  text-shadow: 1px 1px 5px $gray;
-  background-color: $strong-blue;
-  padding: 2px;
-  border-radius: 2px;
-  width: 100%;
-}
-
-h4 {
-  color: $strong-blue;
-  display: inline-block;
   margin: 0;
+}
 
-  & + p {
-    margin-top: 0;
-  }
-  a {
+header {
+  color: $dark-cyan;
+
+  .name, .title {
+    font-style: italic;
+    font-size: 3em;
+    background: $dark-cyan;
     color: $very-light-gray;
-    background-color: $strong-blue;
-    padding: 2px;
-    border-radius: 2px;
-    &:hover {
-      color: $strong-blue;
-      background-color: $very-light-gray;
+    padding: .5em 1em .5em;
+    margin: 0;
+
+    height: 50vh;
+    animation: reduceHeight 1.5s;
+    animation-timing-function: ease-in;
+    animation-delay: $opening_animation_delay;
+    animation-fill-mode: forwards;
+    animation-iteration-count: 1;
+    @keyframes reduceHeight {
+      0% { height: 50vh; }
+      100% { height: 2em; }
+    }
+  }
+
+  h1 {
+    margin: 0;
+    animation: $opening_animation_delay ease-in 0s 1 slideInFromLeft, $opening_animation_delay ease-in 0s 1 fadeIn;
+    @keyframes slideInFromLeft {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(0); }
+    }
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { transform: 100%; }
+    }
+  }
+
+  .title {
+    background: $strong-blue;
+    text-align: right;
+    h2 {
+      margin: 0;
+      animation: $opening_animation_delay ease-in 0s 1 slideInFromRight, $opening_animation_delay ease-in 0s 1 fadeIn;
+      @keyframes slideInFromRight {
+        0% { transform: translateX(100%); }
+        100% { transform: translateX(0); }
+      }
     }
   }
 }
 
+h3 {
+}
+
+h4 {
+}
+
 hr {
-  width: 70%;
-  margin-top: 1em;
 }
 
 em {
-  color: $strong-blue;
-  font-style: normal;
 }
 
 a {
-  text-decoration: none;
-  font-style: normal;
-  color: $strong-blue;
-  padding: 2px 1px;
-  border-radius: 3px;
-  text-shadow: 1px 1px 2px lighten($light-blue, 25%);
-  &:hover {
-    color: $light-blue;
-  }
-  &:after {
-    content: '\a0' url(http://upload.wikimedia.org/wikipedia/commons/6/64/Icon_External_Link.png);	
-  }
 }
 
-.portrait {
-  float: left;
-  border-radius: 100px;
-  height: 100px;
-  box-shadow: 0 0 7px rgba(0, 0, 0, .5);
+.portrait-container {
+  height: $height;
+  width: $height;
+  margin-top: -$height;
+
+  img {
+    width: 100%;
+    height: auto;
+
+    animation: 5s ease-in 0s 1 fadeIn;
+  }
 }
 
 .web-presence, .experience, .scholarship, .hobbies {
@@ -103,13 +103,11 @@ a {
   margin-top: 0;
 
   li {
-    margin: .2em 0;
   }
   a:before {
     vertical-align: middle;
   }
   a:after {
-    content: '';
   }
   a[href*="https://www.twitter"]:before {
     content: url(twitter.png);
@@ -126,29 +124,10 @@ a {
 }
 
 .tag {
-  color: $very-light-gray;
-
-  font-size: 0.9em;
-  background-color: $light-blue;
-  padding: 2px;
-  border-radius: 3px;
-  box-shadow: inset 0 0 5px 0 $strong-blue;
-  text-shadow: 2px 2px 2px $strong-blue;
 }
 
 .current-job {
-  font-size: 1.2em;
-  background-color: darken($very-light-gray, 10%);
-  padding: 5px 7px;
-  border-radius: 5px;
-  box-shadow: inset 0 0 5px $gray;
 }
 
 .job-date {
-  display: inline-block;
-  font-size: .8em;
-  color: $gray;
-  &:before {
-    content: '\a0'; //non-breakable space
-  }
 }
