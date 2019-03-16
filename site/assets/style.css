@@ -82,4 +82,7 @@ header {
   .web-presence a[href*="https://www.bitbucket"]:before {
     content: url(bitbucket.png); }
 
+.job-date {
+  margin-left: 1ch; }
+
 /*# sourceMappingURL=style.css.map */
