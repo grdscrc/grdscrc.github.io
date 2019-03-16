@@ -1,5 +1,10 @@
-html {
+* {
   box-sizing: border-box; }
+
+html {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font: italic 1.2em "Fira Sans", serif; }
 
 body {
   margin: 0; }
@@ -16,17 +21,17 @@ header {
     height: 50vh;
     animation: reduceHeight 1.5s;
     animation-timing-function: ease-in;
-    animation-delay: 5s;
+    animation-delay: 2s;
     animation-fill-mode: forwards;
     animation-iteration-count: 1; }
 @keyframes reduceHeight {
   0% {
     height: 50vh; }
   100% {
-    height: 2em; } }
+    height: 3em; } }
   header h1 {
     margin: 0;
-    animation: 5s ease-in 0s 1 slideInFromLeft, 5s ease-in 0s 1 fadeIn; }
+    animation: 3s ease-in 0s 1 slideInFromLeft, 3s ease-in 0s 1 fadeIn; }
 @keyframes slideInFromLeft {
   0% {
     transform: translateX(-100%); }
@@ -36,13 +41,13 @@ header {
   0% {
     opacity: 0; }
   100% {
-    transform: 100%; } }
+    opacity: 1; } }
   header .title {
     background: #27B;
     text-align: right; }
     header .title h2 {
       margin: 0;
-      animation: 5s ease-in 0s 1 slideInFromRight, 5s ease-in 0s 1 fadeIn; }
+      animation: 3s ease-in 0s 1 slideInFromRight, 3s ease-in 0s 1 fadeIn; }
 @keyframes slideInFromRight {
   0% {
     transform: translateX(100%); }
@@ -55,7 +60,8 @@ header {
   .portrait-container img {
     width: 100%;
     height: auto;
-    animation: 5s ease-in 0s 1 fadeIn; }
+    opacity: 0;
+    animation: 2s ease-in 4s 1 fadeIn forwards; }
 
 .web-presence, .experience, .scholarship, .hobbies {
   display: inline-block; }
