@@ -13,46 +13,20 @@ header {
   color: #057; }
   header .name, header .title {
     font-style: italic;
-    font-size: 3em;
     background: #057;
     color: #fdfdfd;
     padding: .5em 1em .5em;
     margin: 0;
     height: 50vh;
-    animation: reduceHeight 1.5s;
-    animation-timing-function: ease-in;
-    animation-delay: 2s;
-    animation-fill-mode: forwards;
-    animation-iteration-count: 1; }
-@keyframes reduceHeight {
-  0% {
-    height: 50vh; }
-  100% {
-    height: 3em; } }
-  header h1 {
-    margin: 0;
-    animation: 3s ease-in 0s 1 slideInFromLeft, 3s ease-in 0s 1 fadeIn; }
-@keyframes slideInFromLeft {
-  0% {
-    transform: translateX(-100%); }
-  100% {
-    transform: translateX(0); } }
-@keyframes fadeIn {
-  0% {
-    opacity: 0; }
-  100% {
-    opacity: 1; } }
+    font-size: 3em; }
+  header .name {
+    margin: 0; }
   header .title {
     background: #27B;
     text-align: right; }
     header .title h2 {
-      margin: 0;
-      animation: 3s ease-in 0s 1 slideInFromRight, 3s ease-in 0s 1 fadeIn; }
-@keyframes slideInFromRight {
-  0% {
-    transform: translateX(100%); }
-  100% {
-    transform: translateX(0); } }
+      margin: 0; }
+
 .portrait-container {
   height: 100px;
   width: 100px;
@@ -60,8 +34,7 @@ header {
   .portrait-container img {
     width: 100%;
     height: auto;
-    opacity: 0;
-    animation: 2s ease-in 4s 1 fadeIn forwards; }
+    opacity: 0; }
 
 .web-presence, .experience, .scholarship, .hobbies {
   display: inline-block; }
