@@ -73,12 +73,28 @@ header {
 }
 
 .web-presence {
+  width: 100%;
   list-style: none;
-  float: right;
-  text-align: right;
-  margin-top: 0;
+  text-align: center;
+  margin: 1em 0;
 
   li {
+    display: inline-block;
+    width: 20%;
+    border: 2px solid $light_blue;
+    border-radius: 10px;
+    a {
+      display: inline-block;
+      width: 100%;
+      color: $strong_blue;
+      text-decoration: none;
+      padding: .3em;
+
+      &:hover {
+        background: $light_blue;
+        color: $very_light_gray;
+      }
+    }
   }
   a:before {
     vertical-align: middle;

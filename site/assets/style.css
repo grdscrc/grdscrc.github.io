@@ -45,10 +45,24 @@ header {
   display: inline-block; }
 
 .web-presence {
+  width: 100%;
   list-style: none;
-  float: right;
-  text-align: right;
-  margin-top: 0; }
+  text-align: center;
+  margin: 1em 0; }
+  .web-presence li {
+    display: inline-block;
+    width: 20%;
+    border: 2px solid #49D;
+    border-radius: 10px; }
+    .web-presence li a {
+      display: inline-block;
+      width: 100%;
+      color: #27B;
+      text-decoration: none;
+      padding: .3em; }
+      .web-presence li a:hover {
+        background: #49D;
+        color: #fdfdfd; }
   .web-presence a:before {
     vertical-align: middle; }
   .web-presence a[href*="https://www.twitter"]:before {
