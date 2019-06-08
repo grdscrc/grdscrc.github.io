@@ -1,0 +1,35 @@
+$portrait_apparition_time: 2s;
+
+$opening_animation_delay: 1s;
+$opening_animation_time: 3s;
+
+$fading_animation_time: 3s;
+
+@mixin loop-children {
+  @for $i from 1 through 10 {
+    &:nth-child(#{$i}) {
+      // animation-duration: #{$fading_animation_time + $i};
+      animation-delay: #{$i * 1.5}s;
+    }
+  }
+}
+
+header {
+  .name, .title {
+    height: 50vh;
+
+    .fading-in h3 {
+      animation: $fading_animation_time ease-in-out 0s 1 normal both fade-in;
+      @keyframes fade-in {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+      }
+
+      @include loop-children;
+    }
+  }
+}
+
+.portrait-container img {
+  animation: $portrait_apparition_time ease-in $opening_animation_delay+$opening_animation_time 1 fadeIn forwards;
+}
