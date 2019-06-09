@@ -8,25 +8,35 @@ header .name, header .title {
   to {
     opacity: 1; } }
     header .name .fading-in h3:nth-child(1), header .title .fading-in h3:nth-child(1) {
-      animation-delay: 1.5s; }
+      animation-delay: 1.5s;
+      font-size: 0.6em; }
     header .name .fading-in h3:nth-child(2), header .title .fading-in h3:nth-child(2) {
-      animation-delay: 3s; }
+      animation-delay: 3s;
+      font-size: 0.5em; }
     header .name .fading-in h3:nth-child(3), header .title .fading-in h3:nth-child(3) {
-      animation-delay: 4.5s; }
+      animation-delay: 4.5s;
+      font-size: 0.4em; }
     header .name .fading-in h3:nth-child(4), header .title .fading-in h3:nth-child(4) {
-      animation-delay: 6s; }
+      animation-delay: 6s;
+      font-size: 0.3em; }
     header .name .fading-in h3:nth-child(5), header .title .fading-in h3:nth-child(5) {
-      animation-delay: 7.5s; }
+      animation-delay: 7.5s;
+      font-size: 0.2em; }
     header .name .fading-in h3:nth-child(6), header .title .fading-in h3:nth-child(6) {
-      animation-delay: 9s; }
+      animation-delay: 9s;
+      font-size: 0.1em; }
     header .name .fading-in h3:nth-child(7), header .title .fading-in h3:nth-child(7) {
-      animation-delay: 10.5s; }
+      animation-delay: 10.5s;
+      font-size: 0em; }
     header .name .fading-in h3:nth-child(8), header .title .fading-in h3:nth-child(8) {
-      animation-delay: 12s; }
+      animation-delay: 12s;
+      font-size: -0.1em; }
     header .name .fading-in h3:nth-child(9), header .title .fading-in h3:nth-child(9) {
-      animation-delay: 13.5s; }
+      animation-delay: 13.5s;
+      font-size: -0.2em; }
     header .name .fading-in h3:nth-child(10), header .title .fading-in h3:nth-child(10) {
-      animation-delay: 15s; }
+      animation-delay: 15s;
+      font-size: -0.3em; }
 
 .portrait-container img {
   animation: 2s ease-in 4s 1 fadeIn forwards; }

@@ -8,8 +8,8 @@ $fading_animation_time: 3s;
 @mixin loop-children {
   @for $i from 1 through 10 {
     &:nth-child(#{$i}) {
-      // animation-duration: #{$fading_animation_time + $i};
       animation-delay: #{$i * 1.5}s;
+      font-size: #{(7 - $i)/10}em;
     }
   }
 }
