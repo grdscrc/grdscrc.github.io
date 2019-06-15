@@ -11,16 +11,17 @@ body {
 
 header {
   color: #057; }
-  @media only screen and (max-width: 500px) {
-    header {
-      font-size: .7em; } }
   header .name, header .title {
     background: #057;
     color: #fdfdfd;
     padding: 5vh 5vw;
     margin: 0;
-    height: 50vh;
+    height: 25vh;
     font-size: 3em; }
+    @media only screen and (max-width: 90ch) {
+      header .name, header .title {
+        height: 26vh;
+        font-size: 1.6em; } }
   header .name {
     margin: 0; }
   header .title {
@@ -48,12 +49,12 @@ header {
   width: 100%;
   list-style: none;
   text-align: center;
-  margin: 1em 0; }
+  margin: 1em 0;
+  padding: 0; }
   .web-presence li {
     display: inline-block;
-    width: 20%;
-    border: 2px solid #49D;
-    border-radius: 10px; }
+    width: 19%;
+    border-radius: .1em; }
     .web-presence li a {
       display: inline-block;
       width: 100%;

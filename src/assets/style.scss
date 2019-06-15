@@ -22,10 +22,6 @@ body {
 }
 
 header {
-  @media only screen and (max-width: 500px) {
-    font-size: .7em;
-  }
-
   color: $dark_cyan;
 
   .name, .title {
@@ -34,8 +30,12 @@ header {
     padding: 5vh 5vw;
     margin: 0;
 
-    height: 50vh;
+    height: 25vh;
     font-size: 3em;
+    @media only screen and (max-width: 90ch) {
+      height: 26vh;
+      font-size: 1.6em;
+    }
   }
 
   .name {
@@ -77,12 +77,13 @@ header {
   list-style: none;
   text-align: center;
   margin: 1em 0;
+  padding: 0;
 
   li {
     display: inline-block;
-    width: 20%;
-    border: 2px solid $light_blue;
-    border-radius: 10px;
+    width: 19%;
+    border-radius: .1em;
+
     a {
       display: inline-block;
       width: 100%;
