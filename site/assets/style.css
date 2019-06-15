@@ -73,6 +73,8 @@ header {
     content: url(github.png); }
   .web-presence a[href*="https://www.bitbucket"]:before {
     content: url(bitbucket.png); }
+  .web-presence a[href*="https://www.letterboxd"]:before {
+    content: url(letterboxd.png); }
 
 .job-date {
   margin-left: 1ch; }

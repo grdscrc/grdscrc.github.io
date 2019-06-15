@@ -113,6 +113,9 @@ header {
   a[href*="https://www.bitbucket"]:before {
     content: url(bitbucket.png);
   }
+  a[href*="https://www.letterboxd"]:before {
+    content: url(letterboxd.png);
+  }
 }
 
 .job-date {
