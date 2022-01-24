@@ -33,7 +33,9 @@ h3 {
 h4 {
   color: #27B;
   display: inline-block;
-  margin: 0; }
+  margin: 0 0 1em;
+  width: 100%;
+}
   h4 + p {
     margin-top: 0; }
   h4 small {
@@ -71,6 +73,10 @@ a {
     color: #49D; }
   a:after {
     content: " " url(http://upload.wikimedia.org/wikipedia/commons/6/64/Icon_External_Link.png); }
+
+ul {
+  margin-top: 0;
+  padding-left: 2ch; }
 
 .portrait {
   float: left;
@@ -131,5 +137,22 @@ a {
   color: #7d7d7d; }
   .job-date:before {
     content: '\a0'; }
+
+.job-place:before {
+  /* content: " " url(https://upload.wikimedia.org/wikipedia/commons/7/74/Location_icon_from_Noun_Project.png); */
+  /* content: ""; */
+  background-image: url(https://upload.wikimedia.org/wikipedia/commons/7/74/Location_icon_from_Noun_Project.png);
+  background-size: 10px 20px;
+
+}
+
+.job-stack {
+  float: right;
+  font-style: italic;
+}
+
+.job-stack ul, .job-stack ul li {
+  display: inline;
+}
 
 /*# sourceMappingURL=style.css.map */
