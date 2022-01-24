@@ -1,5 +1,7 @@
 html {
   background-color: transparent;
+  height: 29.7cm;
+  width: 21cm;
 }
 
 body {
@@ -14,3 +16,8 @@ body {
     margin-left: 40vw;
     margin-top: -1em;
 }
+
+a:after {
+    content: ""; }
+
+.noprint { display:none; }
