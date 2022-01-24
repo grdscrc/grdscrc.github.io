@@ -66,11 +66,12 @@ a {
 
 .portrait {
   float: left;
-  border-radius: 100px;
+  /* border-radius: 100px; */
   height: 10em;
   margin-left: 390px;
   margin-top: -3em;
-  /* box-shadow: 0 0 7px rgba(0, 0, 0, 0.5); */ }
+  /* box-shadow: 0 0 7px rgba(0, 0, 0, 0.5); */
+}
 
 .web-presence, .experience, .scholarship, .hobbies {
   display: inline-block; }

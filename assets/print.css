@@ -1,4 +1,16 @@
+html {
+  background-color: transparent;
+}
+
+body {
+  background-color: transparent;
+  padding: 10px;
+  max-width: auto;
+  box-shadow: none;
+}
+
 .portrait {
-    height: 5em;
+    height: 7em;
     margin-left: 40vw;
+    margin-top: -1em;
 }
