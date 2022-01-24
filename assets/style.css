@@ -75,7 +75,7 @@ a {
   a:hover {
     color: #49D; }
   a:after {
-    content: " " url(http://upload.wikimedia.org/wikipedia/commons/6/64/Icon_External_Link.png); }
+    content: " " url(https://upload.wikimedia.org/wikipedia/commons/6/64/Icon_External_Link.png); }
 
 ul {
   margin-top: 0;
@@ -148,8 +148,14 @@ ul {
     content: '\a0'; }
 
 .job-place:before {
+  content: '';
+  display: inline-block;
+  width: 2em;
+  height: 2em;
   background-image: url(https://upload.wikimedia.org/wikipedia/commons/7/74/Location_icon_from_Noun_Project.png);
-  background-size: 10px 20px;
+  background-size: 2em;
+  vertical-align: middle;
+  margin-right: -0.5ch;
 }
 
 .job-stack {
