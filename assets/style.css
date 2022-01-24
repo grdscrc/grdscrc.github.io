@@ -1,6 +1,6 @@
 @charset "UTF-8";
 html {
-  background-color: white; }
+  background-color: #ededed; }
 
 body {
   font-family: 'Oxygen';
@@ -81,6 +81,7 @@ a {
   .web-presence li {
     margin: .2em 0; }
   .web-presence a:before {
+    margin-right: 1ch;
     vertical-align: middle; }
   .web-presence a:after {
     content: ''; }
