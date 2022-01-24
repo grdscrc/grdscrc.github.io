@@ -20,6 +20,9 @@ h1 {
 
 h2 {
   margin-top: -1em; }
+  @media (max-width: 21cm) {
+    h2 {
+      margin-top: 0; } }
 
 h3 {
   margin-top: 0;
@@ -80,11 +83,17 @@ ul {
 
 .portrait {
   float: left;
-  /* border-radius: 100px; */
   height: 10em;
-  margin-left: 390px;
+  margin-left: 10cm;
   margin-top: -3em;
-  /* box-shadow: 0 0 7px rgba(0, 0, 0, 0.5); */
+}
+
+@media (max-width: 21cm) {
+  .portrait {
+    height: 10em;
+    margin-left: 0;
+    margin-top: -2em;
+  }
 }
 
 .web-presence, .experience, .scholarship, .hobbies {
@@ -139,11 +148,8 @@ ul {
     content: '\a0'; }
 
 .job-place:before {
-  /* content: " " url(https://upload.wikimedia.org/wikipedia/commons/7/74/Location_icon_from_Noun_Project.png); */
-  /* content: ""; */
   background-image: url(https://upload.wikimedia.org/wikipedia/commons/7/74/Location_icon_from_Noun_Project.png);
   background-size: 10px 20px;
-
 }
 
 .job-stack {
@@ -155,4 +161,14 @@ ul {
   display: inline;
 }
 
-/*# sourceMappingURL=style.css.map */
+.hobbies .col-50 {
+  max-width: 10cm;
+  display: inline-block; }
+
+.hobbies .col-50:first-of-type {
+  margin-bottom: 0 }
+
+footer {
+  text-align: center;
+  max-width: 10cm;
+  margin: auto;}
