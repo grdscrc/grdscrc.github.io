@@ -1,5 +1,3 @@
-* { text-shadow: none; }
-
 html {
   background-color: transparent;
   height: 29.7cm;
@@ -19,7 +17,10 @@ body {
   margin-top: -1em;
 }
 
-a { color: initial; }
+a, h3, .tag {
+  color: initial;
+  text-shadow: none;
+}
 
 a:after {
     content: ""; }
