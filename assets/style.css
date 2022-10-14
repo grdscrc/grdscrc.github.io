@@ -1,4 +1,9 @@
 @charset "UTF-8";
+:root {
+  --text-color: #057;
+  --emphasis-color: #27B;
+}
+
 html {
   background-color: #ededed; }
 
@@ -12,7 +17,7 @@ body {
 
 h1, h2 {
   font-family: 'Oxygen Mono';
-  color: #057; }
+  color: var(--text-color); }
 
 h1 {
   margin: 0 auto;
@@ -28,13 +33,13 @@ h3 {
   margin-top: 0;
   color: #fdfdfd;
   text-shadow: 1px 1px 5px #7d7d7d;
-  background-color: #27B;
+  background-color: var(--emphasis-color);
   padding: 2px;
   border-radius: 2px;
   width: 100%; }
 
 h4 {
-  color: #27B;
+  color: var(--emphasis-color);
   display: inline-block;
   margin: 0 0 .5em;
   width: 100%;
@@ -46,11 +51,11 @@ h4 {
   }
   h4 a {
     color: #fdfdfd;
-    background-color: #27B;
+    background-color: var(--emphasis-color);
     padding: 2px;
     border-radius: 2px; }
     h4 a:hover {
-      color: #27B;
+      color: var(--emphasis-color);
       background-color: #fdfdfd; }
 
 hr {
@@ -58,7 +63,7 @@ hr {
   margin-top: 1em; }
 
 em {
-  color: #27B;
+  color: var(--emphasis-color);
   font-style: normal; }
 
 p, li {
@@ -68,7 +73,7 @@ p, li {
 a {
   text-decoration: none;
   font-style: normal;
-  color: #27B;
+  color: var(--emphasis-color);
   padding: 2px 1px;
   border-radius: 3px;
   text-shadow: 1px 1px 2px #b0d4f1; }
@@ -84,7 +89,7 @@ ul {
 .portrait {
   position: relative;
   float: left;
-  margin-top: -2em; }
+  margin-top: -1.5em; }
 
 .web-presence, .experience, .scholarship, .hobbies {
   display: inline-block; }
@@ -120,8 +125,8 @@ ul {
   background-color: #49D;
   padding: 2px;
   border-radius: 3px;
-  box-shadow: inset 0 0 5px 0 #27B;
-  text-shadow: 2px 2px 2px #27B; }
+  box-shadow: inset 0 0 5px 0 var(--emphasis-color);
+  text-shadow: 2px 2px 2px var(--emphasis-color); }
 
 .current-job {
   font-size: 1.2em;
