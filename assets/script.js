@@ -13,20 +13,20 @@
 var checkHeader = _.throttle(() => {
   console.log('checkHeader');
   header = document.querySelector('header');
+  documentStyle = document.documentElement.style;
 
   // Detect scroll position
   let scrollPosition = Math.round(window.scrollY);
 
   // If we've scrolled, add "scrolled" class to the header
-  if (scrollPosition > 0){
+  if (scrollPosition > 0 && !header.classList.contains('scrolled')){
       header.classList.add('scrolled');
-      height = document.defaultView.getComputedStyle(header).height;
-      header.style.setProperty("--header-scrolled-height", height);
+      documentStyle.setProperty("--header-scrolled-height", '7em');
   }
   // If not, remove "scrolled" class from header
   else {
       header.classList.remove('scrolled');
-      header.style.setProperty("--header-scrolled-height", 0);
+      documentStyle.setProperty("--header-scrolled-height", 0);
   }
 }, 300);
 
