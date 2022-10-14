@@ -10,13 +10,8 @@ body {
   background-color: transparent;
   padding: 10px;
   box-shadow: none;
-}
-
-h3 {
-  background-color: #6E6E6E;
-}
-h4 {
-  color: #6E6E6E;
+  -webkit-print-color-adjust:exact !important;
+  print-color-adjust:exact !important;
 }
 
 .portrait {
@@ -24,10 +19,7 @@ h4 {
   margin-top: -1em;
 }
 
-a {
-  color: initial;
-  background-color: none;
-}
+a { color: initial; }
 
 a:after {
     content: ""; }
