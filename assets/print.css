@@ -10,9 +10,21 @@ body {
   box-shadow: none;
 }
 
+h3 {
+  background-color: #6E6E6E;
+}
+h4 {
+  color: #6E6E6E;
+}
+
 .portrait {
   height: 7em;
   margin-top: -1em;
+}
+
+a {
+  color: initial;
+  background-color: none;
 }
 
 a:after {
