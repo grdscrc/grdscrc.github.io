@@ -3,6 +3,8 @@
   --text-color: #057;
   --emphasis-color: #27B;
   --emphasis-light-color: #7eb8e7;
+
+  --header-scrolled-height: 0;
 }
 
 html {
@@ -15,6 +17,24 @@ body {
   padding: 10px;
   max-width: 900px;
   box-shadow: 0 0 10px 0 #e3e3e3; }
+
+body {
+  padding-top: var(--header-scrolled-height);
+}
+
+header.scrolled {
+  position: fixed;
+  top: 0;
+  width: 900px;
+  height: var(--header-scrolled-height);
+  background-color: inherit; }
+
+header.scrolled .web-presence li {
+  display: inline;
+  margin-right: 1ch; }
+
+header.scrolled .portrait {
+  display: none; }
 
 h1, h2 {
   font-family: 'Oxygen Mono';
@@ -107,8 +127,10 @@ ul {
   margin-top: -1em; }
   .web-presence li {
     margin: .2em 0; }
+  .web-presence li:last-child {
+    margin-right: 0; }
   .web-presence a:before {
-    margin-right: 1ch;
+    margin-right: 0.3ch;
     vertical-align: middle; }
   .web-presence a:after {
     content: ''; }
@@ -118,8 +140,6 @@ ul {
     content: url(linkedin.png); }
   .web-presence a[href*="https://www.github"]:before {
     content: url(github.png); }
-  .web-presence a[href*="https://www.bitbucket"]:before {
-    content: url(bitbucket.png); }
 
 .current-job {
   font-size: 1.2em;
