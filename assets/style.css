@@ -114,6 +114,9 @@ ul {
   margin-top: 0;
   padding-left: 2ch; }
 
+ul.detailed li { display: none; }
+[type="checkbox"]:checked+ul.detailed li { display: initial; }
+
 .portrait {
   position: relative;
   float: left;
