@@ -25,4 +25,5 @@ a:after {
     content: ""; }
 
 ul.detailed li { display:none; }
+.collapser { display: none; }
 .noprint { display:none; }

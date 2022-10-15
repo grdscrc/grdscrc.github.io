@@ -115,7 +115,11 @@ ul {
   padding-left: 2ch; }
 
 ul.detailed li { display: none; }
-[type="checkbox"]:checked+ul.detailed li { display: initial; }
+.collapser.active+ul.detailed li { display: list-item; }
+
+.collapser { float: right; }
+.collapser::after { content: '+'; }
+.collapser.active::after { content: '-'; }
 
 .portrait {
   position: relative;
