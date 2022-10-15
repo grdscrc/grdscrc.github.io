@@ -117,7 +117,20 @@ ul {
 ul.detailed li { display: none; }
 .collapser.active+ul.detailed li { display: list-item; }
 
-.collapser { float: right; }
+.collapser {
+  float: right;
+  font-size: 1.5em;
+  background-color: var(--emphasis-color);
+  color: var(--emphasis-light-color);
+  padding: 0 0.3em;
+  border-radius: 5px;
+  color: white; }
+
+.collapser.active {
+  background-color: var(--emphasis-light-color);
+  color: var(--emphasis-color);
+  padding: 0 0.4em; }
+
 .collapser::after { content: '+'; }
 .collapser.active::after { content: '-'; }
 
