@@ -22,18 +22,19 @@ body {
   padding-top: var(--header-scrolled-height);
 }
 
+header {
+  top: -5em; /* useful for transition to top:0 when sticky */
+}
+
 header.scrolled {
   position: fixed;
   top: 0;
   width: calc(100% - 20px);
-  max-width: 920px;
+  max-width: 900px;
   margin: 0 -10px;
   padding: 0 10px;
-  height: var(--header-scrolled-height);
   background-color: inherit;
-  /* background: rgb(85,170,238); */
-  /* background: linear-gradient(0deg, rgba(85,170,238,1) 0%, rgba(124,190,242,1) 7%, rgba(183,219,248,1) 20%, rgba(232,243,253,1) 30%, rgba(255,255,255,1) 100%); */
-}
+  transition: top 0.25s ease-in-out; }
 
 header.scrolled .web-presence li {
   display: inline;
@@ -136,8 +137,6 @@ ul.detailed li { display: none; }
 .collapser.active::after { content: '-'; }
 
 .portrait {
-  position: relative;
-  float: left;
   margin-top: -1.5em; }
 
 .web-presence, .experience, .scholarship, .hobbies {
@@ -167,6 +166,10 @@ ul.detailed li { display: none; }
     content: url(linkedin.png); }
   .web-presence a[href*="https://www.github"]:before {
     content: url(github.png); }
+
+.experience {
+  margin-top: -1em;
+}
 
 .current-job {
   font-size: 1.2em;

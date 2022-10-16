@@ -11,20 +11,20 @@
 
 // This function will run a throttled script every 300 ms
 var checkHeader = _.throttle(() => {
-  console.log('checkHeader');
   header = document.querySelector('header');
   documentStyle = document.documentElement.style;
 
   // Detect scroll position
   let scrollPosition = Math.round(window.scrollY);
 
-  // If we've scrolled, add "scrolled" class to the header
-  if (scrollPosition > 0){
-    header.classList.add('scrolled');
-    documentStyle.setProperty("--header-scrolled-height", '7em');
+  bigHeaderHeight = header.offsetHeight;
+  if (scrollPosition > bigHeaderHeight){
+    if (!header.classList.contains('scrolled')) {
+      header.classList.add('scrolled');
+      documentStyle.setProperty("--header-scrolled-height", bigHeaderHeight+'px');
+    }
   }
-  // If not, remove "scrolled" class from header
-  else {
+  else if (header.classList.contains('scrolled')) {
       header.classList.remove('scrolled');
       documentStyle.setProperty("--header-scrolled-height", 0);
   }
