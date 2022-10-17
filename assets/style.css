@@ -26,7 +26,7 @@ header.scrolled {
   position: fixed;
   top: 0;
   width: calc(100% - 20px);
-  max-width: 920px;
+  max-width: 900px;
   margin: 0 -10px;
   padding: 0 10px;
   height: var(--header-scrolled-height);
