@@ -7,55 +7,68 @@
   --header-scrolled-height: 0;
 }
 
-html {
-  background-color: #ededed; }
 
 body {
   font-family: 'Oxygen';
-  background-color: #fdfdfd;
-  margin: 0 auto;
-  padding: 10px;
-  max-width: 900px;
-  box-shadow: 0 0 10px 0 #e3e3e3; }
+  margin: 0;
+  max-width: 100vw;
+}
 
-body {
-  padding-top: var(--header-scrolled-height);
+body:has(header.scrolled) {
+  padding-top: 100vh;
+}
+
+header, section {
+  height: 100vh;
 }
 
 header {
   top: -5em; /* useful for transition to top:0 when sticky */
+  background-color: #057;
+  display: grid;
+  grid-template-columns: 50% 50%;
 }
 
 header.scrolled {
   position: fixed;
   top: 0;
-  width: calc(100% - 20px);
-  max-width: 900px;
-  margin: 0 -10px;
+  width: 100%;
+  height: 3em;
   padding: 0 10px;
-  background-color: inherit;
-  transition: top 0.25s ease-in-out; }
+  background-color: var(--emphasis-color);
+  transition: top 0.25s ease-in-out;
+}
+
+header:not(.scrolled) .portrait {
+  grid-column: 1;
+  grid-row: 1 / 3;
+}
+
+header:not(.scrolled) .name {
+  grid-column: 2;
+  grid-row: 1;
+  color: white;
+  padding: 30vh 0 0 10vw;
+}
+
+header:not(.scrolled) .web-presence {
+  grid-column: 2;
+  grid-row: 2;
+  position: relative;
+}
+
+header:not(.scrolled) .web-presence ul {
+  position: absolute;
+  bottom: 1vh;
+  right: 1vw;
+  text-align: right;
+}
+
+header.scrolled .portrait { display: none; }
 
 header.scrolled .web-presence li {
   display: inline;
   margin-right: 1ch; }
-
-header.scrolled .portrait {
-  display: none; }
-
-h1, h2 {
-  font-family: 'Oxygen Mono';
-  color: var(--text-color); }
-
-h1 {
-  margin: 0 auto;
-  text-align: right; }
-
-h2 {
-  margin-top: -1em; }
-  @media (max-width: 21cm) {
-    h2 {
-      margin-top: 0; } }
 
 h3 {
   margin-top: 0;
@@ -137,7 +150,12 @@ ul.detailed li { display: none; }
 .collapser.active::after { content: '-'; }
 
 .portrait {
-  margin-top: -1.5em; }
+  overflow: hidden;
+}
+
+.portrait img {
+  height: 100%;
+}
 
 .web-presence, .experience, .scholarship, .hobbies {
   display: inline-block; }
@@ -146,30 +164,29 @@ ul.detailed li { display: none; }
   padding-bottom: 1em;
   width: 100%; }
 
-.web-presence {
+.web-presence ul {
   list-style: none;
-  float: right;
-  text-align: right;
-  margin-top: -1em; }
-  .web-presence li {
+}
+  .web-presence ul li {
     margin: .2em 0; }
-  .web-presence li:last-child {
+  .web-presence ul li:last-child {
     margin-right: 0; }
-  .web-presence a:before {
+  .web-presence ul a {
+    color: white;
+    text-shadow: none;
+    font-weight: bold;
+  }
+  .web-presence ul a:before {
     margin-right: 0.3ch;
     vertical-align: middle; }
-  .web-presence a:after {
+  .web-presence ul a:after {
     content: ''; }
-  .web-presence a[href*="https://www.twitter"]:before {
+  .web-presence ul a[href*="https://www.twitter"]:before {
     content: url(twitter.png); }
-  .web-presence a[href*="https://www.linkedin"]:before {
+  .web-presence ul a[href*="https://www.linkedin"]:before {
     content: url(linkedin.png); }
-  .web-presence a[href*="https://www.github"]:before {
+  .web-presence ul a[href*="https://www.github"]:before {
     content: url(github.png); }
-
-.experience {
-  margin-top: -1em;
-}
 
 .current-job {
   font-size: 1.2em;
