@@ -36,7 +36,9 @@ header.scrolled {
 }
 
 header.scrolled .web-presence {
-min-width: 50vw;
+float: none;
+display: block;
+padding: 0;
 }
 
 header.scrolled .web-presence li {
