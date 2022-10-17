@@ -35,6 +35,10 @@ header.scrolled {
   /* background: linear-gradient(0deg, rgba(85,170,238,1) 0%, rgba(124,190,242,1) 7%, rgba(183,219,248,1) 20%, rgba(232,243,253,1) 30%, rgba(255,255,255,1) 100%); */
 }
 
+header.scrolled .web-presence {
+min-width: 50vw;
+}
+
 header.scrolled .web-presence li {
   display: inline;
   margin-right: 1ch; }
