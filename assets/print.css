@@ -28,4 +28,4 @@ a:after {
 
 ul.detailed li { display:none; }
 .collapser { display: none; }
-.noprint { display:none; }
+.noprint { display:none !important; }
