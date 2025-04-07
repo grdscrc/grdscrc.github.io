@@ -1,0 +1,56 @@
+name: Generate PDF
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Install Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+
+    - name: Install Puppeteer
+      run: |
+        npm init -y
+        npm install puppeteer
+        sudo apt-get install -y xvfb
+
+    - name: Local server
+      run: |
+        npm install -g serve
+        nohup xvfb-run --auto-servernum serve . -l 8080 &
+
+    - name: Generate PDF
+      run: |
+        cat > export.js << 'EOF'
+        const puppeteer = require('puppeteer');
+
+        (async () => {
+          const browser = await puppeteer.launch({ headless: 'new' });
+          const page = await browser.newPage();
+          await page.goto('http://localhost:8080', { waitUntil: 'networkidle0' });
+          await page.pdf({
+            path: 'resume-cv-IgorDescayrac.pdf',
+            format: 'A4',
+            printBackground: true,
+            margin: { top: '1cm', bottom: '1cm', left: '1cm', right: '1cm' }
+          });
+          await browser.close();
+        })();
+        EOF
+
+        node export.js
+
+    - name: Upload PDF
+      uses: actions/upload-artifact@v3
+      with:
+        name: cv-igor-pdf
+        path: cv-igor.pdf
