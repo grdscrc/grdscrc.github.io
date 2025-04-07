@@ -26,6 +26,8 @@ a, h3 {
 a:after {
     content: ""; }
 
+.hobbies { padding-bottom: 0; }
+
 ul.detailed li { display:none; }
 .collapser { display: none; }
 .noprint { display:none !important; }
