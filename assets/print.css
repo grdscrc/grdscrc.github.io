@@ -27,3 +27,4 @@ a:after {
 ul.detailed li { display:none; }
 .collapser { display: none; }
 .noprint { display:none; }
+.force-print { display: inline-block !important; }
