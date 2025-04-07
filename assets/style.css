@@ -22,6 +22,8 @@ body {
   padding-top: var(--header-scrolled-height);
 }
 
+.printonly { display: none; }
+
 header.scrolled {
   position: fixed;
   top: 0;
