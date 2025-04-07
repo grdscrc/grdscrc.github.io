@@ -1,0 +1,38 @@
+@page {
+  size: A4;
+  margin: 1cm;
+}
+
+html {
+  background-color: transparent;
+  height: 29.7cm;
+  width: 21cm;
+}
+
+body {
+  background-color: transparent;
+  padding: 10px;
+  box-shadow: none;
+  -webkit-print-color-adjust:exact !important;
+  print-color-adjust:exact !important;
+}
+
+h2 { margin-left: 8ch; }
+
+.portrait {
+  height: 7em;
+  margin-top: -2em;
+}
+
+a, h3 {
+  text-shadow: none;
+}
+
+a:after {
+    content: ""; }
+
+.hobbies { padding-bottom: 0; }
+
+ul.detailed li { display:none; }
+.collapser { display: none; }
+.noprint { display:none !important; }
