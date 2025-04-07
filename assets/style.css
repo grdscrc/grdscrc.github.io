@@ -66,8 +66,14 @@ header.scrolled .web-presence li {
   display: inline;
   margin-right: 1ch; }
 
-header.scrolled .portrait {
-  display: none; }
+  header.scrolled .portrait {
+    display: none; }
+  
+@media screen and (max-width: 479px) {
+  header .portrait {
+    width: 15ch;
+  }
+}
 
 h1, h2 {
   font-family: 'Oxygen Mono';
