@@ -12,9 +12,11 @@ body {
   print-color-adjust:exact !important;
 }
 
+h2 { margin-left: 8ch; }
+
 .portrait {
   height: 7em;
-  margin-top: -1em;
+  margin-top: -2em;
 }
 
 a, h3 {
