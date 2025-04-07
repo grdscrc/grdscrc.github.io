@@ -7,6 +7,28 @@
   --header-scrolled-height: 0;
 }
 
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #1e1e1e;
+    color: #eee;
+  }
+
+  a {
+    color: #90caf9;
+  }
+
+  section {
+    background-color: #2a2a2a;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  h1, h2, h3 {
+    color: #fff;
+  }
+}
+
 html {
   background-color: #ededed; }
 
