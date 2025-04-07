@@ -56,3 +56,12 @@ jobs:
       with:
         name: resume-cv-IgorDescayrac-pdf
         path: resume-cv-IgorDescayrac.pdf
+
+    - name: Deploy on gh-pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./
+        destination_dir: dist
+        keep_files: true
+        commit_message: "🔄 Auto update of resume PDF"
