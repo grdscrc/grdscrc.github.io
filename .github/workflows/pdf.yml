@@ -52,5 +52,5 @@ jobs:
     - name: Upload PDF
       uses: actions/upload-artifact@v3
       with:
-        name: cv-igor-pdf
-        path: cv-igor.pdf
+        name: resume-cv-IgorDescayrac-pdf
+        path: resume-cv-IgorDescayrac.pdf
