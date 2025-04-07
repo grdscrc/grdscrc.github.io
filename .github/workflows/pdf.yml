@@ -3,9 +3,12 @@ name: Generate PDF
 on:
   push:
     branches: [ master ]
+    paths-ignore:
+      - 'public/*.pdf'
 
 jobs:
   build:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
 
     steps:
@@ -26,6 +29,7 @@ jobs:
     - name: Local server
       run: |
         npm install -g serve
+        mkdir -p public
         nohup xvfb-run --auto-servernum serve . -l 8080 &
 
     - name: Generate PDF
@@ -40,7 +44,7 @@ jobs:
           const page = await browser.newPage();
           await page.goto('http://localhost:8080', { waitUntil: 'networkidle0' });
           await page.pdf({
-            path: 'resume-cv-IgorDescayrac.pdf',
+            path: 'public/resume-cv-IgorDescayrac.pdf',
             format: 'A4',
             printBackground: true,
             margin: { top: '1cm', bottom: '1cm', left: '1cm', right: '1cm' }
@@ -52,16 +56,9 @@ jobs:
         node export.js
 
     - name: Upload PDF
-      uses: actions/upload-artifact@v4
-      with:
-        name: resume-cv-IgorDescayrac-pdf
-        path: resume-cv-IgorDescayrac.pdf
-
-    - name: Deploy on gh-pages
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./
-        destination_dir: dist
-        keep_files: true
-        commit_message: "🔄 Auto update of resume PDF"
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add public/resume-cv-IgorDescayrac.pdf
+        git commit -m "🤖 PDF upload" || echo "nothing to commit"
+        git push
