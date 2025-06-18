@@ -41,16 +41,17 @@ jobs:
           const browser = await puppeteer.launch({
             args: ['--no-sandbox', '--disable-setuid-sandbox']
           });
-          const page = await browser.newPage();
-          await page.goto('http://localhost:8080', { waitUntil: 'networkidle0' });
-          await page.pdf({
+          const pageFr = await browser.newPage();
+          await pageFr.goto('http://localhost:8080', { waitUntil: 'networkidle0' });
+          await pageFr.pdf({
             path: 'public/resume-cv-IgorDescayrac.pdf',
             format: 'A4',
             printBackground: true,
             margin: { top: '1cm', bottom: '1cm', left: '1cm', right: '1cm' }
           });
-          await page.goto('http://localhost:8080/index.en.html', { waitUntil: 'networkidle0' });
-          await page.pdf({
+          const pageEn = await browser.newPage();
+          await pageEn.goto('http://localhost:8080/index.en.html', { waitUntil: 'networkidle0' });
+          await pageEn.pdf({
             path: 'public/resume-cv-IgorDescayrac-en.pdf',
             format: 'A4',
             printBackground: true,
