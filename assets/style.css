@@ -168,7 +168,7 @@ a:hover {
   color: #49D;
   text-shadow: none;
 }
-a:after {
+a:not([href^="https://grdscrc.github.io"]):after {
   content: " " url(https://upload.wikimedia.org/wikipedia/commons/6/64/Icon_External_Link.png);
 }
 
