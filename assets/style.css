@@ -73,7 +73,12 @@ header.scrolled .web-presence {
 }
 
 header.scrolled .btn-flottants {
-  display: none;
+  transform: translateX(20%) translateY(-6rem);
+}
+@media screen and (max-width: 1270px) {
+  header.scrolled .btn-flottants {
+    display: none;
+  }
 }
 
 header.scrolled .web-presence li {
