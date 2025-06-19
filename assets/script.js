@@ -32,3 +32,14 @@ var checkHeader = _.throttle(() => {
 
 // Run the checkHeader function every time you scroll
 window.addEventListener('scroll', checkHeader);
+
+document.querySelectorAll('ul.detailed').forEach(ul => {
+  ul.addEventListener('click', (e) => {
+    const collapser = ul.previousElementSibling;
+    console.log({e, collapser});
+    if (collapser && collapser.classList.contains('collapser')) {
+      collapser.click();
+    }
+  });
+});
+
