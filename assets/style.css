@@ -216,8 +216,6 @@ ul.detailed li { display: none; }
     vertical-align: middle; }
   .web-presence a:after {
     content: ''; }
-  .web-presence a[href*="https://www.twitter"]:before {
-    content: url(twitter.png); }
   .web-presence a[href*="https://www.linkedin"]:before {
     content: url(linkedin.png); }
   .web-presence a[href*="https://www.github"]:before {
