@@ -182,21 +182,25 @@ ul.detailed li { display: none; }
   margin-top: -1.5em; }
 
 .web-presence, .experience, .scholarship, .hobbies {
-  display: inline-block; }
-
-.btn-flottant {
-  float: right;
-  margin: 1em -20%;
+  display: inline-block;
 }
 
-@media (max-width: 1270px) {
-  .btn-flottant {
-    float: none;
-    display: block;
-    margin: 1rem auto;
+.btn-flottants {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  margin-top: 2rem;
+}
+.btn-flottants a {
+  display: block;
+}
+@media (min-width: 1270px) {
+  .btn-flottants {
+    transform: translateX(25%) translateY(-8rem);
+    align-items: last baseline;
   }
 }
-
 
 .experience, .scholarship, .hobbies {
   padding-bottom: 1em;
@@ -204,7 +208,9 @@ ul.detailed li { display: none; }
 
 .web-presence {
   list-style: none;
-  float: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
   text-align: right;
   margin-top: -1em; }
   .web-presence li {
