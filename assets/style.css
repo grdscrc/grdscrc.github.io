@@ -184,6 +184,20 @@ ul.detailed li { display: none; }
 .web-presence, .experience, .scholarship, .hobbies {
   display: inline-block; }
 
+.btn-flottant {
+  float: right;
+  margin: 1em -20%;
+}
+
+@media (max-width: 1270px) {
+  .btn-flottant {
+    float: none;
+    display: block;
+    margin: 1rem auto;
+  }
+}
+
+
 .experience, .scholarship, .hobbies {
   padding-bottom: 1em;
   width: 100%; }
