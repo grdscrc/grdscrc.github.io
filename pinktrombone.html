@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Pink Trombone</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body {
+  background: #1a0a0f;
+  overflow: hidden;
+  width: 100vw;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Georgia', serif;
+  touch-action: none;
+}
+canvas {
+  display: block;
+  touch-action: none;
+}
+#ui {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 12px 16px;
+  gap: 8px;
+  pointer-events: none;
+}
+.controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  pointer-events: all;
+}
+.btn {
+  background: rgba(255,180,200,0.15);
+  border: 1px solid rgba(255,180,200,0.35);
+  color: rgba(255,200,215,0.9);
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-family: Georgia, serif;
+}
+.btn:active { background: rgba(255,180,200,0.3); }
+.btn.active { background: rgba(255,100,140,0.3); border-color: rgba(255,100,140,0.6); }
+.info {
+  font-size: 11px;
+  color: rgba(255,180,200,0.5);
+  text-align: center;
+  pointer-events: none;
+}
+#startOverlay {
+  position: absolute;
+  inset: 0;
+  background: #1a0a0f;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  cursor: pointer;
+}
+#startOverlay h1 {
+  font-family: Georgia, serif;
+  color: rgba(255,180,200,0.9);
+  font-size: 28px;
+  font-weight: normal;
+  letter-spacing: 2px;
+}
+#startOverlay p {
+  color: rgba(255,180,200,0.5);
+  font-size: 14px;
+  font-family: Georgia, serif;
+  text-align: center;
+  padding: 0 20px;
+}
+#startBtn {
+  background: rgba(255,100,140,0.2);
+  border: 1px solid rgba(255,100,140,0.5);
+  color: rgba(255,200,215,0.9);
+  border-radius: 30px;
+  padding: 12px 36px;
+  font-size: 16px;
+  font-family: Georgia, serif;
+  cursor: pointer;
+  margin-top: 10px;
+}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="ui">
+  <div class="controls">
+    <button class="btn" id="btnVoice">voiced</button>
+    <button class="btn" id="btnNose">nasal</button>
+    <button class="btn" id="btnWobble" style="font-size:11px">vibrato</button>
+  </div>
+  <div class="info">touch the throat to shape sound · slide up/down to change pitch</div>
+</div>
+<div id="startOverlay">
+  <h1>Pink Trombone</h1>
+  <p>Bare-handed procedural<br>speech synthesis</p>
+  <button id="startBtn">touch to begin</button>
+  <p style="font-size:11px; opacity:0.5">by Neil Thapen · mobile port</p>
+</div>
+<script>
+(function(){
+"use strict";
+
+// ── Audio constants ───────────────────────────────────────────────
+const SR = 44100;
+const N   = 44;   // tract length (segments)
+
+// ── State ─────────────────────────────────────────────────────────
+let audioCtx, scriptNode, started = false;
+
+// Glottis
+let G = {
+  freq: 140,          // fundamental
+  tenseness: 0.6,
+  intensity: 0,       // 0..1 (ramped)
+  loudness: 1,
+  wobble: true,
+  isTouched: false,
+  T: 0,              // glottal time
+  noise: 0,
+  UIx: 0, UIy: 0,
+  touchID: null,
+};
+
+// Tract
+let T = {
+  // geometry
+  diam: new Float64Array(N),
+  rest: new Float64Array(N),
+  target: new Float64Array(N),
+  L:   new Float64Array(N),
+  R:   new Float64Array(N),
+  jL:  new Float64Array(N),
+  jR:  new Float64Array(N),
+  ref: new Float64Array(N),
+  maxAmplitude: new Float64Array(N),
+  // nose
+  noseDiam: new Float64Array(28),
+  noseL:    new Float64Array(28),
+  noseR:    new Float64Array(28),
+  noseJL:   new Float64Array(28),
+  noseJR:   new Float64Array(28),
+  noseRef:  new Float64Array(28),
+  noseMaxAmp: new Float64Array(28),
+  noseLength: 28,
+  noseTipStart: 23,
+  // velum (controls nasal coupling)
+  velumTarget: 0.01,
+  // constriction (tongue / lip touch)
+  constrictionIdx: N * 0.5,
+  constrictionDiam: 3,
+  fricationNoise: 0,
+  turbulenceNoise: 0,
+  // globals
+  glottisOutput: 0,
+  lipOut: 0,
+  noseLipOut: 0,
+  // UI touch
+  touchID: null,
+  UIx: 0, UIy: 0,
+  active: false,
+  endTime: 0,
+  // flags
+  nasal: false,
+};
+
+// ── Utility ───────────────────────────────────────────────────────
+function lerp(a, b, t){ return a + (b - a) * t; }
+function clamp(v,lo,hi){ return v<lo?lo:v>hi?hi:v; }
+function rand(){ return Math.random()*2-1; }
+
+// Simplex-ish noise for wobble
+let noiseA = 0, noiseB = 0, noiseC = 0;
+function noise1(t){
+  const s = Math.sin(t * 1.2 + noiseA);
+  const c = Math.cos(t * 0.9 + noiseB);
+  return 0.5*(s+c);
+}
+
+// ── Tract shape helpers ───────────────────────────────────────────
+function setRestDiameter(){
+  // Typical human vocal tract profile at rest
+  for(let i=0;i<N;i++){
+    let d = 0;
+    const x = i / (N-1);
+    // pharynx -> velum -> oral -> lips
+    if(x < 0.13) d = 0.6;
+    else if(x < 0.27) d = lerp(0.6,1.1,(x-0.13)/0.14);
+    else if(x < 0.4) d = lerp(1.1,3.5,(x-0.27)/0.13);
+    else if(x < 0.8) d = lerp(3.5,1.3,(x-0.4)/0.4);
+    else d = lerp(1.3,0.8,(x-0.8)/0.2);
+    T.rest[i] = d;
+    T.target[i] = d;
+    T.diam[i] = d;
+  }
+  // nose
+  for(let i=0;i<T.noseLength;i++){
+    const t = i/(T.noseLength-1);
+    let d;
+    if(t < 0.3) d = lerp(0.4,1.1,t/0.3);
+    else if(t < 0.8) d = lerp(1.1,1.3,(t-0.3)/0.5);
+    else d = lerp(1.3,0.3,(t-0.8)/0.2);
+    T.noseDiam[i] = d;
+  }
+}
+
+function calculateReflections(){
+  for(let i=1;i<N;i++){
+    const A = T.diam[i]*T.diam[i];
+    const Ap = T.diam[i-1]*T.diam[i-1];
+    if(A === 0) T.ref[i] = 0.999;
+    else T.ref[i] = (Ap - A)/(Ap + A);
+  }
+  // nose reflections
+  for(let i=1;i<T.noseLength;i++){
+    const A = T.noseDiam[i]*T.noseDiam[i];
+    const Ap = T.noseDiam[i-1]*T.noseDiam[i-1];
+    if(A === 0) T.noseRef[i] = 0.999;
+    else T.noseRef[i] = (Ap - A)/(Ap + A);
+  }
+}
+
+// velum coupling position
+const velumPos = Math.floor(N * 0.62);
+
+// ── Glottis DSP ───────────────────────────────────────────────────
+function glottisOutput(lambda1, lambda2){
+  const wobble = G.wobble ? 0.02*noise1(G.T*0.11) + 0.02*noise1(G.T*0.09) : 0;
+  const freq = G.freq * (1 + wobble);
+  G.T += freq / SR;
+  if(G.T >= 1) G.T -= 1;
+
+  const Rd = clamp(3*(1-G.tenseness), 0.5, 2.7);
+  const Ra = -0.01 + 0.048*Rd;
+  const Rk = 0.224 + 0.118*Rd;
+  const Rg = (Rk/4)*(0.5+1.2*Rk)/(.11*Rd-Ra*(0.5+1.2*Rk));
+  const Ta = Ra;
+  const Tp = 1/(2*Rg);
+  const Te = Tp + Tp*Rk;
+  const eps = 1/Ta;
+  const shift = Math.exp(-eps*(1-Te));
+  const delta = 1 - shift;
+  const rHSin = Math.sin(Math.PI*G.T/Tp);
+  let out = 0;
+  if(G.T > Te) out = (-Math.exp(-eps*(G.T-Te)) + shift)/delta;
+  else if(G.T < Tp) out = 0.5*(1-Math.cos(Math.PI*G.T/Tp))*rHSin;
+  else out = (1 - Math.exp(-eps*(G.T-Tp))*(Math.exp(-eps*(Te-Tp))-1+shift)/delta)*rHSin;
+
+  const aspiration = G.intensity * (1-Math.sqrt(G.tenseness)) * 0.2 * rand();
+  out += aspiration;
+  return out * G.intensity * G.loudness;
+}
+
+// ── Tract DSP ─────────────────────────────────────────────────────
+function tractStep(input, lambda){
+  calculateReflections();
+
+  // mouth step
+  T.jR[0] = T.L[0] * 0.75 + input;
+  for(let i=1;i<N;i++){
+    const r = T.ref[i] * (1-lambda) + T.ref[i] * lambda;
+    const w = r * (T.R[i-1] + T.L[i]);
+    T.jR[i] = T.R[i-1] - w;
+    T.jL[i-1] = T.L[i] + w;
+  }
+  // lip reflection
+  T.jL[N-1] = T.R[N-1] * -0.85;
+  // glottal reflection
+  const refGlottis = -0.75;
+  T.jR[0] = T.L[0] * refGlottis + input;
+
+  // velum coupling to nose
+  const velumR = T.velumTarget * (1-lambda) + T.velumTarget * lambda;
+  const vA = velumR * velumR;
+  const mA = T.diam[velumPos] * T.diam[velumPos];
+  const nA = T.noseDiam[0] * T.noseDiam[0];
+  const sum = mA + nA;
+  if(sum > 0){
+    const refVelum = (-vA + mA - nA)/sum * 0.5;
+    T.noseR[0] = T.noseL[0] * T.noseRef[0] + T.L[velumPos] * (1-Math.abs(T.noseRef[0]));
+  }
+
+  // nose step
+  for(let i=1;i<T.noseLength;i++){
+    const r = T.noseRef[i];
+    const w = r * (T.noseR[i-1] + T.noseL[i]);
+    T.noseJR[i] = T.noseR[i-1] - w;
+    T.noseJL[i-1] = T.noseL[i] + w;
+  }
+  T.noseJL[T.noseLength-1] = T.noseR[T.noseLength-1] * -0.85;
+
+  for(let i=0;i<N;i++){ T.R[i] = T.jR[i]*0.999; T.L[i] = T.jL[i]*0.999; }
+  for(let i=0;i<T.noseLength;i++){ T.noseR[i] = T.noseJR[i]*0.999; T.noseL[i] = T.noseJL[i]*0.999; }
+
+  T.lipOut = T.R[N-1];
+  T.noseLipOut = T.noseR[T.noseLength-1];
+}
+
+// Smooth tract toward target
+function tractUpdate(){
+  const slow = 350;
+  for(let i=0;i<N;i++){
+    T.diam[i] = lerp(T.diam[i], T.target[i], 1/slow);
+  }
+  // apply constriction from touch
+  if(T.active){
+    const idx = Math.round(T.constrictionIdx);
+    const d = T.constrictionDiam;
+    for(let i=-4;i<=4;i++){
+      if(idx+i < 0 || idx+i >= N) continue;
+      const factor = 1 - Math.abs(i/4.0);
+      T.target[idx+i] = Math.min(T.target[idx+i], d*factor + T.rest[idx+i]*(1-factor));
+    }
+  }
+  // velum
+  T.velumTarget = T.nasal ? 0.4 : 0.01;
+}
+
+// ── Audio process callback ────────────────────────────────────────
+function process(e){
+  const out = e.outputBuffer.getChannelData(0);
+  tractUpdate();
+  for(let i=0;i<out.length;i++){
+    const lambda1 = i/out.length;
+    const lambda2 = (i+0.5)/out.length;
+    const g = glottisOutput(lambda1, lambda2);
+    tractStep(g, lambda1);
+    tractStep(g, lambda2);
+    out[i] = (T.lipOut + T.noseLipOut) * 0.125;
+  }
+}
+
+// ── Audio init ────────────────────────────────────────────────────
+function initAudio(){
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: SR });
+  const bufferSize = 4096;
+  scriptNode = audioCtx.createScriptProcessor(bufferSize, 0, 1);
+  scriptNode.onaudioprocess = process;
+  scriptNode.connect(audioCtx.destination);
+  setRestDiameter();
+  calculateReflections();
+  started = true;
+}
+
+// ── Canvas & Drawing ──────────────────────────────────────────────
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+function resize(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  draw();
+}
+window.addEventListener('resize', resize);
+
+// Map canvas X coordinate to tract index
+function xToTractIdx(x){
+  const tw = tractWidth();
+  const tx = tractX();
+  return Math.round(N * (x - tx) / tw);
+}
+function tractX(){ return canvas.width * 0.05; }
+function tractWidth(){ return canvas.width * 0.9; }
+function tractY(){ return canvas.height * 0.35; }
+function tractH(){ return canvas.height * 0.45; }
+
+// Convert tract index + diameter to canvas coords (cross-section view)
+function tractToXY(i, d, isUpper){
+  const tx = tractX(), tw = tractWidth();
+  const ty = tractY(), th = tractH();
+  const x = tx + (i/(N-1)) * tw;
+  const maxD = 4.5;
+  const mid = ty + th/2;
+  const scaled = (d/maxD) * (th*0.4);
+  const y = isUpper ? mid - scaled : mid + scaled;
+  return {x, y};
+}
+
+// Color mapping for tract
+function tractColor(i){
+  const t = i/N;
+  const r = Math.round(lerp(200, 240, t));
+  const g = Math.round(lerp(100, 140, t));
+  const b = Math.round(lerp(120, 160, t));
+  return `rgb(${r},${g},${b})`;
+}
+
+function drawTract(){
+  const tx = tractX(), tw = tractWidth();
+  const ty = tractY(), th = tractH();
+  const mid = ty + th/2;
+
+  // background
+  ctx.fillStyle = 'rgba(50,10,20,0.6)';
+  ctx.roundRect(tx-8, ty-8, tw+16, th+16, 12);
+  ctx.fill();
+
+  // Outer wall
+  ctx.beginPath();
+  ctx.moveTo(...Object.values(tractToXY(0, T.diam[0], true)));
+  for(let i=1;i<N;i++){
+    const {x,y} = tractToXY(i, T.diam[i], true);
+    ctx.lineTo(x,y);
+  }
+  for(let i=N-1;i>=0;i--){
+    const {x,y} = tractToXY(i, T.diam[i], false);
+    ctx.lineTo(x,y);
+  }
+  ctx.closePath();
+
+  // gradient fill (flesh tone)
+  const grd = ctx.createLinearGradient(tx, ty, tx, ty+th);
+  grd.addColorStop(0, 'rgba(200,100,120,0.9)');
+  grd.addColorStop(0.5, 'rgba(230,140,150,0.9)');
+  grd.addColorStop(1, 'rgba(200,100,120,0.9)');
+  ctx.fillStyle = grd;
+  ctx.fill();
+
+  // Amplitude visualization
+  for(let i=0;i<N;i++){
+    const amp = clamp(T.maxAmplitude[i], 0, 1);
+    T.maxAmplitude[i] *= 0.995;
+    const cur = Math.abs(T.R[i]) + Math.abs(T.L[i]);
+    if(cur > T.maxAmplitude[i]) T.maxAmplitude[i] = cur;
+    if(amp < 0.001) continue;
+    const {x, y:y1} = tractToXY(i, T.diam[i], true);
+    const {y:y2} = tractToXY(i, T.diam[i], false);
+    ctx.beginPath();
+    ctx.moveTo(x, y1); ctx.lineTo(x, y2);
+    ctx.strokeStyle = `rgba(255,200,220,${amp*0.3})`;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+
+  // center line
+  ctx.beginPath();
+  ctx.setLineDash([4,6]);
+  ctx.moveTo(tx, mid); ctx.lineTo(tx+tw, mid);
+  ctx.strokeStyle = 'rgba(255,150,170,0.25)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // labels
+  ctx.fillStyle = 'rgba(255,200,215,0.45)';
+  ctx.font = '11px Georgia';
+  ctx.textAlign = 'left';
+  ctx.fillText('throat', tx+2, ty - 12);
+  ctx.textAlign = 'right';
+  ctx.fillText('lips', tx+tw, ty - 12);
+}
+
+function drawGlottis(){
+  const cx = canvas.width * 0.5;
+  const cy = canvas.height * 0.15;
+  const r = 40;
+  // glow when active
+  if(G.intensity > 0.01){
+    const grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, r*2);
+    grd.addColorStop(0, `rgba(255,100,140,${G.intensity*0.5})`);
+    grd.addColorStop(1, 'transparent');
+    ctx.fillStyle = grd;
+    ctx.beginPath(); ctx.arc(cx, cy, r*2, 0, Math.PI*2); ctx.fill();
+  }
+
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2);
+  ctx.strokeStyle = `rgba(255,160,180,${0.3 + G.intensity*0.4})`;
+  ctx.lineWidth = 2; ctx.stroke();
+
+  // pitch indicator
+  const normFreq = (G.freq - 80) / (300-80);
+  ctx.beginPath(); ctx.arc(cx, cy, r, -Math.PI/2, -Math.PI/2 + normFreq*Math.PI*2);
+  ctx.strokeStyle = `rgba(255,100,140,${0.5 + G.intensity*0.5})`;
+  ctx.lineWidth = 4; ctx.stroke();
+
+  ctx.fillStyle = `rgba(255,200,215,${0.4 + G.intensity*0.4})`;
+  ctx.font = '11px Georgia';
+  ctx.textAlign = 'center';
+  ctx.fillText(`${Math.round(G.freq)} Hz`, cx, cy+r+16);
+
+  // Tenseness label
+  ctx.fillStyle = 'rgba(255,180,200,0.4)';
+  ctx.font = '11px Georgia';
+  ctx.fillText('pitch / voice', cx, cy - r - 8);
+}
+
+function draw(){
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawGlottis();
+  drawTract();
+}
+
+// ── Pitch fade ───────────────────────────────────────────────────
+let intensityTarget = 0;
+function updateIntensity(){
+  intensityTarget = (G.isTouched || T.active) ? 1 : 0;
+  G.intensity = lerp(G.intensity, intensityTarget, 0.05);
+  G.loudness = lerp(G.loudness, G.isTouched ? 1 : (T.active ? 0.6 : 0), 0.05);
+}
+
+// ── Touch / Mouse handling ────────────────────────────────────────
+function getPos(e){
+  const r = canvas.getBoundingClientRect();
+  if(e.touches) return { x: e.touches[0].clientX - r.left, y: e.touches[0].clientY - r.top };
+  return { x: e.clientX - r.left, y: e.clientY - r.top };
+}
+function getAllTouches(e){
+  const r = canvas.getBoundingClientRect();
+  return Array.from(e.touches).map(t => ({x: t.clientX - r.left, y: t.clientY - r.top, id: t.identifier}));
+}
+
+const glottisRect = () => ({
+  x: canvas.width*0.5 - 60, y: canvas.height*0.05,
+  w: 120, h: canvas.height*0.22
+});
+
+function inGlottisZone(x, y){
+  const g = glottisRect();
+  return x >= g.x && x <= g.x+g.w && y >= g.y && y <= g.y+g.h;
+}
+function inTractZone(x, y){
+  return y >= tractY()-20 && y <= tractY()+tractH()+20 &&
+         x >= tractX()-10 && x <= tractX()+tractWidth()+10;
+}
+
+function handleGlottisMove(x, y){
+  const g = glottisRect();
+  const cx = g.x + g.w/2;
+  const cy = g.y + g.h/2;
+  // x -> tenseness, y -> pitch
+  G.tenseness = clamp(1 - (x - g.x) / g.w, 0.1, 1);
+  G.freq = clamp(lerp(300, 80, (y - g.y) / g.h), 80, 300);
+}
+
+function handleTractMove(x, y){
+  const tx = tractX(), tw = tractWidth();
+  const ty = tractY(), th = tractH();
+  const mid = ty + th/2;
+  // which segment
+  T.constrictionIdx = clamp(N * (x - tx) / tw, 2, N-3);
+  // y position: distance from center -> diameter
+  const dist = Math.abs(y - mid) / (th*0.45);
+  T.constrictionDiam = clamp(3.5 * (1-dist*dist), 0.01, 3.5);
+}
+
+// multi-touch: track both zones
+let glottisTouch = null, tractTouch = null;
+
+function onDown(e){
+  e.preventDefault();
+  if(!started) return;
+  const touches = getAllTouches(e);
+  for(const t of touches){
+    if(inGlottisZone(t.x, t.y) && glottisTouch === null){
+      glottisTouch = t.id;
+      G.isTouched = true;
+      handleGlottisMove(t.x, t.y);
+    } else if(inTractZone(t.x, t.y) && tractTouch === null){
+      tractTouch = t.id;
+      T.active = true;
+      handleTractMove(t.x, t.y);
+    }
+  }
+}
+function onMove(e){
+  e.preventDefault();
+  if(!started) return;
+  const touches = getAllTouches(e);
+  for(const t of touches){
+    if(t.id === glottisTouch) handleGlottisMove(t.x, t.y);
+    if(t.id === tractTouch) handleTractMove(t.x, t.y);
+  }
+}
+function onUp(e){
+  e.preventDefault();
+  if(!started) return;
+  const ids = new Set(Array.from(e.touches).map(t=>t.identifier));
+  if(glottisTouch !== null && !ids.has(glottisTouch)){ glottisTouch = null; G.isTouched = false; }
+  if(tractTouch !== null && !ids.has(tractTouch)){ tractTouch = null; T.active = false; }
+}
+
+// Mouse fallback
+let mouseGlottis = false, mouseTract = false;
+canvas.addEventListener('mousedown', e=>{
+  e.preventDefault();
+  if(!started) return;
+  const r = canvas.getBoundingClientRect();
+  const x = e.clientX - r.left, y = e.clientY - r.top;
+  if(inGlottisZone(x,y)){ mouseGlottis=true; G.isTouched=true; handleGlottisMove(x,y); }
+  else if(inTractZone(x,y)){ mouseTract=true; T.active=true; handleTractMove(x,y); }
+});
+canvas.addEventListener('mousemove', e=>{
+  if(!started) return;
+  const r = canvas.getBoundingClientRect();
+  const x = e.clientX-r.left, y = e.clientY-r.top;
+  if(mouseGlottis) handleGlottisMove(x,y);
+  if(mouseTract) handleTractMove(x,y);
+});
+canvas.addEventListener('mouseup', ()=>{ mouseGlottis=false; mouseTract=false; G.isTouched=false; T.active=false; });
+canvas.addEventListener('mouseleave', ()=>{ mouseGlottis=false; mouseTract=false; G.isTouched=false; T.active=false; });
+
+canvas.addEventListener('touchstart', onDown, {passive:false});
+canvas.addEventListener('touchmove',  onMove, {passive:false});
+canvas.addEventListener('touchend',   onUp,   {passive:false});
+canvas.addEventListener('touchcancel',onUp,   {passive:false});
+
+// ── UI Buttons ────────────────────────────────────────────────────
+const btnVoice = document.getElementById('btnVoice');
+const btnNose  = document.getElementById('btnNose');
+const btnWob   = document.getElementById('btnWobble');
+
+btnVoice.addEventListener('click', ()=>{
+  const alwaysVoiced = btnVoice.classList.toggle('active');
+  G.isTouched = alwaysVoiced;
+});
+btnNose.addEventListener('click', ()=>{
+  T.nasal = btnNose.classList.toggle('active');
+});
+btnWob.addEventListener('click', ()=>{
+  G.wobble = !btnWob.classList.toggle('active');
+  if(G.wobble) btnWob.classList.add('active');
+  else btnWob.classList.remove('active');
+});
+btnWob.classList.add('active'); // vibrato on by default
+
+// ── Start overlay ─────────────────────────────────────────────────
+document.getElementById('startBtn').addEventListener('click', ()=>{
+  initAudio();
+  document.getElementById('startOverlay').style.display = 'none';
+});
+document.getElementById('startOverlay').addEventListener('touchend', e=>{
+  e.preventDefault();
+  initAudio();
+  document.getElementById('startOverlay').style.display = 'none';
+});
+
+// ── Animation loop ────────────────────────────────────────────────
+function loop(){
+  updateIntensity();
+  draw();
+  requestAnimationFrame(loop);
+}
+
+resize();
+loop();
+
+})();
+</script>
+</body>
+</html>
