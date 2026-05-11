@@ -2,213 +2,234 @@
 <html lang="fr">
 
 <head>
-    <link rel="shortcut icon" type="image/x-icon" href="assets/kalicon.ico">
-    <link rel="alternate" hreflang="fr" href="index.html" />
-    <link rel="alternate" hreflang="en" href="index.en.html" />
-    <!-- Use bogus media attr to download stylesheets and apply later-->
-    <!-- https://codepen.io/tigt/post/async-css-without-javascript#do-we-have-a-standard-for-this-4-->
-    <link rel="stylesheet" type="text/css" media="wait" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no">
-    <title>Igor Descayrac - Tout bètement le CV d'un développeur, que voulez-vous que je vous dise</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Igor Descayrac — CV</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
 </head>
 
 <body>
-    <header>
-        <h1>Igor Descayrac</h1>
-        <h2>Développeur full-stack</h2>
-        <img class="portrait"
-            src="https://www.gravatar.com/avatar/78d1abd1fd2dd6d713f70bfcebaef9c3?s=200"
-            alt="Mon sympathique faciès en 200x200px, teinté à la fois de discrétion et de curiosité">
-        <ul class="web-presence">
-            <li><a href="https://www.linkedin.com/pub/igor-descayrac/64/120/6a9">Igor Descayrac</a></li>
-            <li><a href="https://www.github.com/grdscrc">grdscrc</a></li>
-        </ul>
-        <div class="noprint btn-flottants">
-            <a
-                    href="https://grdscrc.github.io/public/resume-cv-IgorDescayrac.pdf"
-                    download>
-                📄 .PDF
-            </a>
-            <a
-                    href="https://grdscrc.github.io/index.en.html"
-                    hreflang="en">
-                🇬🇧&nbsp;English version
-            </a>
-        </div>
-    </header>
-    <section class="experience">
-        <h3>Jobs</h3>
-        <h4><a class="company" href="https://www.lanouvellerepublique.fr"
-                target="blank">La Nouvelle République</a>
-            <span class="job-date">2023-2025</span>
-            <span class="job-place">Tours</span>
-            <span class="job-stack">
-            <ul>
-                <li>Python</li>
-                <li>React.js</li>
-                <li>Next.js</li>
-                <li>Perl</li>
-                <li>Node Red <span class="noprint">(Interface low-code pour gestion de flux d'évènements)</span></li>
-                <li>vim</li>
-            </span>
-        </h4>
-        <ul>
-            <caption>Concepteur/développeur pour différents sujets attenant à la rédaction et manipulation d'articles</caption>
-            <li>Développement d'un servlet d'archivage des articles web, par communication avec un Digital Asset Manager</li>
-            <li>Interfaçage pour gérer les notifications mobiles et web de publication d'articles</li>
-            <li>Amélioration de la gestion des articles vidéos</li>
-            <li>Création d'un mécanisme d'export XML pour génération automatique de carnets d'évènements</li>
-        </ul>
-        <hr>
-        <h4><a class="company" href="https://www.petal-health.com"
-                target="blank">PetalMD</a>
-            <span class="job-date">2022</span>
-            <span class="job-place">Remote&nbsp;&rarr;&nbsp;Québec</span>
-            <span class="job-stack">
-            <ul>
-                <li>Ruby&nbsp;on&nbsp;Rails</li>
-                <li>Express.js</li>
-                <li>ElasticSearch</li>
-                <li>Docker</li>
-                <li>Git</li>
-                <li class="noprint">Visual&nbsp;Studio&nbsp;Code</li>
-            </ul>
-            </span>
-        </h4>
-        <span class="collapser" onclick="this.classList.toggle('active')"></span>
-        <ul class="detailed">
-            <caption>Consultant back-end Ruby&nbsp;on&nbsp;Rails sur l'application de gestion des rendez-vous médicaux</caption>
-            <ul class="noprint" style="padding-top: 1em; padding-bottom: 1em;">
-                Réalisations
-                <li>Développement d'outils internes en Express.js : interfaces pour tester l'envoi de rendez-vous et d'informations connexes vers notre système d'information</li>
-                <li>Mise en place d'un delta entre les informations connues du système et reçues des établissements de santé : périodiquement, les rendez-vous sont comparés afin de déterminer les informations obsolètes et les erreurs de correspondances</li>
-                <li>Throttling des workers de mise à jour des agendas de rendez-vous : analyse des métriques d'utilisation des ressources, échantillonnage des payloads, optimisation des tâches CRON</li>
-            </ul>
-            <ul class="noprint" style="padding-top: 1em; padding-bottom: 1em;">
-                Contexte technique
-                <li>Workflow : MacOs > Warp.dev > zsh shell > Visual Studio Code/Vim</li>
-                <li>Issue tracking par JIRA</li>
-            </ul>
-        </ul>
-        <ul class="printonly">
-            Réalisations
-            <li>Développement d'outils internes en Express.js</li>
-            <li>Delta entre le système d'information local et ceux des établissements de santé</li>
-            <li>Throttling des workers de mise à jour des agendas de rendez-vous</li>
-        </ul>
-        <hr>
-        <h4><a class="company" href="https://www.prototyper.fr"
-                target="blank">Prototyper</a>
-            <span class="job-date">2020-2021</span>
-            <span class="job-place">Tours</span>
-            <span class="job-stack">
-            <ul>
-                <li>Vue.js</li>
-                <li>Typescript</li>
-                <li>React&nbsp;native</li>
-                <li>AWS</li>
-            </ul>
-            </span>
-        </h4>
-        <span class="collapser" onclick="this.classList.toggle('active')"></span>
-        <ul class="detailed">
-            <caption>Développeur sur plusieurs applications basées chez AWS</caption>
-            <li>app React native avec gestion de dossiers médicaux, pipelines élaborés sur chaque procédure</li>
-            <li>web app Vue.js/Typescript avec gestion de dossiers Salesforce, édition de contenu modulaire avec CKEditor, messagerie interne</li>
-            <li>web app Vue.js connectée à AWS, consultation de données IoT, interface de prévisualisation en direct</li>
-        </ul>
-        <hr>
-        <h4><a class="company" href="https://www.syadem.fr" target="blank">Syadem</a>
-            - <a class="project" href="https://www.mesvaccins.net" target="blank">MesVaccins.net</a>
-            <span class="job-date">2015-2019</span>
-            <span class="job-place">Bordeaux</span>
-            <span class="job-stack">
-              <ul>
-                <li>Ruby&nbsp;on&nbsp;Rails</li>
-                <li>Coffeescript</li>
-                <li>PHP</li>
-                <li>Ansible</li>
-                <li class="noprint">Sublime Text</li>
-              </ul>
-            </span>
-        </h4>
-        <span class="collapser" onclick="this.classList.toggle('active')"></span>
-        <ul class="detailed">
-            <caption>Développeur d'application web, versions mobile et bureau</caption>
-            <li>Création de la version mobile responsive design de MesVaccins.net</li>
-            <li>Simplification de l’ajout de vaccination et du diagnostic</li>
-            <li>Interfaçage des applications avec d'autres plateformes de dossiers médicaux</li>
-        </ul>
-        <hr class="noprint">
-        <h4 class="noprint">Hélios NTIC
-            <span class="job-date">2014-2015</span>
-            <span class="job-place">Orléans</span>
-            <span class="job-stack">
-              <ul>
-                <li>PHP</li>
-                <li>Prestashop</li>
-              </ul>
-            </span>
-        </h4>
-        <ul class="noprint"><li>Utilisation de Prestashop pour des sites de e-commerce, gestion et maintenance Drupal</li></ul>
+  <div class="page">
 
-    </section>
-    <section class="scholarship">
-        <h3>Études</h3>
-        <h4>Master Génie logiciel, parcours conduite de projet à l’université de Bordeaux</h4>
-        <p class="noprint">
-            C++ (Frameworks OmNet++ et Qt), Java (Design patterns, interfaces graphiques),
-            OCaml, Haskell (Langages à inférence de type), Flex, Yacc (analyse syntaxique
-            et lexicale)
-        </p>
-        <h4>Licence Informatique à l'université de Bordeaux</h4>
-        <p class="noprint">C, Y86 (langage assembleur), Lisp (programmation fonctionnelle et symbolique)</p>
-        <h4 class="noprint">IUT Gestion Logistique et Transport à l’université Bordeaux Montesquieu</h4>
-        <p class="noprint">Étude du marché des transports, notions de comptabilité</p>
-        <h4>Bac S <small>spécialité biologie au lycée Michel Montaigne à Bordeaux </small></h4>
-        <p>
-            Anglais étudié et parlé (TOEIC : 980/990)
-        </p>
-    </section>
-    <section class="hobbies">
-        <h3>Temps libre</h3>
-        <ul class="col-50">
-            <li><em>Théâtre d'improvisation</em></li>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div style="text-align:center">
+        <div class="sidebar-photo">ID</div>
+      </div>
+
+      <div>
+        <div class="sidebar-section-title">Contact</div>
+        <div class="contact-item">
+          <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+            <polyline points="22,6 12,13 2,6" />
+          </svg>
+          igor.descayrac@gmail.com
+        </div>
+        <div class="contact-item">
+          <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path
+              d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
+          </svg>
+          +33 6 86 32 21 54
+        </div>
+        <div class="contact-item">
+          <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z" />
+            <rect x="2" y="9" width="4" height="12" />
+            <circle cx="4" cy="4" r="2" />
+          </svg>
+          Igor Descayrac
+        </div>
+        <div class="contact-item">
+          <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path
+              d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22" />
+          </svg>
+          grdscrc
+        </div>
+      </div>
+
+      <div>
+        <div class="sidebar-section-title">Stack technique</div>
+        <div class="skills-list">
+          <span class="skill-tag">React.js</span>
+          <span class="skill-tag">TypeScript</span>
+          <span class="skill-tag">Vue.js</span>
+          <span class="skill-tag">React Native</span>
+          <span class="skill-tag">Next.js</span>
+          <span class="skill-tag">Python</span>
+          <span class="skill-tag">Node Red</span>
+          <span class="skill-tag">Ruby on Rails</span>
+          <span class="skill-tag">Express.js</span>
+          <span class="skill-tag">ElasticSearch</span>
+          <span class="skill-tag">Docker</span>
+          <span class="skill-tag">Git</span>
+          <span class="skill-tag">AWS</span>
+          <span class="skill-tag">Ansible</span>
+          <span class="skill-tag">PHP</span>
+          <span class="skill-tag">Perl</span>
+          <span class="skill-tag">Vim</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="sidebar-section-title">Langues</div>
+        <div class="lang-item">
+          <span class="lang-name">Français</span> — natif
+        </div>
+        <div class="lang-item">
+          <span class="lang-name">Anglais</span> — courant<br>
+          <span class="lang-score">Confirmé C2</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="sidebar-section-title">Centres d'intérêt</div>
+        <div class="hobby-item">Stand-up<br>
+          <span style="font-size:10px;color:#8099c0">Le Sofa</span>
+        </div>
+        <div class="hobby-item">Podcast<br>
+          <span style="font-size:10px;color:#8099c0">Tu Couperas Ça</span>
+        </div>
+        <div class="hobby-item">Théâtre d'improvisation<br>
+          <span style="font-size:10px;color:#8099c0">Association d'Improvisation Ligérienne</span>
+        </div>
+        <div class="hobby-item">Guitare & batterie</div>
+        <div class="hobby-item">Course à pied — 10km de Tours 2024</div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+      <header class="header">
+        <div class="name">Igor <span>Descayrac</span>
+        </div>
+        <div class="title">Développeur Full-Stack</div>
+        <div class="header-line">
+
+        </div>
+      </header>
+
+      <section class="section">
+        <div class="section-title">Expérience</div>
+
+        <div class="job">
+          <div class="job-header">
+            <div class="job-company">La Nouvelle République</div>
+            <div class="job-meta">
+              <span class="job-location">Tours</span>
+              <span class="job-date">2023 — 2025</span>
+            </div>
+          </div>
+          <div class="job-tech">
+            <span class="tech-tag">Python</span>
+            <span class="tech-tag">React.js</span>
+            <span class="tech-tag">Next.js</span>
+            <span class="tech-tag">Perl</span>
+            <span class="tech-tag">Node Red</span>
+            <span class="tech-tag">vim</span>
+          </div>
+          <div class="job-desc">
+            <p><em>Concepteur-développeur</em> pour différents projets attenant à la rédaction et manipulation d'articles.</p>
             <ul>
-                <li>Membre actif de l'Association d'Improvisation Ligérienne, où nous développons de nouveaux formats de spectacles</li>
+              <li>Développement d'un servlet d'archivage des articles web via Digital Asset Manager</li>
+              <li>Interface de gestion des notifications mobiles et web de publication d'articles</li>
+              <li>Amélioration de la gestion des articles vidéos</li>
+              <li>Création d'un mécanisme d'export XML pour génération automatique de carnets d'évènements</li>
             </ul>
-            <li><em>Musique</em></li>
+          </div>
+        </div>
+
+        <div class="job">
+          <div class="job-header">
+            <div class="job-company">PetalMD</div>
+            <div class="job-meta">
+              <span class="job-location">Remote → Québec</span>
+              <span class="job-date">2022</span>
+            </div>
+          </div>
+          <div class="job-tech">
+            <span class="tech-tag">Ruby on Rails</span>
+            <span class="tech-tag">Express.js</span>
+            <span class="tech-tag">ElasticSearch</span>
+            <span class="tech-tag">Docker</span>
+            <span class="tech-tag">Git</span>
+          </div>
+          <div class="job-desc">
+            <em>Consultant back-end Ruby on Rails</em>
             <ul>
-                <li>Pratique d'instruments
-                    <ul>
-                        <li>guitare</li>
-                        <li>batterie</li>
-                        <li class="noprint">guitare basse (compétence encore plus basse)</li>
-                    </ul>
-                </li>
+              <li>Outils internes en Express.js : synchronisation de rendez-vous médicaux</li>
             </ul>
-        </ul>
-        <ul class="col-50">
-            <li><em>Culture</em></li>
+          </div>
+        </div>
+
+        <div class="job">
+          <div class="job-header">
+            <div class="job-company">Prototyper</div>
+            <div class="job-meta">
+              <span class="job-location">Tours</span>
+              <span class="job-date">2020 — 2021</span>
+            </div>
+          </div>
+          <div class="job-tech">
+            <span class="tech-tag">Vue.js</span>
+            <span class="tech-tag">TypeScript</span>
+            <span class="tech-tag">React Native</span>
+            <span class="tech-tag">AWS</span>
+          </div>
+          <div class="job-desc">
+            <em>Développeur full-stack</em>
             <ul>
-                <li>Séries anglophones</li>
-                <li>Cinéma d'animation : studios Pixar, studios Laika, Cartoon Saloon</li>
-                <li class="noprint">Panel shows britanniques: QI, Would I lie to you, Mock the week</li>
-            </ul>
-            <li><em>Sport</em></li>
+              <li>Applications React Native, Vue.js hébergées chez AWS</li>
+          </div>
+        </div>
+
+        <div class="job">
+          <div class="job-header">
+            <div class="job-company">Syadem · MesVaccins.net</div>
+            <div class="job-meta">
+              <span class="job-location">Bordeaux</span>
+              <span class="job-date">2015 — 2019</span>
+            </div>
+          </div>
+          <div class="job-tech">
+            <span class="tech-tag">Ruby on Rails</span>
+            <span class="tech-tag">CoffeeScript</span>
+            <span class="tech-tag">PHP</span>
+            <span class="tech-tag">Ansible</span>
+          </div>
+          <div class="job-desc">
+            <em>Développeur web</em> d'applications mobile et bureau
             <ul>
-                <li>Footing, participant aux 10km de Tours 2024, humble possesseur d'un compte Strava alimenté par moi-même</li>
+              <li>Interfaçage avec d'autres plateformes de dossiers médicaux</li>
             </ul>
-        </ul>
-    </section>
-    <footer class="noprint"><small>copyright © <span id="current-year"></span></small></footer>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-title">Formation</div>
+
+        <div class="edu-item">
+          <div class="edu-degree">Master Génie Logiciel</div>
+          <div class="edu-school">Parcours conduite de projet — Université de Bordeaux</div>
+        </div>
+        <div class="edu-item">
+          <div class="edu-degree">Licence Informatique</div>
+          <div class="edu-school">Université de Bordeaux</div>
+        </div>
+        <div class="edu-item">
+          <div class="edu-degree">Bac S — Spécialité Biologie</div>
+          <div class="edu-school">Lycée Michel Montaigne, Bordeaux</div>
+        </div>
+      </section>
+
+    </main>
+  </div>
 </body>
-<script>document.getElementById('current-year').innerHTML = (new Date()).getFullYear()</script>
-<script src="assets/script.js"></script>
 <link rel="stylesheet" type="text/css" media="all" href="assets/style.css">
-<link rel="stylesheet" type="text/css" media="print" href="assets/print.css">
-<link rel="stylesheet" type="text/css" media="all" href="https://fonts.googleapis.com/css?family=Oxygen+Mono">
-<link rel="stylesheet" type="text/css" media="all" href="https://fonts.googleapis.com/css?family=Oxygen">
 
 </html>
