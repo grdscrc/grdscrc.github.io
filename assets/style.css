@@ -25,7 +25,24 @@ body {
     justify-content: center;
     align-items: flex-start;
     min-height: 100vh;
-    padding: 40px 20px;
+}
+
+@media (min-width: 480px) {
+    body {
+        padding: 40px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hide-mobile {
+        display: none;
+    }   
+}
+
+@media (min-width: 480px) {
+    .show-mobile {
+        display: none;
+    }   
 }
 
 .page {
@@ -38,17 +55,32 @@ body {
 
 /* SIDEBAR */
 .sidebar {
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 240px;
     background: var(--sidebar-bg);
     color: #e0e8f5;
-    padding: 48px 28px 40px;
-    display: flex;
-    flex-direction: column;
-    gap: 36px;
+}
+@media (min-width: 480px) {
+    .sidebar {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 240px;
+        padding: 48px 28px 40px;
+        display: flex;
+        flex-direction: column;
+        gap: 36px;
+    }
+}
+
+@media (max-width: 480px) {
+    .sidebar {
+        position: static;
+        width: 100%;
+        padding: 1em 1ch;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 36px;
+    }
 }
 
 .sidebar-photo {
@@ -113,24 +145,20 @@ body {
 
 .lang-item {
     font-size: 12px;
-    color: var(--paper);
     margin-bottom: 8px;
 }
 
 .lang-name {
-    color: #e0e8f5;
     font-weight: 500;
 }
 
 .lang-score {
-    color: var(--gold);
     font-family: 'DM Mono', monospace;
     font-size: 10px;
 }
 
 .hobby-item {
     font-size: 12px;
-    color: var(--paper);
     margin-bottom: 6px;
     padding-left: 12px;
     position: relative;
@@ -140,13 +168,34 @@ body {
     content: '·';
     position: absolute;
     left: 0;
-    color: var(--gold);
+    color: var(--ink);
+}
+
+.hobby-subtitle {
+    font-size:10px;
+}
+
+
+.sidebar {
+    .lang-item { color: var(--paper); }
+    .lang-name { color: #e0e8f5; }
+    .lang-score { color: var(--gold); }
+    .hobby-item { color: var(--paper); }
+    .hobby-item::before { color: var(--gold); }
+    .hobby-subtitle { color: #8099c0; }
 }
 
 /* MAIN */
-.main {
-    margin-left: 240px;
-    padding: 48px 48px 48px 44px;
+@media (max-width: 480px) {
+    .main {
+        padding: 1em 1ch;
+    }
+}
+@media (min-width: 480px) {
+    .main {
+        margin-left: 240px;        
+        padding: 48px 48px 48px 44px;
+    }
 }
 
 .header {

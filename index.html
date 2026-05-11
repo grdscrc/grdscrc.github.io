@@ -15,11 +15,12 @@
 
     <!-- SIDEBAR -->
     <aside class="sidebar">
-      <img class="sidebar-photo"
-          src="https://www.gravatar.com/avatar/78d1abd1fd2dd6d713f70bfcebaef9c3?s=200"
-          alt="Photo portrait d'Igor Descayrac">
+      <img class="sidebar-photo" src="https://www.gravatar.com/avatar/78d1abd1fd2dd6d713f70bfcebaef9c3?s=200"
+        alt="Photo portrait d'Igor Descayrac">
+
       <div>
-        <div class="sidebar-section-title">Contact</div>
+        <div class="sidebar-section-title hide-mobile">Contact</div>
+        <br class="show-mobile">
         <div class="contact-item">
           <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
@@ -51,7 +52,7 @@
         </div>
       </div>
 
-      <div>
+      <div class="hide-mobile">
         <div class="sidebar-section-title">Stack technique</div>
         <div class="skills-list">
           <span class="skill-tag">React.js</span>
@@ -74,7 +75,7 @@
         </div>
       </div>
 
-      <div>
+      <div class="hide-mobile">
         <div class="sidebar-section-title">Langues</div>
         <div class="lang-item">
           <span class="lang-name">Français</span> — natif
@@ -85,24 +86,24 @@
         </div>
       </div>
 
-      <div>
+      <div class="hide-mobile">
         <div class="sidebar-section-title">Centres d'intérêt</div>
         <div class="hobby-item">Stand-up<br>
-          <span style="font-size:10px;color:#8099c0">Le Sofa</span>
+          <span class="hobby-subtitle">Le Sofa</span>
         </div>
         <div class="hobby-item">Podcast<br>
-          <span style="font-size:10px;color:#8099c0">Tu Couperas Ça</span>
+          <span class="hobby-subtitle">Tu Couperas Ça</span>
         </div>
         <div class="hobby-item">Théâtre d'improvisation<br>
-          <span style="font-size:10px;color:#8099c0">Association d'Improvisation Ligérienne</span>
+          <span class="hobby-subtitle">Association d'Improvisation Ligérienne</span>
         </div>
         <div class="hobby-item">
           Composition musicale<br>
-          <span style="font-size:10px;color:#8099c0">Pratique de plusieurs instruments</span>
+          <span class="hobby-subtitle">Pratique de plusieurs instruments</span>
         </div>
         <div class="hobby-item">
           Course à pied<br>
-          <span style="font-size:10px;color:#8099c0">10km de Tours 2024</span>
+          <span class="hobby-subtitle">10km de Tours 2024</span>
         </div>
       </div>
     </aside>
@@ -138,7 +139,8 @@
             <span class="tech-tag">vim</span>
           </div>
           <div class="job-desc">
-            <p><em>Concepteur-développeur</em> pour différents projets attenant à la rédaction et manipulation d'articles.</p>
+            <p><em>Concepteur-développeur</em> pour différents projets attenant à la rédaction et manipulation
+              d'articles.</p>
             <ul>
               <li>Développement d'un servlet d'archivage des articles web via Digital Asset Manager</li>
               <li>Interface de gestion des notifications mobiles et web de publication d'articles</li>
@@ -232,9 +234,43 @@
         </div>
       </section>
 
+      <section class="show-mobile">
+        <div>
+          <div class="section-title">Langues</div>
+          <div class="lang-item">
+            <span class="lang-name">Français</span> — natif
+          </div>
+          <div class="lang-item">
+            <span class="lang-name">Anglais</span> — courant<br>
+            <span class="lang-score">Confirmé C2</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="section-title">Centres d'intérêt</div>
+          <div class="hobby-item">Stand-up<br>
+            <span class="hobby-subtitle">Le Sofa</span>
+          </div>
+          <div class="hobby-item">Podcast<br>
+            <span class="hobby-subtitle">Tu Couperas Ça</span>
+          </div>
+          <div class="hobby-item">Théâtre d'improvisation<br>
+            <span class="hobby-subtitle">Association d'Improvisation Ligérienne</span>
+          </div>
+          <div class="hobby-item">
+            Composition musicale<br>
+            <span class="hobby-subtitle">Pratique de plusieurs instruments</span>
+          </div>
+          <div class="hobby-item">
+            Course à pied<br>
+            <span class="hobby-subtitle">10km de Tours 2024</span>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
 </body>
 <link rel="stylesheet" type="text/css" media="all" href="assets/style.css">
 <link rel="stylesheet" type="text/css" media="print" href="assets/print.css">
+
 </html>
