@@ -1,10 +1,7 @@
 name: Generate PDF
 
 on:
-  push:
-    branches: [ master ]
-    paths-ignore:
-      - 'public/*.pdf'
+  workflow_dispatch: # disabled: trigger manually only
 
 jobs:
   build:
