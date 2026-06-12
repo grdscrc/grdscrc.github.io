@@ -47,6 +47,7 @@ body {
 
 .page {
     width: 820px;
+    height: 1160px; /* A4 ratio: 820 × 297/210 */
     background: var(--paper);
     position: relative;
     overflow: hidden;
