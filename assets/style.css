@@ -228,6 +228,17 @@ body {
     margin-bottom: 0;
 }
 
+.tagline {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--text);
+    margin-top: 0.75em;
+    margin-bottom: 0;
+    max-width: 420px;
+    line-height: 1.5;
+}
+
 .header-line {
     position: absolute;
     bottom: -2px;
