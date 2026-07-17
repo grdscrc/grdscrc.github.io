@@ -54,6 +54,34 @@
       box-shadow: 0 0 24px #a855f730;
     }
 
+    .result-panel.critical-fail {
+      border-color: #ef4444;
+      box-shadow: 0 0 32px #ef444440;
+      animation: shake 0.4s ease;
+    }
+
+    .result-panel.critical-success {
+      border-color: #fbbf24;
+      box-shadow: 0 0 40px #fbbf2450;
+      animation: glow-pulse 0.6s ease-in-out 2;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%       { transform: translateX(-6px); }
+      40%       { transform: translateX(6px); }
+      60%       { transform: translateX(-4px); }
+      80%       { transform: translateX(4px); }
+    }
+
+    @keyframes glow-pulse {
+      0%, 100% { box-shadow: 0 0 40px #fbbf2450; }
+      50%       { box-shadow: 0 0 70px #fbbf2490; }
+    }
+
+    .result-value.critical-fail  { color: #f87171; }
+    .result-value.critical-success { color: #fcd34d; }
+
     .result-label {
       font-size: 0.75rem;
       color: var(--accent);
@@ -176,13 +204,13 @@
 </div>
 
 <div class="dice-grid">
-  <button id="d20" class="die-btn wide" onclick="roll(20)">d20</button>
-  <button id="d6" class="die-btn wide" onclick="roll(6)">d6</button>
-  <button id="d4" class="die-btn" onclick="roll(4)">d4</button>
-  <button id="d8" class="die-btn" onclick="roll(8)">d8</button>
-  <button id="d10" class="die-btn" onclick="roll(10)">d10</button>
-  <button id="d12" class="die-btn" onclick="roll(12)">d12</button>
-  <button id="d100" class="die-btn full" onclick="roll(100)">d100</button>
+  <button class="die-btn" onclick="roll(4)">d4</button>
+  <button class="die-btn" onclick="roll(6)">d6</button>
+  <button class="die-btn" onclick="roll(8)">d8</button>
+  <button class="die-btn" onclick="roll(10)">d10</button>
+  <button class="die-btn wide d20" onclick="roll(20)">d20</button>
+  <button class="die-btn" onclick="roll(12)">d12</button>
+  <button class="die-btn wide" onclick="roll(100)">d100</button>
 </div>
 
 <button class="reroll-btn" id="rerollBtn" onclick="reroll()">↺ Relancer le même dé</button>
@@ -246,6 +274,123 @@
     setTimeout(callback, totalDur * 1000 + 120);
   }
 
+  /* ── Sad trombone (wah-wah-wah-waaah) ── */
+  function playSadTrombone() {
+    const ac  = ctx();
+    const now = ac.currentTime;
+
+    // Classic descending: Bb4 → G4 → Eb4 → C4 (pitch bend down)
+    const notes = [
+      { freq: 466, start: 0.0,  dur: 0.38 },
+      { freq: 392, start: 0.34, dur: 0.38 },
+      { freq: 311, start: 0.66, dur: 0.38 },
+      { freq: 261, start: 0.98, dur: 1.3  }, // long sad hold + downward bend
+    ];
+
+    notes.forEach(({ freq, start, dur }, i) => {
+      const osc  = ac.createOscillator();
+      osc.type   = 'sawtooth';
+      osc.frequency.setValueAtTime(freq, now + start);
+
+      // Last note bends down sadly
+      if (i === notes.length - 1) {
+        osc.frequency.setValueAtTime(freq, now + start + 0.3);
+        osc.frequency.exponentialRampToValueAtTime(freq * 0.82, now + start + dur);
+      }
+
+      // Slow vibrato on last note
+      if (i === notes.length - 1) {
+        const lfo  = ac.createOscillator();
+        lfo.type   = 'sine';
+        lfo.frequency.value = 4.5;
+        const lfoGain = ac.createGain();
+        lfoGain.gain.setValueAtTime(0, now + start);
+        lfoGain.gain.linearRampToValueAtTime(6, now + start + 0.5);
+        lfo.connect(lfoGain);
+        lfoGain.connect(osc.frequency);
+        lfo.start(now + start);
+        lfo.stop(now + start + dur + 0.05);
+      }
+
+      // Warm lowpass → muted brass character
+      const lp  = ac.createBiquadFilter();
+      lp.type   = 'lowpass';
+      lp.frequency.value = 1400;
+      lp.Q.value = 1.5;
+
+      const gain = ac.createGain();
+      gain.gain.setValueAtTime(0, now + start);
+      gain.gain.linearRampToValueAtTime(0.28, now + start + 0.04);
+      gain.gain.setValueAtTime(0.28, now + start + dur - 0.12);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + start + dur);
+
+      osc.connect(lp);
+      lp.connect(gain);
+      gain.connect(ac.destination);
+      osc.start(now + start);
+      osc.stop(now + start + dur + 0.05);
+    });
+  }
+
+  /* ── Heroic trumpet fanfare (ascending + triumphant hold) ── */
+  function playHeroicFanfare() {
+    const ac  = ctx();
+    const now = ac.currentTime;
+
+    // G4 → C5 → E5 → G5 (bugle-style ascending, then hold)
+    const notes = [
+      { freq: 392, start: 0.0,  dur: 0.18 },
+      { freq: 523, start: 0.16, dur: 0.18 },
+      { freq: 659, start: 0.32, dur: 0.18 },
+      { freq: 784, start: 0.48, dur: 0.85 }, // triumphant!
+    ];
+
+    notes.forEach(({ freq, start, dur }, i) => {
+      const osc  = ac.createOscillator();
+      osc.type   = 'sawtooth';
+      osc.frequency.value = freq;
+
+      // Slight upward pitch push at attack (trumpet articulation)
+      osc.frequency.setValueAtTime(freq * 1.02, now + start);
+      osc.frequency.exponentialRampToValueAtTime(freq, now + start + 0.04);
+
+      // Bright bandpass for trumpet timbre
+      const bp  = ac.createBiquadFilter();
+      bp.type   = 'bandpass';
+      bp.frequency.value = freq * 1.8;
+      bp.Q.value = 0.7;
+
+      // Second harmonic layer for richness
+      const osc2  = ac.createOscillator();
+      osc2.type   = 'square';
+      osc2.frequency.value = freq * 2;
+
+      const mixGain = ac.createGain();
+      mixGain.gain.value = 0.12;
+
+      const gain = ac.createGain();
+      // Punchy attack, then slight decay on held note
+      gain.gain.setValueAtTime(0, now + start);
+      gain.gain.linearRampToValueAtTime(i === notes.length - 1 ? 0.42 : 0.36, now + start + 0.025);
+      if (i === notes.length - 1) {
+        gain.gain.setValueAtTime(0.42, now + start + 0.1);
+        gain.gain.linearRampToValueAtTime(0.32, now + start + dur - 0.15);
+      }
+      gain.gain.exponentialRampToValueAtTime(0.001, now + start + dur);
+
+      osc.connect(bp);
+      bp.connect(gain);
+      osc2.connect(mixGain);
+      mixGain.connect(gain);
+      gain.connect(ac.destination);
+
+      osc.start(now + start);
+      osc.stop(now + start + dur + 0.05);
+      osc2.start(now + start);
+      osc2.stop(now + start + dur + 0.05);
+    });
+  }
+
   /* ── TTS ── */
   function speak(text) {
     const utt  = new SpeechSynthesisUtterance(text);
@@ -292,17 +437,37 @@
 
     // Reset UI
     const panel = document.getElementById('panel');
-    panel.classList.add('active');
+    const valEl = document.getElementById('resultValue');
+    panel.className = 'result-panel active';
+    valEl.className = 'result-value';
     document.getElementById('resultLabel').textContent = `d${faces}`;
-    document.getElementById('resultValue').textContent = '…';
+    valEl.textContent = '…';
     document.getElementById('rerollBtn').classList.remove('visible');
     document.querySelectorAll(".die-btn").forEach(d => d.classList.remove('current'))
     document.getElementById(`d${faces}`).classList.add('current');
 
+
+    const isCritFail    = result === 1;
+    const isCritSuccess = result === faces;
+
     playRoll(() => {
       scramble(result, faces, () => {
+        // Apply critical visual state
+        if (isCritFail) {
+          panel.classList.add('critical-fail');
+          valEl.classList.add('critical-fail');
+        } else if (isCritSuccess) {
+          panel.classList.add('critical-success');
+          valEl.classList.add('critical-success');
+        }
+
         setTimeout(() => {
           speak(String(result));
+
+          // Play special jingle after TTS starts
+          if (isCritFail)    setTimeout(playSadTrombone,   700);
+          if (isCritSuccess) setTimeout(playHeroicFanfare, 700);
+
           document.getElementById('rerollBtn').classList.add('visible');
           busy = false;
         }, 150);
