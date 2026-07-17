@@ -222,7 +222,17 @@
   let lastDie   = null;
   let audioCtx  = null;
   let busy      = false;
+  let speechReady = false;
 
+  /* ── Unlock iOS speech synthesis (must run in synchronous user gesture) ── */
+  function ensureSpeech() {
+    if (speechReady || typeof speechSynthesis === 'undefined') return;
+    const u = new SpeechSynthesisUtterance('');
+    u.volume = 0;
+    speechSynthesis.speak(u);
+    speechReady = true;
+  }
+  
   /* ── Audio context (lazy, requires user gesture) ── */
   function ctx() {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -432,6 +442,7 @@
   /* ── Main roll ── */
   function roll(faces) {
     if (busy) return;
+    ensureSpeech(); // doit être appelé ici, synchrone, dans le geste utilisateur
     busy    = true;
     lastDie = faces;
 
