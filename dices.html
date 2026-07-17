@@ -118,7 +118,11 @@
       grid-column: span 2;
     }
 
-    .die-btn.d20 {
+    .die-btn.full {
+      grid-column: span 4;
+    }
+
+    .die-btn.current {
       font-size: 1.35rem;
       border-color: #6d28d9;
       background: #1e1b4b;
@@ -172,13 +176,13 @@
 </div>
 
 <div class="dice-grid">
+  <button class="die-btn wide" onclick="roll(20)">d20</button>
+  <button class="die-btn wide" onclick="roll(6)">d6</button>
   <button class="die-btn" onclick="roll(4)">d4</button>
-  <button class="die-btn" onclick="roll(6)">d6</button>
   <button class="die-btn" onclick="roll(8)">d8</button>
   <button class="die-btn" onclick="roll(10)">d10</button>
-  <button class="die-btn wide d20" onclick="roll(20)">d20</button>
   <button class="die-btn" onclick="roll(12)">d12</button>
-  <button class="die-btn wide" onclick="roll(100)">d100</button>
+  <button class="die-btn full" onclick="roll(100)">d100</button>
 </div>
 
 <button class="reroll-btn" id="rerollBtn" onclick="reroll()">↺ Relancer le même dé</button>
@@ -292,6 +296,8 @@
     document.getElementById('resultLabel').textContent = `d${faces}`;
     document.getElementById('resultValue').textContent = '…';
     document.getElementById('rerollBtn').classList.remove('visible');
+    document.querySelectorAll(".die-btn").forEach(d => d.classList.remove('current'))
+    document.getElementById(`d${faces}`).classList.add('current');
 
     playRoll(() => {
       scramble(result, faces, () => {
