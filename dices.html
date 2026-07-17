@@ -464,7 +464,7 @@
         }
 
         setTimeout(() => {
-          speak(String(result), critFail, critSuccess);
+          speak(String(result), isCritFail, isCritSuccess);
 
           // Play special jingle after TTS starts
           if (isCritFail)    setTimeout(playSadTrombone,   1500);
