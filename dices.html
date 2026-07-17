@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Dés Audio</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0f0f1a;
+      --surface:   #1a1a2e;
+      --border:    #3b2f6e;
+      --accent:    #a855f7;
+      --accent2:   #e879f9;
+      --text:      #e2e8f0;
+      --muted:     #64748b;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 28px 16px 40px;
+      gap: 20px;
+    }
+
+    h1 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    /* ── Result panel ── */
+    .result-panel {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      padding: 22px 28px 18px;
+      text-align: center;
+      width: 100%;
+      max-width: 360px;
+      transition: border-color 0.2s;
+    }
+
+    .result-panel.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 24px #a855f730;
+    }
+
+    .result-label {
+      font-size: 0.75rem;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      min-height: 1rem;
+    }
+
+    .result-value {
+      font-size: 5rem;
+      font-weight: 800;
+      line-height: 1.05;
+      min-height: 5.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent2);
+      transition: color 0.2s;
+    }
+
+    .result-value.rolling {
+      color: var(--accent);
+      animation: flicker 0.08s infinite;
+    }
+
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.25; }
+    }
+
+    /* ── Dice grid ── */
+    .dice-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      width: 100%;
+      max-width: 360px;
+    }
+
+    .die-btn {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      color: var(--text);
+      font-size: 1.05rem;
+      font-weight: 700;
+      padding: 20px 6px;
+      cursor: pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.1s, border-color 0.1s, transform 0.1s;
+      user-select: none;
+    }
+
+    .die-btn:active {
+      background: #2d1b69;
+      border-color: var(--accent);
+      transform: scale(0.93);
+    }
+
+    .die-btn.wide {
+      grid-column: span 2;
+    }
+
+    .die-btn.d20 {
+      font-size: 1.35rem;
+      border-color: #6d28d9;
+      background: #1e1b4b;
+    }
+
+    /* ── Reroll button ── */
+    .reroll-btn {
+      width: 100%;
+      max-width: 360px;
+      background: #3b1264;
+      border: 2px solid var(--accent);
+      border-radius: 14px;
+      color: var(--accent2);
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 16px;
+      cursor: pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.1s, transform 0.1s;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .reroll-btn.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .reroll-btn:active {
+      background: #5b21b6;
+      transform: scale(0.97);
+    }
+
+    .hint {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-align: center;
+      max-width: 280px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🎲 Dés Audio</h1>
+
+<div class="result-panel" id="panel">
+  <div class="result-label" id="resultLabel">&nbsp;</div>
+  <div class="result-value" id="resultValue">?</div>
+</div>
+
+<div class="dice-grid">
+  <button class="die-btn" onclick="roll(4)">d4</button>
+  <button class="die-btn" onclick="roll(6)">d6</button>
+  <button class="die-btn" onclick="roll(8)">d8</button>
+  <button class="die-btn" onclick="roll(10)">d10</button>
+  <button class="die-btn wide d20" onclick="roll(20)">d20</button>
+  <button class="die-btn" onclick="roll(12)">d12</button>
+  <button class="die-btn wide" onclick="roll(100)">d100</button>
+</div>
+
+<button class="reroll-btn" id="rerollBtn" onclick="reroll()">↺ Relancer le même dé</button>
+
+<p class="hint">Appuie sur un dé — le résultat est annoncé à voix haute</p>
+
+<script>
+  /* ── State ── */
+  let lastDie   = null;
+  let audioCtx  = null;
+  let busy      = false;
+
+  /* ── Audio context (lazy, requires user gesture) ── */
+  function ctx() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+  }
+
+  /* ── Dice rolling sound ── */
+  function playRoll(callback) {
+    const ac  = ctx();
+    const now = ac.currentTime;
+    const totalDur = 0.95;
+    const nClicks  = 16;
+
+    for (let i = 0; i < nClicks; i++) {
+      // Clicks accelerate then decelerate (bell curve timing)
+      const progress = i / (nClicks - 1);
+      const t = now + totalDur * (1 - Math.pow(1 - progress, 2)) * 0.9;
+
+      // Short noise burst per click
+      const len    = Math.floor(ac.sampleRate * 0.045);
+      const buf    = ac.createBuffer(1, len, ac.sampleRate);
+      const data   = buf.getChannelData(0);
+      const decay  = 0.12;
+      for (let j = 0; j < len; j++) {
+        data[j] = (Math.random() * 2 - 1) * Math.exp(-j / (len * decay));
+      }
+
+      const src  = ac.createBufferSource();
+      src.buffer = buf;
+
+      // Highpass → crisp "clack"
+      const hp  = ac.createBiquadFilter();
+      hp.type   = 'highpass';
+      hp.frequency.value = 700 + Math.random() * 800;
+
+      // Volume envelope — louder in the middle of the roll
+      const env = ac.createGain();
+      const vol = 0.15 + 0.4 * Math.sin(Math.PI * progress);
+      env.gain.setValueAtTime(vol, t);
+      env.gain.exponentialRampToValueAtTime(0.001, t + 0.07);
+
+      src.connect(hp);
+      hp.connect(env);
+      env.connect(ac.destination);
+      src.start(t);
+    }
+
+    setTimeout(callback, totalDur * 1000 + 120);
+  }
+
+  /* ── TTS ── */
+  function speak(text) {
+    const utt  = new SpeechSynthesisUtterance(text);
+    utt.lang   = 'fr-FR';
+    utt.rate   = 0.88;
+    utt.pitch  = 1.05;
+
+    // Pick best French voice if available
+    const voices = speechSynthesis.getVoices();
+    const best   = voices.find(v => v.lang === 'fr-FR' && v.localService)
+                || voices.find(v => v.lang.startsWith('fr-'))
+                || voices.find(v => v.lang.startsWith('fr'));
+    if (best) utt.voice = best;
+
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utt);
+  }
+
+  /* ── Scramble animation ── */
+  function scramble(finalVal, faces, done) {
+    const el     = document.getElementById('resultValue');
+    const frames = 14;
+    let   count  = 0;
+    el.classList.add('rolling');
+
+    const id = setInterval(() => {
+      el.textContent = Math.floor(Math.random() * faces) + 1;
+      if (++count >= frames) {
+        clearInterval(id);
+        el.classList.remove('rolling');
+        el.textContent = finalVal;
+        done && done();
+      }
+    }, 55);
+  }
+
+  /* ── Main roll ── */
+  function roll(faces) {
+    if (busy) return;
+    busy    = true;
+    lastDie = faces;
+
+    const result = Math.floor(Math.random() * faces) + 1;
+
+    // Reset UI
+    const panel = document.getElementById('panel');
+    panel.classList.add('active');
+    document.getElementById('resultLabel').textContent = `d${faces}`;
+    document.getElementById('resultValue').textContent = '…';
+    document.getElementById('rerollBtn').classList.remove('visible');
+
+    playRoll(() => {
+      scramble(result, faces, () => {
+        setTimeout(() => {
+          speak(String(result));
+          document.getElementById('rerollBtn').classList.add('visible');
+          busy = false;
+        }, 150);
+      });
+    });
+  }
+
+  function reroll() {
+    if (lastDie) roll(lastDie);
+  }
+
+  /* ── Pre-load voices (browsers load async) ── */
+  if (typeof speechSynthesis !== 'undefined') {
+    speechSynthesis.getVoices();
+    speechSynthesis.addEventListener('voiceschanged', () => speechSynthesis.getVoices());
+  }
+</script>
+</body>
+</html>
