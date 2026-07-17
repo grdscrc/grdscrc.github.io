@@ -232,7 +232,7 @@
     speechSynthesis.speak(u);
     speechReady = true;
   }
-  
+
   /* ── Audio context (lazy, requires user gesture) ── */
   function ctx() {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -403,6 +403,70 @@
 
   /* ── TTS ── */
   function speak(text, critFail, critSuccess) {
+    let number = parseInt(text);
+    let fetches = [];
+    if (number <= 16) {
+      fetches.push(fetch(`./assets/audio/${number.toString().padStart(2, '0')}.mp3`));
+    } else if (number == 100) {
+      fetches.push(fetch(`./assets/audio/100.mp3`));
+    } else {
+      let tenths = Math.floor(number / 10);
+      let units  = number % 10;
+      if (number >= 17 && number <= 19) {
+        fetches.push(fetch(`./assets/audio/10.mp3`));
+        fetches.push(fetch(`./assets/audio/${units.toString().padStart(2, '0')}.mp3`));
+      } else if (number >= 20 && number <= 69) {
+        fetches.push(fetch(`./assets/audio/${tenths.toString().padEnd(2, '0')}.mp3`));
+        if (units == 1) fetches.push(fetch(`./assets/audio/et.mp3`));
+        if (units >= 1) fetches.push(fetch(`./assets/audio/${units.toString().padStart(2, '0')}.mp3`));
+      } else if (number >= 70 && number <= 79) {
+        fetches.push(fetch(`./assets/audio/60.mp3`));
+        if (units >= 1 && units <= 6) {
+          fetches.push(fetch(`./assets/audio/1${units}.mp3`));
+        }
+        if (units >= 1 && units >= 7) {
+          fetches.push(fetch(`./assets/audio/10.mp3`));
+          fetches.push(fetch(`./assets/audio/0${units.toString()}.mp3`));
+        }
+      } else if (number >= 80 && number <= 99) {
+        units = number - 80;
+        fetches.push(fetch(`./assets/audio/04.mp3`));
+        fetches.push(fetch(`./assets/audio/20.mp3`));
+        if (units >= 1 && units <= 16)
+          fetches.push(fetch(`./assets/audio/${units.toString().padStart(2, '0')}.mp3`));
+        if (units >= 1 && units >= 17) {
+          fetches.push(fetch(`./assets/audio/10.mp3`));
+          fetches.push(fetch(`./assets/audio/0${units.toString()}.mp3`));
+        }
+      }
+    }
+
+    Promise.all(fetches).then(async responses => {
+      // 1. Décoder tous les buffers
+      const buffers = await Promise.all(
+        responses.map(async r => {
+          if (!r.ok) throw new Error(`HTTP ${r.status}`);
+          const arr = await r.arrayBuffer();
+          return audioCtx.decodeAudioData(arr);
+        })
+      );
+
+      // 2. Les programmer en séquence
+      let t = audioCtx.currentTime;
+      for (const buffer of buffers) {
+        const source = audioCtx.createBufferSource();
+        source.buffer = buffer;
+        source.connect(audioCtx.destination);
+        source.start(t);
+        t += buffer.duration + 0.02; // 40ms de silence entre les mots
+      }
+    }).catch(err => {
+      console.error('Error fetching or playing audio:', err);
+      speech(text, critFail, critSuccess);
+    });
+  }
+
+  function speech(text, critFail, critSuccess) {
     if (critFail) text += ": échec critique !";
     if (critSuccess) text += ": succès critique !";
     const utt  = new SpeechSynthesisUtterance(text);
