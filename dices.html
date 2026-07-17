@@ -392,7 +392,9 @@
   }
 
   /* ── TTS ── */
-  function speak(text) {
+  function speak(text, critFail, critSuccess) {
+    if (critFail) text += ": échec critique !";
+    if (critSuccess) text += ": succès critique !";
     const utt  = new SpeechSynthesisUtterance(text);
     utt.lang   = 'fr-FR';
     utt.rate   = 0.88;
@@ -462,11 +464,11 @@
         }
 
         setTimeout(() => {
-          speak(String(result));
+          speak(String(result), critFail, critSuccess);
 
           // Play special jingle after TTS starts
-          if (isCritFail)    setTimeout(playSadTrombone,   700);
-          if (isCritSuccess) setTimeout(playHeroicFanfare, 700);
+          if (isCritFail)    setTimeout(playSadTrombone,   1500);
+          if (isCritSuccess) setTimeout(playHeroicFanfare, 1500);
 
           document.getElementById('rerollBtn').classList.add('visible');
           busy = false;
