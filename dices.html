@@ -449,8 +449,8 @@
     document.getElementById(`d${faces}`).classList.add('current');
 
 
-    const isCritFail    = result === 1;
-    const isCritSuccess = result === faces;
+    const isCritFail    = faces >= 12 && result === 1;
+    const isCritSuccess = faces >= 12 && result === faces;
 
     playRoll(() => {
       scramble(result, faces, () => {
@@ -467,8 +467,8 @@
           speak(String(result), isCritFail, isCritSuccess);
 
           // Play special jingle after TTS starts
-          if (isCritFail)    setTimeout(playSadTrombone,   1500);
-          if (isCritSuccess) setTimeout(playHeroicFanfare, 1500);
+          if (isCritFail)    setTimeout(playSadTrombone,   2000);
+          if (isCritSuccess) setTimeout(playHeroicFanfare, 2000);
 
           document.getElementById('rerollBtn').classList.add('visible');
           busy = false;
