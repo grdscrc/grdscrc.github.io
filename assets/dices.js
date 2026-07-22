@@ -59,6 +59,17 @@ function buildAudioFileList(number) {
   return files;
 }
 
+/* ── Construit l'annonce complète : "Lancer d{faces}, résultat : {result}" ── */
+function buildRollAnnouncementFileList(faces, result) {
+  return [
+    './assets/audio/lancer.mp3',
+    './assets/audio/d.mp3',
+    ...buildAudioFileList(faces),
+    './assets/audio/resultat.mp3',
+    ...buildAudioFileList(result),
+  ];
+}
+
 /* ── Unlock iOS speech synthesis (must run in synchronous user gesture) ── */
 function ensureSpeech() {
   if (speechReady || typeof speechSynthesis === 'undefined') return;
@@ -237,9 +248,8 @@ function playHeroicFanfare() {
 }
 
 /* ── TTS ── */
-function speak(text, critFail, critSuccess) {
-  const number  = parseInt(text);
-  const fetches = buildAudioFileList(number).map(path => fetch(path));
+function speak(faces, result, critFail, critSuccess) {
+  const fetches = buildRollAnnouncementFileList(faces, result).map(path => fetch(path));
 
   Promise.all(fetches).then(async responses => {
     // 1. Décoder tous les buffers
@@ -262,13 +272,14 @@ function speak(text, critFail, critSuccess) {
     }
   }).catch(err => {
     console.error('Error fetching or playing audio:', err);
-    speech(text, critFail, critSuccess);
+    speech(faces, result, critFail, critSuccess);
   });
 }
 
-function speech(text, critFail, critSuccess) {
-  if (critFail) text += ": échec critique !";
-  if (critSuccess) text += ": succès critique !";
+function speech(faces, result, critFail, critSuccess) {
+  let text = `Lancer d${faces}, résultat : ${result}`;
+  if (critFail) text += " : échec critique !";
+  if (critSuccess) text += " : succès critique !";
   const utt  = new SpeechSynthesisUtterance(text);
   utt.lang   = 'fr-FR';
   utt.rate   = 0.88;
@@ -340,7 +351,7 @@ function roll(faces) {
       }
 
       setTimeout(() => {
-        speak(String(result), isCritFail, isCritSuccess);
+        speak(faces, result, isCritFail, isCritSuccess);
 
         // Play special jingle after TTS starts
         if (isCritFail)    setTimeout(playSadTrombone,   2000);
@@ -364,5 +375,5 @@ if (typeof speechSynthesis !== 'undefined') {
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { rollDie, isCriticalFail, isCriticalSuccess, buildAudioFileList };
+  module.exports = { rollDie, isCriticalFail, isCriticalSuccess, buildAudioFileList, buildRollAnnouncementFileList };
 }

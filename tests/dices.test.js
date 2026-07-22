@@ -1,6 +1,6 @@
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
-const { rollDie, isCriticalFail, isCriticalSuccess, buildAudioFileList } = require('../assets/dices.js');
+const { rollDie, isCriticalFail, isCriticalSuccess, buildAudioFileList, buildRollAnnouncementFileList } = require('../assets/dices.js');
 
 describe('rollDie', () => {
   test('applies the injected rng to the requested face count', () => {
@@ -106,6 +106,50 @@ describe('buildAudioFileList', () => {
   test('99 → quatre + vingt + dix + neuf', () => {
     assert.deepEqual(buildAudioFileList(99), [
       './assets/audio/04.mp3', './assets/audio/20.mp3', './assets/audio/10.mp3', './assets/audio/09.mp3',
+    ]);
+  });
+});
+
+describe('buildRollAnnouncementFileList', () => {
+  test('"Lancer d20, résultat : 14"', () => {
+    assert.deepEqual(buildRollAnnouncementFileList(20, 14), [
+      './assets/audio/lancer.mp3',
+      './assets/audio/d.mp3',
+      './assets/audio/20.mp3',
+      './assets/audio/resultat.mp3',
+      './assets/audio/14.mp3',
+    ]);
+  });
+
+  test('"Lancer d4, résultat : 1"', () => {
+    assert.deepEqual(buildRollAnnouncementFileList(4, 1), [
+      './assets/audio/lancer.mp3',
+      './assets/audio/d.mp3',
+      './assets/audio/04.mp3',
+      './assets/audio/resultat.mp3',
+      './assets/audio/01.mp3',
+    ]);
+  });
+
+  test('"Lancer d100, résultat : 100"', () => {
+    assert.deepEqual(buildRollAnnouncementFileList(100, 100), [
+      './assets/audio/lancer.mp3',
+      './assets/audio/d.mp3',
+      './assets/audio/100.mp3',
+      './assets/audio/resultat.mp3',
+      './assets/audio/100.mp3',
+    ]);
+  });
+
+  test('"Lancer d20, résultat : 21" (résultat composé avec "et")', () => {
+    assert.deepEqual(buildRollAnnouncementFileList(20, 21), [
+      './assets/audio/lancer.mp3',
+      './assets/audio/d.mp3',
+      './assets/audio/20.mp3',
+      './assets/audio/resultat.mp3',
+      './assets/audio/20.mp3',
+      './assets/audio/et.mp3',
+      './assets/audio/01.mp3',
     ]);
   });
 });
