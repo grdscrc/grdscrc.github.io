@@ -4,6 +4,60 @@ let audioCtx  = null;
 let busy      = false;
 let speechReady = false;
 
+/* ── Pure dice logic (no DOM/browser APIs — testable in isolation) ── */
+function rollDie(faces, rand = Math.random) {
+  return Math.floor(rand() * faces) + 1;
+}
+
+function isCriticalFail(faces, result) {
+  return faces >= 12 && result === 1;
+}
+
+function isCriticalSuccess(faces, result) {
+  return faces >= 12 && result === faces;
+}
+
+/* ── Décompose un nombre (0-100) en liste de fichiers audio FR à enchaîner ── */
+function buildAudioFileList(number) {
+  const files = [];
+  if (number <= 16) {
+    files.push(`./assets/audio/${number.toString().padStart(2, '0')}.mp3`);
+  } else if (number == 100) {
+    files.push(`./assets/audio/100.mp3`);
+  } else {
+    let tenths = Math.floor(number / 10);
+    let units  = number % 10;
+    if (number >= 17 && number <= 19) {
+      files.push(`./assets/audio/10.mp3`);
+      files.push(`./assets/audio/${units.toString().padStart(2, '0')}.mp3`);
+    } else if (number >= 20 && number <= 69) {
+      files.push(`./assets/audio/${tenths.toString().padEnd(2, '0')}.mp3`);
+      if (units == 1) files.push(`./assets/audio/et.mp3`);
+      if (units >= 1) files.push(`./assets/audio/${units.toString().padStart(2, '0')}.mp3`);
+    } else if (number >= 70 && number <= 79) {
+      files.push(`./assets/audio/60.mp3`);
+      if (units >= 1 && units <= 6) {
+        files.push(`./assets/audio/1${units}.mp3`);
+      }
+      if (units >= 1 && units >= 7) {
+        files.push(`./assets/audio/10.mp3`);
+        files.push(`./assets/audio/0${units.toString()}.mp3`);
+      }
+    } else if (number >= 80 && number <= 99) {
+      units = number - 80;
+      files.push(`./assets/audio/04.mp3`);
+      files.push(`./assets/audio/20.mp3`);
+      if (units >= 1 && units <= 16)
+        files.push(`./assets/audio/${units.toString().padStart(2, '0')}.mp3`);
+      if (units >= 1 && units >= 17) {
+        files.push(`./assets/audio/10.mp3`);
+        files.push(`./assets/audio/0${units.toString()}.mp3`);
+      }
+    }
+  }
+  return files;
+}
+
 /* ── Unlock iOS speech synthesis (must run in synchronous user gesture) ── */
 function ensureSpeech() {
   if (speechReady || typeof speechSynthesis === 'undefined') return;
@@ -183,43 +237,8 @@ function playHeroicFanfare() {
 
 /* ── TTS ── */
 function speak(text, critFail, critSuccess) {
-  let number = parseInt(text);
-  let fetches = [];
-  if (number <= 16) {
-    fetches.push(fetch(`./assets/audio/${number.toString().padStart(2, '0')}.mp3`));
-  } else if (number == 100) {
-    fetches.push(fetch(`./assets/audio/100.mp3`));
-  } else {
-    let tenths = Math.floor(number / 10);
-    let units  = number % 10;
-    if (number >= 17 && number <= 19) {
-      fetches.push(fetch(`./assets/audio/10.mp3`));
-      fetches.push(fetch(`./assets/audio/${units.toString().padStart(2, '0')}.mp3`));
-    } else if (number >= 20 && number <= 69) {
-      fetches.push(fetch(`./assets/audio/${tenths.toString().padEnd(2, '0')}.mp3`));
-      if (units == 1) fetches.push(fetch(`./assets/audio/et.mp3`));
-      if (units >= 1) fetches.push(fetch(`./assets/audio/${units.toString().padStart(2, '0')}.mp3`));
-    } else if (number >= 70 && number <= 79) {
-      fetches.push(fetch(`./assets/audio/60.mp3`));
-      if (units >= 1 && units <= 6) {
-        fetches.push(fetch(`./assets/audio/1${units}.mp3`));
-      }
-      if (units >= 1 && units >= 7) {
-        fetches.push(fetch(`./assets/audio/10.mp3`));
-        fetches.push(fetch(`./assets/audio/0${units.toString()}.mp3`));
-      }
-    } else if (number >= 80 && number <= 99) {
-      units = number - 80;
-      fetches.push(fetch(`./assets/audio/04.mp3`));
-      fetches.push(fetch(`./assets/audio/20.mp3`));
-      if (units >= 1 && units <= 16)
-        fetches.push(fetch(`./assets/audio/${units.toString().padStart(2, '0')}.mp3`));
-      if (units >= 1 && units >= 17) {
-        fetches.push(fetch(`./assets/audio/10.mp3`));
-        fetches.push(fetch(`./assets/audio/0${units.toString()}.mp3`));
-      }
-    }
-  }
+  const number  = parseInt(text);
+  const fetches = buildAudioFileList(number).map(path => fetch(path));
 
   Promise.all(fetches).then(async responses => {
     // 1. Décoder tous les buffers
@@ -290,7 +309,7 @@ function roll(faces) {
   busy    = true;
   lastDie = faces;
 
-  const result = Math.floor(Math.random() * faces) + 1;
+  const result = rollDie(faces);
 
   // Reset UI
   const panel = document.getElementById('panel');
@@ -305,8 +324,8 @@ function roll(faces) {
   document.getElementById(`d${faces}`).classList.add('current');
 
 
-  const isCritFail    = faces >= 12 && result === 1;
-  const isCritSuccess = faces >= 12 && result === faces;
+  const isCritFail    = isCriticalFail(faces, result);
+  const isCritSuccess = isCriticalSuccess(faces, result);
 
   playRoll(() => {
     scramble(result, faces, () => {
@@ -341,4 +360,8 @@ function reroll() {
 if (typeof speechSynthesis !== 'undefined') {
   speechSynthesis.getVoices();
   speechSynthesis.addEventListener('voiceschanged', () => speechSynthesis.getVoices());
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { rollDie, isCriticalFail, isCriticalSuccess, buildAudioFileList };
 }
