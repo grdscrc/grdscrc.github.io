@@ -385,6 +385,13 @@ function setLanguage(lang) {
   currentLanguage = lang;
   applyLanguage();
   closeLangMenu();
+  history.replaceState(null, '', '#' + lang);
+}
+
+/* ── Langue initiale : lit le hash de l'URL (ex: #en), sinon garde le français par défaut ── */
+function languageFromHash() {
+  const hash = window.location.hash.slice(1).toLowerCase();
+  return LANGUAGES[hash] ? hash : null;
 }
 
 /* ── Pre-load voices (browsers load async) ── */
@@ -394,6 +401,7 @@ if (typeof speechSynthesis !== 'undefined') {
 }
 
 if (typeof document !== 'undefined') {
+  currentLanguage = languageFromHash() || currentLanguage;
   applyLanguage();
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.lang-dropdown')) closeLangMenu();
