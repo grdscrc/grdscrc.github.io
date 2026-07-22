@@ -4,6 +4,9 @@ let audioCtx  = null;
 let busy      = false;
 let speechReady = false;
 let currentLanguage = 'fr';
+let rollHistory = [];
+
+const MAX_HISTORY = 20;
 
 /* ── Pure dice logic (no DOM/browser APIs — testable in isolation) ── */
 function rollDie(faces, rand = Math.random) {
@@ -16,6 +19,11 @@ function isCriticalFail(faces, result) {
 
 function isCriticalSuccess(faces, result) {
   return faces >= 12 && result === faces;
+}
+
+/* ── Ajoute une entrée en tête de l'historique, plafonné à maxItems ── */
+function pushHistoryEntry(history, entry, maxItems = MAX_HISTORY) {
+  return [entry, ...history].slice(0, maxItems);
 }
 
 /* ── Décompose un nombre (0-100) en liste de fichiers audio FR à enchaîner ── */
@@ -95,6 +103,8 @@ const LANGUAGES = {
     critSuccessSuffix: ' : succès critique !',
     critFailAudio:    './assets/audio/echec_critique.mp3',
     critSuccessAudio: './assets/audio/succes_critique.mp3',
+    historyTitle: 'Historique',
+    historyEmpty: 'Aucun lancer pour l\'instant',
   },
   en: {
     lancer:   './assets/audio/english/throwing.mp3',
@@ -111,6 +121,8 @@ const LANGUAGES = {
     critSuccessSuffix: ' : critical success!',
     critFailAudio:    './assets/audio/english/critical_fail.mp3',
     critSuccessAudio: './assets/audio/english/critical_success.mp3',
+    historyTitle: 'History',
+    historyEmpty: 'No rolls yet',
   },
 };
 
@@ -239,6 +251,25 @@ function speech(faces, result, critFail, critSuccess, lang, onDone) {
   speechSynthesis.speak(utt);
 }
 
+/* ── Affiche l'historique des lancers ── */
+function renderHistory() {
+  const list = document.getElementById('historyList');
+  const t = LANGUAGES[currentLanguage];
+
+  if (rollHistory.length === 0) {
+    list.innerHTML = `<li class="list-group-item bg-transparent text-body-secondary text-center small">${t.historyEmpty}</li>`;
+    return;
+  }
+
+  list.innerHTML = rollHistory.map(({ faces, result, isCritFail, isCritSuccess }) => {
+    const resultClass = isCritFail ? 'text-danger fw-bold' : isCritSuccess ? 'text-warning fw-bold' : 'fw-semibold';
+    return `<li class="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+      <span class="text-body-secondary">d${faces}</span>
+      <span class="${resultClass}">${result}</span>
+    </li>`;
+  }).join('');
+}
+
 /* ── Scramble animation ── */
 function scramble(finalVal, faces, done) {
   const el     = document.getElementById('resultValue');
@@ -316,6 +347,9 @@ function roll(faces) {
       valEl.classList.add('critical-success');
     }
 
+    rollHistory = pushHistoryEntry(rollHistory, { faces, result, isCritFail, isCritSuccess });
+    renderHistory();
+
     scrambleDone = true;
     maybeFinish();
   });
@@ -332,7 +366,9 @@ function applyLanguage() {
   document.getElementById('hintText').textContent = t.hint;
   document.getElementById('rerollBtn').textContent = t.reroll;
   document.getElementById('langDropdownLabel').textContent = t.flagLabel;
+  document.getElementById('historyTitle').textContent = t.historyTitle;
   document.documentElement.lang = currentLanguage;
+  renderHistory();
 }
 
 function closeLangMenu() {
@@ -367,7 +403,7 @@ if (typeof document !== 'undefined') {
 
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
-    rollDie, isCriticalFail, isCriticalSuccess,
+    rollDie, isCriticalFail, isCriticalSuccess, pushHistoryEntry,
     buildAudioFileList, buildAudioFileListEnglish,
     buildRollAnnouncementSegments,
   };

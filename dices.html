@@ -126,6 +126,17 @@
     .lang-dropdown {
       z-index: 10;
     }
+
+    /* ── History ── */
+    .history-list {
+      max-height: 240px;
+      overflow-y: auto;
+    }
+
+    .history-list .list-group-item {
+      border-color: var(--bs-border-color-translucent);
+      padding: 0.4rem 0;
+    }
   </style>
 </head>
 <body class="d-flex flex-column align-items-center pt-4 pb-5 px-3">
@@ -178,6 +189,13 @@
   <button class="btn btn-secondary w-100 reroll-btn" id="rerollBtn" onclick="reroll()">↺ Relancer le même dé</button>
 
   <p id="hintText" class="hint text-body-secondary small text-center mb-0">Appuie sur un dé — le résultat est annoncé à voix haute</p>
+
+  <div class="card w-100 history-card">
+    <div class="card-body py-2 px-3">
+      <h2 id="historyTitle" class="text-primary text-uppercase small fw-semibold mb-2">Historique</h2>
+      <ul id="historyList" class="list-group list-group-flush small history-list"></ul>
+    </div>
+  </div>
 
 </div>
 

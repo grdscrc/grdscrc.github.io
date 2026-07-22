@@ -1,7 +1,7 @@
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const {
-  rollDie, isCriticalFail, isCriticalSuccess,
+  rollDie, isCriticalFail, isCriticalSuccess, pushHistoryEntry,
   buildAudioFileList, buildAudioFileListEnglish,
   buildRollAnnouncementSegments,
 } = require('../assets/dices.js');
@@ -57,6 +57,36 @@ describe('isCriticalSuccess', () => {
   test('false when the roll does not equal faces', () => {
     assert.equal(isCriticalSuccess(20, 19), false);
     assert.equal(isCriticalSuccess(20, 1), false);
+  });
+});
+
+describe('pushHistoryEntry', () => {
+  test('prepends the new entry to the front (most recent first)', () => {
+    const history = pushHistoryEntry([{ faces: 6, result: 3 }], { faces: 20, result: 14 });
+    assert.deepEqual(history, [{ faces: 20, result: 14 }, { faces: 6, result: 3 }]);
+  });
+
+  test('caps the history at maxItems, dropping the oldest entry', () => {
+    let history = [];
+    history = pushHistoryEntry(history, { faces: 6, result: 1 }, 3);
+    history = pushHistoryEntry(history, { faces: 6, result: 2 }, 3);
+    history = pushHistoryEntry(history, { faces: 6, result: 3 }, 3);
+    history = pushHistoryEntry(history, { faces: 6, result: 4 }, 3);
+    assert.deepEqual(history, [
+      { faces: 6, result: 4 },
+      { faces: 6, result: 3 },
+      { faces: 6, result: 2 },
+    ]);
+  });
+
+  test('defaults to a cap of 20 when maxItems is omitted', () => {
+    let history = [];
+    for (let i = 1; i <= 25; i++) {
+      history = pushHistoryEntry(history, { faces: 6, result: i });
+    }
+    assert.equal(history.length, 20);
+    assert.deepEqual(history[0], { faces: 6, result: 25 });
+    assert.deepEqual(history[19], { faces: 6, result: 6 });
   });
 });
 
