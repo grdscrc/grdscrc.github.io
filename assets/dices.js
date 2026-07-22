@@ -36,10 +36,11 @@ function buildAudioFileList(number) {
       if (units >= 1) files.push(`./assets/audio/${units.toString().padStart(2, '0')}.mp3`);
     } else if (number >= 70 && number <= 79) {
       files.push(`./assets/audio/60.mp3`);
-      if (units >= 1 && units <= 6) {
+      if (units === 0) {
+        files.push(`./assets/audio/10.mp3`);
+      } else if (units <= 6) {
         files.push(`./assets/audio/1${units}.mp3`);
-      }
-      if (units >= 1 && units >= 7) {
+      } else {
         files.push(`./assets/audio/10.mp3`);
         files.push(`./assets/audio/0${units.toString()}.mp3`);
       }
@@ -49,9 +50,9 @@ function buildAudioFileList(number) {
       files.push(`./assets/audio/20.mp3`);
       if (units >= 1 && units <= 16)
         files.push(`./assets/audio/${units.toString().padStart(2, '0')}.mp3`);
-      if (units >= 1 && units >= 17) {
+      else if (units >= 17) {
         files.push(`./assets/audio/10.mp3`);
-        files.push(`./assets/audio/0${units.toString()}.mp3`);
+        files.push(`./assets/audio/0${(units - 10).toString()}.mp3`);
       }
     }
   }
