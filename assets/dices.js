@@ -154,7 +154,7 @@ function ctx() {
 }
 
 /* ── Joue un unique clip audio (ex: annonce d'échec/succès critique enregistrée) ── */
-function playClip(path) {
+function playClip(path, onDone) {
   ctx();
   fetch(path)
     .then(r => {
@@ -167,8 +167,12 @@ function playClip(path) {
       source.buffer = buffer;
       source.connect(audioCtx.destination);
       source.start();
+      if (onDone) setTimeout(onDone, buffer.duration * 1000);
     })
-    .catch(err => console.error('Error playing clip:', err));
+    .catch(err => {
+      console.error('Error playing clip:', err);
+      if (onDone) onDone();
+    });
 }
 
 /* ── TTS ──
@@ -278,12 +282,28 @@ function roll(faces) {
   const isCritFail    = isCriticalFail(faces, result);
   const isCritSuccess = isCriticalSuccess(faces, result);
 
+  // busy ne repasse à false qu'une fois l'animation ET tout l'audio (annonce +
+  // clip critique éventuel) terminés, pour empêcher un nouveau clic de faire
+  // chevaucher deux voix.
+  let scrambleDone = false;
+  let audioDone    = false;
+  const maybeFinish = () => {
+    if (!scrambleDone || !audioDone) return;
+    document.getElementById('rerollBtn').classList.add('visible');
+    busy = false;
+  };
+
   // Annonce vocale lancée dès le clic, en parallèle de l'animation.
   // Le clip critique n'est joué qu'une fois l'annonce réellement terminée (onDone).
   speak(faces, result, isCritFail, isCritSuccess, currentLanguage, () => {
     const t = LANGUAGES[currentLanguage];
-    if (isCritFail)    playClip(t.critFailAudio);
-    if (isCritSuccess) playClip(t.critSuccessAudio);
+    const critClip = isCritFail ? t.critFailAudio : isCritSuccess ? t.critSuccessAudio : null;
+    if (critClip) {
+      playClip(critClip, () => { audioDone = true; maybeFinish(); });
+    } else {
+      audioDone = true;
+      maybeFinish();
+    }
   });
 
   scramble(result, faces, () => {
@@ -296,8 +316,8 @@ function roll(faces) {
       valEl.classList.add('critical-success');
     }
 
-    document.getElementById('rerollBtn').classList.add('visible');
-    busy = false;
+    scrambleDone = true;
+    maybeFinish();
   });
 }
 
