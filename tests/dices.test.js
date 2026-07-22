@@ -1,6 +1,6 @@
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
-const { rollDie, isCriticalFail, isCriticalSuccess, buildAudioFileList, buildRollAnnouncementFileList } = require('../assets/dices.js');
+const { rollDie, isCriticalFail, isCriticalSuccess, buildAudioFileList, buildRollAnnouncementSegments } = require('../assets/dices.js');
 
 describe('rollDie', () => {
   test('applies the injected rng to the requested face count', () => {
@@ -110,46 +110,54 @@ describe('buildAudioFileList', () => {
   });
 });
 
-describe('buildRollAnnouncementFileList', () => {
-  test('"Lancer d20, résultat : 14"', () => {
-    assert.deepEqual(buildRollAnnouncementFileList(20, 14), [
-      './assets/audio/lancer.mp3',
-      './assets/audio/d.mp3',
-      './assets/audio/20.mp3',
-      './assets/audio/resultat.mp3',
-      './assets/audio/14.mp3',
+describe('buildRollAnnouncementSegments', () => {
+  const WORD   = 0.02;  // silence entre deux mots/phrases distincts
+  const WITHIN = 0.005; // silence entre les syllabes d'un même nombre composé
+
+  const seg = (file, gap) => ({ file: `./assets/audio/${file}`, gap });
+
+  test('"Lancer d20, résultat : 14" — un seul fichier par nombre, silences normaux', () => {
+    assert.deepEqual(buildRollAnnouncementSegments(20, 14), [
+      seg('lancer.mp3', WORD),
+      seg('d.mp3', WORD),
+      seg('20.mp3', WORD),
+      seg('resultat.mp3', WORD),
+      seg('14.mp3', WORD),
     ]);
   });
 
   test('"Lancer d4, résultat : 1"', () => {
-    assert.deepEqual(buildRollAnnouncementFileList(4, 1), [
-      './assets/audio/lancer.mp3',
-      './assets/audio/d.mp3',
-      './assets/audio/04.mp3',
-      './assets/audio/resultat.mp3',
-      './assets/audio/01.mp3',
+    assert.deepEqual(buildRollAnnouncementSegments(4, 1), [
+      seg('lancer.mp3', WORD),
+      seg('d.mp3', WORD),
+      seg('04.mp3', WORD),
+      seg('resultat.mp3', WORD),
+      seg('01.mp3', WORD),
     ]);
   });
 
-  test('"Lancer d100, résultat : 100"', () => {
-    assert.deepEqual(buildRollAnnouncementFileList(100, 100), [
-      './assets/audio/lancer.mp3',
-      './assets/audio/d.mp3',
-      './assets/audio/100.mp3',
-      './assets/audio/resultat.mp3',
-      './assets/audio/100.mp3',
+  test('"Lancer d20, résultat : 99" — nombre composé : silences courts entre ses syllabes', () => {
+    assert.deepEqual(buildRollAnnouncementSegments(20, 99), [
+      seg('lancer.mp3', WORD),
+      seg('d.mp3', WORD),
+      seg('20.mp3', WORD),
+      seg('resultat.mp3', WORD),
+      seg('04.mp3', WITHIN),
+      seg('20.mp3', WITHIN),
+      seg('10.mp3', WITHIN),
+      seg('09.mp3', WORD), // dernière syllabe : silence normal avant la suite (ou la fin)
     ]);
   });
 
   test('"Lancer d20, résultat : 21" (résultat composé avec "et")', () => {
-    assert.deepEqual(buildRollAnnouncementFileList(20, 21), [
-      './assets/audio/lancer.mp3',
-      './assets/audio/d.mp3',
-      './assets/audio/20.mp3',
-      './assets/audio/resultat.mp3',
-      './assets/audio/20.mp3',
-      './assets/audio/et.mp3',
-      './assets/audio/01.mp3',
+    assert.deepEqual(buildRollAnnouncementSegments(20, 21), [
+      seg('lancer.mp3', WORD),
+      seg('d.mp3', WORD),
+      seg('20.mp3', WORD),
+      seg('resultat.mp3', WORD),
+      seg('20.mp3', WITHIN),
+      seg('et.mp3', WITHIN),
+      seg('01.mp3', WORD),
     ]);
   });
 });
