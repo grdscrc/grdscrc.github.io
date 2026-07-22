@@ -85,14 +85,27 @@ describe('buildAudioFileList', () => {
     });
   }
 
-  // Comportement actuel documenté (probables bugs de la table FR, non corrigés ici) :
-  test('70 ne renvoie que "soixante" (pas de fichier "dix")', () => {
-    assert.deepEqual(buildAudioFileList(70), ['./assets/audio/60.mp3']);
+  // 70 = "soixante-dix" = soixante + dix
+  test('70 → soixante + dix', () => {
+    assert.deepEqual(buildAudioFileList(70), ['./assets/audio/60.mp3', './assets/audio/10.mp3']);
   });
 
-  test('97-99 produisent un nom de fichier à 3 chiffres ("017.mp3"…)', () => {
+  // 97-99 = "quatre-vingt-dix-{sept,huit,neuf}" = quatre + vingt + dix + {7,8,9}, fichiers à 2 chiffres
+  test('97 → quatre + vingt + dix + sept', () => {
     assert.deepEqual(buildAudioFileList(97), [
-      './assets/audio/04.mp3', './assets/audio/20.mp3', './assets/audio/10.mp3', './assets/audio/017.mp3',
+      './assets/audio/04.mp3', './assets/audio/20.mp3', './assets/audio/10.mp3', './assets/audio/07.mp3',
+    ]);
+  });
+
+  test('98 → quatre + vingt + dix + huit', () => {
+    assert.deepEqual(buildAudioFileList(98), [
+      './assets/audio/04.mp3', './assets/audio/20.mp3', './assets/audio/10.mp3', './assets/audio/08.mp3',
+    ]);
+  });
+
+  test('99 → quatre + vingt + dix + neuf', () => {
+    assert.deepEqual(buildAudioFileList(99), [
+      './assets/audio/04.mp3', './assets/audio/20.mp3', './assets/audio/10.mp3', './assets/audio/09.mp3',
     ]);
   });
 });
