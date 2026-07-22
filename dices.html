@@ -15,6 +15,16 @@
       max-width: 400px;
     }
 
+    .app-title {
+      font-size: 1.1rem;
+      letter-spacing: 0.12em;
+    }
+
+    .hint {
+      max-width: 280px;
+      line-height: 1.5;
+    }
+
     /* ── Result panel ── */
     .result-panel {
       transition: border-color 0.2s, box-shadow 0.2s;
@@ -118,7 +128,7 @@
 
 <div class="app w-100 d-flex flex-column align-items-center gap-3">
 
-  <h1 class="text-primary text-uppercase fw-semibold text-center mb-0" style="font-size:1.1rem; letter-spacing:.12em;">🎲 Dés Audio</h1>
+  <h1 class="app-title text-primary text-uppercase fw-semibold text-center mb-0">🎲 Dés Audio</h1>
 
   <div class="card w-100 text-center result-panel" id="panel">
     <div class="card-body py-4">
@@ -153,7 +163,7 @@
 
   <button class="btn btn-secondary w-100 reroll-btn" id="rerollBtn" onclick="reroll()">↺ Relancer le même dé</button>
 
-  <p class="text-body-secondary small text-center mb-0" style="max-width:280px; line-height:1.5;">Appuie sur un dé — le résultat est annoncé à voix haute</p>
+  <p class="hint text-body-secondary small text-center mb-0">Appuie sur un dé — le résultat est annoncé à voix haute</p>
 
 </div>
 
