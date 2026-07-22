@@ -85,6 +85,7 @@ const LANGUAGES = {
     d:        './assets/audio/d.mp3',
     resultat: './assets/audio/resultat.mp3',
     buildNumber: buildAudioFileList,
+    flagLabel: '🇫🇷 Français',
     title:  '🎲 Dés Audio',
     hint:   'Appuie sur un dé — le résultat est annoncé à voix haute',
     reroll: '↺ Relancer le même dé',
@@ -98,6 +99,7 @@ const LANGUAGES = {
     d:        './assets/audio/english/d.mp3',
     resultat: './assets/audio/english/result.mp3',
     buildNumber: buildAudioFileListEnglish,
+    flagLabel: '🇬🇧 English',
     title:  '🎲 Audio Dice',
     hint:   'Tap a die — the result is announced out loud',
     reroll: '↺ Reroll the same die',
@@ -432,18 +434,31 @@ function reroll() {
   if (lastDie) roll(lastDie);
 }
 
-/* ── Bascule FR ⇄ EN ── */
+/* ── Sélecteur de langue FR ⇄ EN ── */
 function applyLanguage() {
   const t = LANGUAGES[currentLanguage];
   document.getElementById('appTitle').textContent = t.title;
   document.getElementById('hintText').textContent = t.hint;
   document.getElementById('rerollBtn').textContent = t.reroll;
+  document.getElementById('langDropdownLabel').textContent = t.flagLabel;
   document.documentElement.lang = currentLanguage;
 }
 
-function toggleLanguage() {
-  currentLanguage = currentLanguage === 'fr' ? 'en' : 'fr';
+function closeLangMenu() {
+  document.getElementById('langDropdownMenu').classList.remove('show');
+  document.getElementById('langDropdownBtn').setAttribute('aria-expanded', 'false');
+}
+
+function toggleLangMenu(event) {
+  event.stopPropagation();
+  const isOpen = document.getElementById('langDropdownMenu').classList.toggle('show');
+  document.getElementById('langDropdownBtn').setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+}
+
+function setLanguage(lang) {
+  currentLanguage = lang;
   applyLanguage();
+  closeLangMenu();
 }
 
 /* ── Pre-load voices (browsers load async) ── */
@@ -454,6 +469,9 @@ if (typeof speechSynthesis !== 'undefined') {
 
 if (typeof document !== 'undefined') {
   applyLanguage();
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.lang-dropdown')) closeLangMenu();
+  });
 }
 
 if (typeof module !== 'undefined' && module.exports) {

@@ -123,14 +123,22 @@
       transform: scale(0.97);
     }
 
-    .lang-toggle {
+    .lang-dropdown {
       z-index: 10;
     }
   </style>
 </head>
 <body class="d-flex flex-column align-items-center pt-4 pb-5 px-3">
 
-<button type="button" class="lang-toggle btn btn-outline-secondary btn-sm position-fixed top-0 end-0 m-3" onclick="toggleLanguage()" aria-label="Changer de langue / Change language" title="Français / English">🇫🇷🔄🇬🇧</button>
+<div class="dropdown lang-dropdown position-fixed top-0 end-0 m-3">
+  <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" id="langDropdownBtn" aria-expanded="false" onclick="toggleLangMenu(event)">
+    <span id="langDropdownLabel">🇫🇷 Français</span>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end" id="langDropdownMenu" aria-labelledby="langDropdownBtn">
+    <li><button type="button" class="dropdown-item" onclick="setLanguage('fr')">🇫🇷 Français</button></li>
+    <li><button type="button" class="dropdown-item" onclick="setLanguage('en')">🇬🇧 English</button></li>
+  </ul>
+</div>
 
 <div class="app w-100 d-flex flex-column align-items-center gap-3">
 
