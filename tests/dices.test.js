@@ -112,7 +112,7 @@ describe('buildAudioFileList', () => {
 
 describe('buildRollAnnouncementSegments', () => {
   const WORD   = 0.02;  // silence entre deux mots/phrases distincts
-  const WITHIN = 0.005; // silence entre les syllabes d'un même nombre composé
+  const WITHIN = 0; // silence entre les syllabes d'un même nombre composé
 
   const seg = (file, gap) => ({ file: `./assets/audio/${file}`, gap });
 
