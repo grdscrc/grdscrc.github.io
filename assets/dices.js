@@ -93,6 +93,8 @@ const LANGUAGES = {
     announce: (faces, result) => `Lancer d${faces}, résultat : ${result}`,
     critFailSuffix:    ' : échec critique !',
     critSuccessSuffix: ' : succès critique !',
+    critFailAudio:    './assets/audio/echec_critique.mp3',
+    critSuccessAudio: './assets/audio/succes_critique.mp3',
   },
   en: {
     lancer:   './assets/audio/english/throwing.mp3',
@@ -107,6 +109,8 @@ const LANGUAGES = {
     announce: (faces, result) => `Throwing d${faces}, result: ${result}`,
     critFailSuffix:    ' : critical failure!',
     critSuccessSuffix: ' : critical success!',
+    critFailAudio:    './assets/audio/english/critical_fail.mp3',
+    critSuccessAudio: './assets/audio/english/critical_success.mp3',
   },
 };
 
@@ -149,172 +153,29 @@ function ctx() {
   return audioCtx;
 }
 
-/* ── Dice rolling sound ── */
-function playRoll(callback) {
-  const ac  = ctx();
-  const now = ac.currentTime;
-  const totalDur = 0.95;
-  const nClicks  = 16;
-
-  for (let i = 0; i < nClicks; i++) {
-    // Clicks accelerate then decelerate (bell curve timing)
-    const progress = i / (nClicks - 1);
-    const t = now + totalDur * (1 - Math.pow(1 - progress, 2)) * 0.9;
-
-    // Short noise burst per click
-    const len    = Math.floor(ac.sampleRate * 0.045);
-    const buf    = ac.createBuffer(1, len, ac.sampleRate);
-    const data   = buf.getChannelData(0);
-    const decay  = 0.12;
-    for (let j = 0; j < len; j++) {
-      data[j] = (Math.random() * 2 - 1) * Math.exp(-j / (len * decay));
-    }
-
-    const src  = ac.createBufferSource();
-    src.buffer = buf;
-
-    // Highpass → crisp "clack"
-    const hp  = ac.createBiquadFilter();
-    hp.type   = 'highpass';
-    hp.frequency.value = 700 + Math.random() * 800;
-
-    // Volume envelope — louder in the middle of the roll
-    const env = ac.createGain();
-    const vol = 0.15 + 0.4 * Math.sin(Math.PI * progress);
-    env.gain.setValueAtTime(vol, t);
-    env.gain.exponentialRampToValueAtTime(0.001, t + 0.07);
-
-    src.connect(hp);
-    hp.connect(env);
-    env.connect(ac.destination);
-    src.start(t);
-  }
-
-  setTimeout(callback, totalDur * 1000 + 120);
-}
-
-/* ── Sad trombone (wah-wah-wah-waaah) ── */
-function playSadTrombone() {
-  const ac  = ctx();
-  const now = ac.currentTime;
-
-  // Classic descending: Bb4 → G4 → Eb4 → C4 (pitch bend down)
-  const notes = [
-    { freq: 466, start: 0.0,  dur: 0.38 },
-    { freq: 392, start: 0.34, dur: 0.38 },
-    { freq: 311, start: 0.66, dur: 0.38 },
-    { freq: 261, start: 0.98, dur: 1.3  }, // long sad hold + downward bend
-  ];
-
-  notes.forEach(({ freq, start, dur }, i) => {
-    const osc  = ac.createOscillator();
-    osc.type   = 'sawtooth';
-    osc.frequency.setValueAtTime(freq, now + start);
-
-    // Last note bends down sadly
-    if (i === notes.length - 1) {
-      osc.frequency.setValueAtTime(freq, now + start + 0.3);
-      osc.frequency.exponentialRampToValueAtTime(freq * 0.82, now + start + dur);
-    }
-
-    // Slow vibrato on last note
-    if (i === notes.length - 1) {
-      const lfo  = ac.createOscillator();
-      lfo.type   = 'sine';
-      lfo.frequency.value = 4.5;
-      const lfoGain = ac.createGain();
-      lfoGain.gain.setValueAtTime(0, now + start);
-      lfoGain.gain.linearRampToValueAtTime(6, now + start + 0.5);
-      lfo.connect(lfoGain);
-      lfoGain.connect(osc.frequency);
-      lfo.start(now + start);
-      lfo.stop(now + start + dur + 0.05);
-    }
-
-    // Warm lowpass → muted brass character
-    const lp  = ac.createBiquadFilter();
-    lp.type   = 'lowpass';
-    lp.frequency.value = 1400;
-    lp.Q.value = 1.5;
-
-    const gain = ac.createGain();
-    gain.gain.setValueAtTime(0, now + start);
-    gain.gain.linearRampToValueAtTime(0.28, now + start + 0.04);
-    gain.gain.setValueAtTime(0.28, now + start + dur - 0.12);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + start + dur);
-
-    osc.connect(lp);
-    lp.connect(gain);
-    gain.connect(ac.destination);
-    osc.start(now + start);
-    osc.stop(now + start + dur + 0.05);
-  });
-}
-
-/* ── Heroic trumpet fanfare (ascending + triumphant hold) ── */
-function playHeroicFanfare() {
-  const ac  = ctx();
-  const now = ac.currentTime;
-
-  // G4 → C5 → E5 → G5 (bugle-style ascending, then hold)
-  const notes = [
-    { freq: 392, start: 0.0,  dur: 0.18 },
-    { freq: 523, start: 0.16, dur: 0.18 },
-    { freq: 659, start: 0.32, dur: 0.18 },
-    { freq: 784, start: 0.48, dur: 0.85 }, // triumphant!
-  ];
-
-  notes.forEach(({ freq, start, dur }, i) => {
-    const osc  = ac.createOscillator();
-    osc.type   = 'sawtooth';
-    osc.frequency.value = freq;
-
-    // Slight upward pitch push at attack (trumpet articulation)
-    osc.frequency.setValueAtTime(freq * 1.02, now + start);
-    osc.frequency.exponentialRampToValueAtTime(freq, now + start + 0.04);
-
-    // Bright bandpass for trumpet timbre
-    const bp  = ac.createBiquadFilter();
-    bp.type   = 'bandpass';
-    bp.frequency.value = freq * 1.8;
-    bp.Q.value = 0.7;
-
-    // Second harmonic layer for richness
-    const osc2  = ac.createOscillator();
-    osc2.type   = 'square';
-    osc2.frequency.value = freq * 2;
-
-    const mixGain = ac.createGain();
-    mixGain.gain.value = 0.12;
-
-    const gain = ac.createGain();
-    // Punchy attack, then slight decay on held note
-    gain.gain.setValueAtTime(0, now + start);
-    gain.gain.linearRampToValueAtTime(i === notes.length - 1 ? 0.42 : 0.36, now + start + 0.025);
-    if (i === notes.length - 1) {
-      gain.gain.setValueAtTime(0.42, now + start + 0.1);
-      gain.gain.linearRampToValueAtTime(0.32, now + start + dur - 0.15);
-    }
-    gain.gain.exponentialRampToValueAtTime(0.001, now + start + dur);
-
-    osc.connect(bp);
-    bp.connect(gain);
-    osc2.connect(mixGain);
-    mixGain.connect(gain);
-    gain.connect(ac.destination);
-
-    osc.start(now + start);
-    osc.stop(now + start + dur + 0.05);
-    osc2.start(now + start);
-    osc2.stop(now + start + dur + 0.05);
-  });
+/* ── Joue un unique clip audio (ex: annonce d'échec/succès critique enregistrée) ── */
+function playClip(path) {
+  ctx();
+  fetch(path)
+    .then(r => {
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return r.arrayBuffer();
+    })
+    .then(arr => audioCtx.decodeAudioData(arr))
+    .then(buffer => {
+      const source = audioCtx.createBufferSource();
+      source.buffer = buffer;
+      source.connect(audioCtx.destination);
+      source.start();
+    })
+    .catch(err => console.error('Error playing clip:', err));
 }
 
 /* ── TTS ──
    `onDone` est appelé exactement quand l'annonce finit de jouer (pas une estimation),
    pour pouvoir enchaîner un jingle critique sans qu'il chevauche la voix. ── */
 function speak(faces, result, critFail, critSuccess, lang, onDone) {
-  ctx(); // s'assure que audioCtx existe avant le décodage, indépendamment de playRoll()
+  ctx(); // s'assure que audioCtx existe avant le décodage
 
   const segments = buildRollAnnouncementSegments(faces, result, lang);
   const fetches  = segments.map(seg => fetch(seg.file));
@@ -417,27 +278,26 @@ function roll(faces) {
   const isCritFail    = isCriticalFail(faces, result);
   const isCritSuccess = isCriticalSuccess(faces, result);
 
-  // Annonce vocale lancée dès le clic, en parallèle du son de lancer et de l'animation.
-  // Le jingle critique n'est joué qu'une fois l'annonce réellement terminée (onDone).
+  // Annonce vocale lancée dès le clic, en parallèle de l'animation.
+  // Le clip critique n'est joué qu'une fois l'annonce réellement terminée (onDone).
   speak(faces, result, isCritFail, isCritSuccess, currentLanguage, () => {
-    if (isCritFail)    playSadTrombone();
-    if (isCritSuccess) playHeroicFanfare();
+    const t = LANGUAGES[currentLanguage];
+    if (isCritFail)    playClip(t.critFailAudio);
+    if (isCritSuccess) playClip(t.critSuccessAudio);
   });
 
-  playRoll(() => {
-    scramble(result, faces, () => {
-      // Apply critical visual state
-      if (isCritFail) {
-        panel.classList.add('critical-fail');
-        valEl.classList.add('critical-fail');
-      } else if (isCritSuccess) {
-        panel.classList.add('critical-success');
-        valEl.classList.add('critical-success');
-      }
+  scramble(result, faces, () => {
+    // Apply critical visual state
+    if (isCritFail) {
+      panel.classList.add('critical-fail');
+      valEl.classList.add('critical-fail');
+    } else if (isCritSuccess) {
+      panel.classList.add('critical-success');
+      valEl.classList.add('critical-success');
+    }
 
-      document.getElementById('rerollBtn').classList.add('visible');
-      busy = false;
-    });
+    document.getElementById('rerollBtn').classList.add('visible');
+    busy = false;
   });
 }
 
