@@ -59,15 +59,29 @@ function buildAudioFileList(number) {
   return files;
 }
 
-/* ── Construit l'annonce complète : "Lancer d{faces}, résultat : {result}" ── */
-function buildRollAnnouncementFileList(faces, result) {
-  return [
-    './assets/audio/lancer.mp3',
-    './assets/audio/d.mp3',
-    ...buildAudioFileList(faces),
-    './assets/audio/resultat.mp3',
-    ...buildAudioFileList(result),
-  ];
+const GAP_BETWEEN_WORDS    = 0.02;  // silence entre deux mots/phrases distincts
+const GAP_WITHIN_A_NUMBER  = 0.005; // silence entre les syllabes d'un même nombre composé (ex: quatre-vingt-dix-neuf)
+
+/* ── Ajoute à `segments` les fichiers d'un nombre, avec un silence court entre ses syllabes
+   et le silence normal après le dernier (avant le mot/segment suivant) ── */
+function pushNumberSegments(segments, number) {
+  const files = buildAudioFileList(number);
+  files.forEach((file, i) => {
+    const isLast = i === files.length - 1;
+    segments.push({ file, gap: isLast ? GAP_BETWEEN_WORDS : GAP_WITHIN_A_NUMBER });
+  });
+}
+
+/* ── Construit l'annonce complète : "Lancer d{faces}, résultat : {result}" ──
+   Chaque segment porte le silence à respecter après sa lecture. ── */
+function buildRollAnnouncementSegments(faces, result) {
+  const segments = [];
+  segments.push({ file: './assets/audio/lancer.mp3', gap: GAP_BETWEEN_WORDS });
+  segments.push({ file: './assets/audio/d.mp3', gap: GAP_BETWEEN_WORDS });
+  pushNumberSegments(segments, faces);
+  segments.push({ file: './assets/audio/resultat.mp3', gap: GAP_BETWEEN_WORDS });
+  pushNumberSegments(segments, result);
+  return segments;
 }
 
 /* ── Unlock iOS speech synthesis (must run in synchronous user gesture) ── */
@@ -249,7 +263,8 @@ function playHeroicFanfare() {
 
 /* ── TTS ── */
 function speak(faces, result, critFail, critSuccess) {
-  const fetches = buildRollAnnouncementFileList(faces, result).map(path => fetch(path));
+  const segments = buildRollAnnouncementSegments(faces, result);
+  const fetches  = segments.map(seg => fetch(seg.file));
 
   Promise.all(fetches).then(async responses => {
     // 1. Décoder tous les buffers
@@ -261,15 +276,15 @@ function speak(faces, result, critFail, critSuccess) {
       })
     );
 
-    // 2. Les programmer en séquence
+    // 2. Les programmer en séquence, avec le silence propre à chaque segment
     let t = audioCtx.currentTime;
-    for (const buffer of buffers) {
+    buffers.forEach((buffer, i) => {
       const source = audioCtx.createBufferSource();
       source.buffer = buffer;
       source.connect(audioCtx.destination);
       source.start(t);
-      t += buffer.duration + 0.02; // 40ms de silence entre les mots
-    }
+      t += buffer.duration + segments[i].gap;
+    });
   }).catch(err => {
     console.error('Error fetching or playing audio:', err);
     speech(faces, result, critFail, critSuccess);
@@ -375,5 +390,5 @@ if (typeof speechSynthesis !== 'undefined') {
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { rollDie, isCriticalFail, isCriticalSuccess, buildAudioFileList, buildRollAnnouncementFileList };
+  module.exports = { rollDie, isCriticalFail, isCriticalSuccess, buildAudioFileList, buildRollAnnouncementSegments };
 }
