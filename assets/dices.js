@@ -60,7 +60,7 @@ function buildAudioFileList(number) {
 }
 
 const GAP_BETWEEN_WORDS    = 0.02;  // silence entre deux mots/phrases distincts
-const GAP_WITHIN_A_NUMBER  = 0.005; // silence entre les syllabes d'un même nombre composé (ex: quatre-vingt-dix-neuf)
+const GAP_WITHIN_A_NUMBER  = 0; // silence entre les syllabes d'un même nombre composé (ex: quatre-vingt-dix-neuf)
 
 /* ── Ajoute à `segments` les fichiers d'un nombre, avec un silence court entre ses syllabes
    et le silence normal après le dernier (avant le mot/segment suivant) ── */
