@@ -55,9 +55,9 @@ function buildAudioFileList(number) {
         files.push(`./assets/audio/0${units.toString()}.mp3`);
       }
     } else if (number >= 80 && number <= 99) {
+      // number === 80 et number === 90 sont interceptés plus haut
       units = number - 80;
-      files.push(`./assets/audio/04.mp3`);
-      files.push(`./assets/audio/20.mp3`);
+      files.push(`./assets/audio/80.mp3`);
       if (units >= 1 && units <= 16)
         files.push(`./assets/audio/${units.toString().padStart(2, '0')}.mp3`);
       else if (units >= 17) {
