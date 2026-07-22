@@ -310,8 +310,12 @@ function playHeroicFanfare() {
   });
 }
 
-/* ── TTS ── */
-function speak(faces, result, critFail, critSuccess, lang) {
+/* ── TTS ──
+   `onDone` est appelé exactement quand l'annonce finit de jouer (pas une estimation),
+   pour pouvoir enchaîner un jingle critique sans qu'il chevauche la voix. ── */
+function speak(faces, result, critFail, critSuccess, lang, onDone) {
+  ctx(); // s'assure que audioCtx existe avant le décodage, indépendamment de playRoll()
+
   const segments = buildRollAnnouncementSegments(faces, result, lang);
   const fetches  = segments.map(seg => fetch(seg.file));
 
@@ -326,7 +330,8 @@ function speak(faces, result, critFail, critSuccess, lang) {
     );
 
     // 2. Les programmer en séquence, avec le silence propre à chaque segment
-    let t = audioCtx.currentTime;
+    const startTime = audioCtx.currentTime;
+    let t = startTime;
     buffers.forEach((buffer, i) => {
       const source = audioCtx.createBufferSource();
       source.buffer = buffer;
@@ -334,13 +339,15 @@ function speak(faces, result, critFail, critSuccess, lang) {
       source.start(t);
       t += buffer.duration + segments[i].gap;
     });
+
+    if (onDone) setTimeout(onDone, (t - startTime) * 1000);
   }).catch(err => {
     console.error('Error fetching or playing audio:', err);
-    speech(faces, result, critFail, critSuccess, lang);
+    speech(faces, result, critFail, critSuccess, lang, onDone);
   });
 }
 
-function speech(faces, result, critFail, critSuccess, lang) {
+function speech(faces, result, critFail, critSuccess, lang, onDone) {
   const t = LANGUAGES[lang];
   let text = t.announce(faces, result);
   if (critFail) text += t.critFailSuffix;
@@ -357,6 +364,11 @@ function speech(faces, result, critFail, critSuccess, lang) {
               || voices.find(v => v.lang.startsWith(prefix + '-'))
               || voices.find(v => v.lang.startsWith(prefix));
   if (best) utt.voice = best;
+
+  if (onDone) {
+    utt.onend   = onDone;
+    utt.onerror = onDone;
+  }
 
   speechSynthesis.cancel();
   speechSynthesis.speak(utt);
@@ -405,6 +417,13 @@ function roll(faces) {
   const isCritFail    = isCriticalFail(faces, result);
   const isCritSuccess = isCriticalSuccess(faces, result);
 
+  // Annonce vocale lancée dès le clic, en parallèle du son de lancer et de l'animation.
+  // Le jingle critique n'est joué qu'une fois l'annonce réellement terminée (onDone).
+  speak(faces, result, isCritFail, isCritSuccess, currentLanguage, () => {
+    if (isCritFail)    playSadTrombone();
+    if (isCritSuccess) playHeroicFanfare();
+  });
+
   playRoll(() => {
     scramble(result, faces, () => {
       // Apply critical visual state
@@ -416,16 +435,8 @@ function roll(faces) {
         valEl.classList.add('critical-success');
       }
 
-      setTimeout(() => {
-        speak(faces, result, isCritFail, isCritSuccess, currentLanguage);
-
-        // Play special jingle after TTS starts
-        if (isCritFail)    setTimeout(playSadTrombone,   2000);
-        if (isCritSuccess) setTimeout(playHeroicFanfare, 2000);
-
-        document.getElementById('rerollBtn').classList.add('visible');
-        busy = false;
-      }, 150);
+      document.getElementById('rerollBtn').classList.add('visible');
+      busy = false;
     });
   });
 }
