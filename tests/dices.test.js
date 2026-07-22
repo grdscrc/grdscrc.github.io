@@ -1,6 +1,10 @@
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
-const { rollDie, isCriticalFail, isCriticalSuccess, buildAudioFileList, buildRollAnnouncementSegments } = require('../assets/dices.js');
+const {
+  rollDie, isCriticalFail, isCriticalSuccess,
+  buildAudioFileList, buildAudioFileListEnglish,
+  buildRollAnnouncementSegments,
+} = require('../assets/dices.js');
 
 describe('rollDie', () => {
   test('applies the injected rng to the requested face count', () => {
@@ -110,6 +114,28 @@ describe('buildAudioFileList', () => {
   });
 });
 
+describe('buildAudioFileListEnglish', () => {
+  const cases = [
+    // [number, expected files]
+    [1,   ['./assets/audio/english/01.mp3']],
+    [16,  ['./assets/audio/english/16.mp3']],
+    [17,  ['./assets/audio/english/17.mp3']],   // pas de décomposition : "seventeen" est un mot entier
+    [20,  ['./assets/audio/english/20.mp3']],
+    [21,  ['./assets/audio/english/20.mp3', './assets/audio/english/01.mp3']],
+    [30,  ['./assets/audio/english/30.mp3']],   // "thirty" seul, pas d'unité à ajouter
+    [70,  ['./assets/audio/english/70.mp3']],
+    [77,  ['./assets/audio/english/70.mp3', './assets/audio/english/07.mp3']],
+    [99,  ['./assets/audio/english/90.mp3', './assets/audio/english/09.mp3']],
+    [100, ['./assets/audio/english/100.mp3']],
+  ];
+
+  for (const [number, expected] of cases) {
+    test(`${number} → ${expected.join(' + ')}`, () => {
+      assert.deepEqual(buildAudioFileListEnglish(number), expected);
+    });
+  }
+});
+
 describe('buildRollAnnouncementSegments', () => {
   const WORD   = 0.02;  // silence entre deux mots/phrases distincts
   const WITHIN = 0; // silence entre les syllabes d'un même nombre composé
@@ -158,6 +184,29 @@ describe('buildRollAnnouncementSegments', () => {
       seg('20.mp3', WITHIN),
       seg('et.mp3', WITHIN),
       seg('01.mp3', WORD),
+    ]);
+  });
+
+  const segEn = (file, gap) => ({ file: `./assets/audio/english/${file}`, gap });
+
+  test('EN — "Throwing d20, result: 14"', () => {
+    assert.deepEqual(buildRollAnnouncementSegments(20, 14, 'en'), [
+      segEn('throwing.mp3', WORD),
+      segEn('d.mp3', WORD),
+      segEn('20.mp3', WORD),
+      segEn('result.mp3', WORD),
+      segEn('14.mp3', WORD),
+    ]);
+  });
+
+  test('EN — "Throwing d20, result: 99" — nombre composé', () => {
+    assert.deepEqual(buildRollAnnouncementSegments(20, 99, 'en'), [
+      segEn('throwing.mp3', WORD),
+      segEn('d.mp3', WORD),
+      segEn('20.mp3', WORD),
+      segEn('result.mp3', WORD),
+      segEn('90.mp3', WITHIN),
+      segEn('09.mp3', WORD),
     ]);
   });
 });

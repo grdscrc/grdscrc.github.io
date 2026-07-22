@@ -3,6 +3,7 @@ let lastDie   = null;
 let audioCtx  = null;
 let busy      = false;
 let speechReady = false;
+let currentLanguage = 'fr';
 
 /* ── Pure dice logic (no DOM/browser APIs — testable in isolation) ── */
 function rollDie(faces, rand = Math.random) {
@@ -59,28 +60,74 @@ function buildAudioFileList(number) {
   return files;
 }
 
+/* ── Décompose un nombre (0-100) en liste de fichiers audio EN à enchaîner ── */
+function buildAudioFileListEnglish(number) {
+  const files = [];
+  if (number <= 20) {
+    files.push(`./assets/audio/english/${number.toString().padStart(2, '0')}.mp3`);
+  } else if (number == 100) {
+    files.push(`./assets/audio/english/100.mp3`);
+  } else {
+    const tens  = Math.floor(number / 10) * 10;
+    const units = number % 10;
+    files.push(`./assets/audio/english/${tens}.mp3`);
+    if (units >= 1) files.push(`./assets/audio/english/${units.toString().padStart(2, '0')}.mp3`);
+  }
+  return files;
+}
+
 const GAP_BETWEEN_WORDS    = 0.02;  // silence entre deux mots/phrases distincts
 const GAP_WITHIN_A_NUMBER  = 0; // silence entre les syllabes d'un même nombre composé (ex: quatre-vingt-dix-neuf)
 
+const LANGUAGES = {
+  fr: {
+    lancer:   './assets/audio/lancer.mp3',
+    d:        './assets/audio/d.mp3',
+    resultat: './assets/audio/resultat.mp3',
+    buildNumber: buildAudioFileList,
+    title:  '🎲 Dés Audio',
+    hint:   'Appuie sur un dé — le résultat est annoncé à voix haute',
+    reroll: '↺ Relancer le même dé',
+    speechLang: 'fr-FR',
+    announce: (faces, result) => `Lancer d${faces}, résultat : ${result}`,
+    critFailSuffix:    ' : échec critique !',
+    critSuccessSuffix: ' : succès critique !',
+  },
+  en: {
+    lancer:   './assets/audio/english/throwing.mp3',
+    d:        './assets/audio/english/d.mp3',
+    resultat: './assets/audio/english/result.mp3',
+    buildNumber: buildAudioFileListEnglish,
+    title:  '🎲 Audio Dice',
+    hint:   'Tap a die — the result is announced out loud',
+    reroll: '↺ Reroll the same die',
+    speechLang: 'en-US',
+    announce: (faces, result) => `Throwing d${faces}, result: ${result}`,
+    critFailSuffix:    ' : critical failure!',
+    critSuccessSuffix: ' : critical success!',
+  },
+};
+
 /* ── Ajoute à `segments` les fichiers d'un nombre, avec un silence court entre ses syllabes
    et le silence normal après le dernier (avant le mot/segment suivant) ── */
-function pushNumberSegments(segments, number) {
-  const files = buildAudioFileList(number);
+function pushNumberSegments(segments, number, buildNumber) {
+  const files = buildNumber(number);
   files.forEach((file, i) => {
     const isLast = i === files.length - 1;
     segments.push({ file, gap: isLast ? GAP_BETWEEN_WORDS : GAP_WITHIN_A_NUMBER });
   });
 }
 
-/* ── Construit l'annonce complète : "Lancer d{faces}, résultat : {result}" ──
+/* ── Construit l'annonce complète : "Lancer d{faces}, résultat : {result}" (ou son équivalent EN) ──
    Chaque segment porte le silence à respecter après sa lecture. ── */
-function buildRollAnnouncementSegments(faces, result) {
+function buildRollAnnouncementSegments(faces, result, lang = 'fr') {
+  const t = LANGUAGES[lang];
   const segments = [];
-  segments.push({ file: './assets/audio/lancer.mp3', gap: GAP_BETWEEN_WORDS });
-  segments.push({ file: './assets/audio/d.mp3', gap: GAP_BETWEEN_WORDS });
-  pushNumberSegments(segments, faces);
-  segments.push({ file: './assets/audio/resultat.mp3', gap: GAP_BETWEEN_WORDS });
-  pushNumberSegments(segments, result);
+  segments.push({ file: t.lancer, gap: GAP_BETWEEN_WORDS });
+  segments.push({ file: t.d, gap: GAP_BETWEEN_WORDS });
+  pushNumberSegments(segments, faces, t.buildNumber);
+  segments.push({ file: t.resultat, gap: GAP_BETWEEN_WORDS });
+  pushNumberSegments(segments, result, t.buildNumber);
   return segments;
 }
 
@@ -262,8 +309,8 @@ function playHeroicFanfare() {
 }
 
 /* ── TTS ── */
-function speak(faces, result, critFail, critSuccess) {
-  const segments = buildRollAnnouncementSegments(faces, result);
+function speak(faces, result, critFail, critSuccess, lang) {
+  const segments = buildRollAnnouncementSegments(faces, result, lang);
   const fetches  = segments.map(seg => fetch(seg.file));
 
   Promise.all(fetches).then(async responses => {
@@ -287,24 +334,26 @@ function speak(faces, result, critFail, critSuccess) {
     });
   }).catch(err => {
     console.error('Error fetching or playing audio:', err);
-    speech(faces, result, critFail, critSuccess);
+    speech(faces, result, critFail, critSuccess, lang);
   });
 }
 
-function speech(faces, result, critFail, critSuccess) {
-  let text = `Lancer d${faces}, résultat : ${result}`;
-  if (critFail) text += " : échec critique !";
-  if (critSuccess) text += " : succès critique !";
+function speech(faces, result, critFail, critSuccess, lang) {
+  const t = LANGUAGES[lang];
+  let text = t.announce(faces, result);
+  if (critFail) text += t.critFailSuffix;
+  if (critSuccess) text += t.critSuccessSuffix;
   const utt  = new SpeechSynthesisUtterance(text);
-  utt.lang   = 'fr-FR';
+  utt.lang   = t.speechLang;
   utt.rate   = 0.88;
   utt.pitch  = 1.05;
 
-  // Pick best French voice if available
+  // Pick best voice for the current language if available
+  const prefix = t.speechLang.split('-')[0];
   const voices = speechSynthesis.getVoices();
-  const best   = voices.find(v => v.lang === 'fr-FR' && v.localService)
-              || voices.find(v => v.lang.startsWith('fr-'))
-              || voices.find(v => v.lang.startsWith('fr'));
+  const best   = voices.find(v => v.lang === t.speechLang && v.localService)
+              || voices.find(v => v.lang.startsWith(prefix + '-'))
+              || voices.find(v => v.lang.startsWith(prefix));
   if (best) utt.voice = best;
 
   speechSynthesis.cancel();
@@ -366,7 +415,7 @@ function roll(faces) {
       }
 
       setTimeout(() => {
-        speak(faces, result, isCritFail, isCritSuccess);
+        speak(faces, result, isCritFail, isCritSuccess, currentLanguage);
 
         // Play special jingle after TTS starts
         if (isCritFail)    setTimeout(playSadTrombone,   2000);
@@ -383,12 +432,34 @@ function reroll() {
   if (lastDie) roll(lastDie);
 }
 
+/* ── Bascule FR ⇄ EN ── */
+function applyLanguage() {
+  const t = LANGUAGES[currentLanguage];
+  document.getElementById('appTitle').textContent = t.title;
+  document.getElementById('hintText').textContent = t.hint;
+  document.getElementById('rerollBtn').textContent = t.reroll;
+  document.documentElement.lang = currentLanguage;
+}
+
+function toggleLanguage() {
+  currentLanguage = currentLanguage === 'fr' ? 'en' : 'fr';
+  applyLanguage();
+}
+
 /* ── Pre-load voices (browsers load async) ── */
 if (typeof speechSynthesis !== 'undefined') {
   speechSynthesis.getVoices();
   speechSynthesis.addEventListener('voiceschanged', () => speechSynthesis.getVoices());
 }
 
+if (typeof document !== 'undefined') {
+  applyLanguage();
+}
+
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { rollDie, isCriticalFail, isCriticalSuccess, buildAudioFileList, buildRollAnnouncementSegments };
+  module.exports = {
+    rollDie, isCriticalFail, isCriticalSuccess,
+    buildAudioFileList, buildAudioFileListEnglish,
+    buildRollAnnouncementSegments,
+  };
 }

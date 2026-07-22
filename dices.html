@@ -122,13 +122,19 @@
     .reroll-btn:active {
       transform: scale(0.97);
     }
+
+    .lang-toggle {
+      z-index: 10;
+    }
   </style>
 </head>
 <body class="d-flex flex-column align-items-center pt-4 pb-5 px-3">
 
+<button type="button" class="lang-toggle btn btn-outline-secondary btn-sm position-fixed top-0 end-0 m-3" onclick="toggleLanguage()" aria-label="Changer de langue / Change language" title="Français / English">🇫🇷🔄🇬🇧</button>
+
 <div class="app w-100 d-flex flex-column align-items-center gap-3">
 
-  <h1 class="app-title text-primary text-uppercase fw-semibold text-center mb-0">🎲 Dés Audio</h1>
+  <h1 id="appTitle" class="app-title text-primary text-uppercase fw-semibold text-center mb-0">🎲 Dés Audio</h1>
 
   <div class="card w-100 text-center result-panel" id="panel">
     <div class="card-body py-4">
@@ -163,7 +169,7 @@
 
   <button class="btn btn-secondary w-100 reroll-btn" id="rerollBtn" onclick="reroll()">↺ Relancer le même dé</button>
 
-  <p class="hint text-body-secondary small text-center mb-0">Appuie sur un dé — le résultat est annoncé à voix haute</p>
+  <p id="hintText" class="hint text-body-secondary small text-center mb-0">Appuie sur un dé — le résultat est annoncé à voix haute</p>
 
 </div>
 
