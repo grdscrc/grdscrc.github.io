@@ -31,8 +31,8 @@ function buildAudioFileList(number) {
   const files = [];
   if (number <= 16) {
     files.push(`./assets/audio/${number.toString().padStart(2, '0')}.mp3`);
-  } else if (number == 100) {
-    files.push(`./assets/audio/100.mp3`);
+  } else if (number % 10 === 0) {
+    files.push(`./assets/audio/${number}.mp3`);
   } else {
     let tenths = Math.floor(number / 10);
     let units  = number % 10;
@@ -44,19 +44,18 @@ function buildAudioFileList(number) {
       if (units == 1) files.push(`./assets/audio/et.mp3`);
       if (units >= 1) files.push(`./assets/audio/${units.toString().padStart(2, '0')}.mp3`);
     } else if (number >= 70 && number <= 79) {
+      // number === 70 est intercepté plus haut : units va de 1 à 9 ici
       files.push(`./assets/audio/60.mp3`);
-      if (units === 0) {
-        files.push(`./assets/audio/10.mp3`);
-      } else if (units <= 6) {
+      if (units <= 6) {
         files.push(`./assets/audio/1${units}.mp3`);
       } else {
         files.push(`./assets/audio/10.mp3`);
         files.push(`./assets/audio/0${units.toString()}.mp3`);
       }
     } else if (number >= 80 && number <= 99) {
+      // number === 80 et number === 90 sont interceptés plus haut
       units = number - 80;
-      files.push(`./assets/audio/04.mp3`);
-      files.push(`./assets/audio/20.mp3`);
+      files.push(`./assets/audio/80.mp3`);
       if (units >= 1 && units <= 16)
         files.push(`./assets/audio/${units.toString().padStart(2, '0')}.mp3`);
       else if (units >= 17) {
