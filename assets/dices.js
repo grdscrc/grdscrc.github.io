@@ -31,10 +31,8 @@ function buildAudioFileList(number) {
   const files = [];
   if (number <= 16) {
     files.push(`./assets/audio/${number.toString().padStart(2, '0')}.mp3`);
-  } else if (number === 70 || number === 80 || number === 90) {
+  } else if (number % 10 === 0) {
     files.push(`./assets/audio/${number}.mp3`);
-  } else if (number == 100) {
-    files.push(`./assets/audio/100.mp3`);
   } else {
     let tenths = Math.floor(number / 10);
     let units  = number % 10;
