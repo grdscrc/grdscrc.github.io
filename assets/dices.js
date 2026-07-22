@@ -268,7 +268,7 @@ function speak(faces, result, critFail, critSuccess) {
       source.buffer = buffer;
       source.connect(audioCtx.destination);
       source.start(t);
-      t += buffer.duration + 0.02; // 40ms de silence entre les mots
+      t += buffer.duration + 0.005; // 5ms de silence entre les mots
     }
   }).catch(err => {
     console.error('Error fetching or playing audio:', err);
