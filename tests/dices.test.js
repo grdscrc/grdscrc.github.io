@@ -107,8 +107,11 @@ describe('buildAudioFileList', () => {
     [76,  ['./assets/audio/60.mp3', './assets/audio/16.mp3']],
     [77,  ['./assets/audio/60.mp3', './assets/audio/10.mp3', './assets/audio/07.mp3']],
     [79,  ['./assets/audio/60.mp3', './assets/audio/10.mp3', './assets/audio/09.mp3']],
-    [80,  ['./assets/audio/04.mp3', './assets/audio/20.mp3']],
+    [70,  ['./assets/audio/70.mp3']],
+    [80,  ['./assets/audio/80.mp3']],
     [81,  ['./assets/audio/04.mp3', './assets/audio/20.mp3', './assets/audio/01.mp3']],
+    [90,  ['./assets/audio/90.mp3']],
+    [91,  ['./assets/audio/04.mp3', './assets/audio/20.mp3', './assets/audio/11.mp3']],
     [96,  ['./assets/audio/04.mp3', './assets/audio/20.mp3', './assets/audio/16.mp3']],
     [100, ['./assets/audio/100.mp3']],
   ];
@@ -118,11 +121,6 @@ describe('buildAudioFileList', () => {
       assert.deepEqual(buildAudioFileList(number), expected);
     });
   }
-
-  // 70 = "soixante-dix" = soixante + dix
-  test('70 → soixante + dix', () => {
-    assert.deepEqual(buildAudioFileList(70), ['./assets/audio/60.mp3', './assets/audio/10.mp3']);
-  });
 
   // 97-99 = "quatre-vingt-dix-{sept,huit,neuf}" = quatre + vingt + dix + {7,8,9}, fichiers à 2 chiffres
   test('97 → quatre + vingt + dix + sept', () => {
