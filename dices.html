@@ -1,68 +1,39 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-bs-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Dés Audio</title>
+  <link href="./assets/vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg:        #0f0f1a;
-      --surface:   #1a1a2e;
-      --border:    #3b2f6e;
-      --accent:    #a855f7;
-      --accent2:   #e879f9;
-      --text:      #e2e8f0;
-      --muted:     #64748b;
-    }
-
     body {
-      background: var(--bg);
-      color: var(--text);
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       min-height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 28px 16px 40px;
-      gap: 20px;
     }
 
-    h1 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--accent);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
+    .app {
+      max-width: 400px;
     }
 
     /* ── Result panel ── */
     .result-panel {
-      background: var(--surface);
-      border: 2px solid var(--border);
-      border-radius: 20px;
-      padding: 22px 28px 18px;
-      text-align: center;
-      width: 100%;
-      max-width: 360px;
-      transition: border-color 0.2s;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
 
     .result-panel.active {
-      border-color: var(--accent);
-      box-shadow: 0 0 24px #a855f730;
+      border-color: var(--bs-primary) !important;
+      box-shadow: 0 0 24px rgba(var(--bs-primary-rgb), 0.25);
     }
 
     .result-panel.critical-fail {
-      border-color: #ef4444;
-      box-shadow: 0 0 32px #ef444440;
+      border-color: var(--bs-danger) !important;
+      box-shadow: 0 0 32px rgba(var(--bs-danger-rgb), 0.35);
       animation: shake 0.4s ease;
     }
 
     .result-panel.critical-success {
-      border-color: #fbbf24;
-      box-shadow: 0 0 40px #fbbf2450;
+      border-color: var(--bs-warning) !important;
+      box-shadow: 0 0 40px rgba(var(--bs-warning-rgb), 0.4);
       animation: glow-pulse 0.6s ease-in-out 2;
     }
 
@@ -75,35 +46,25 @@
     }
 
     @keyframes glow-pulse {
-      0%, 100% { box-shadow: 0 0 40px #fbbf2450; }
-      50%       { box-shadow: 0 0 70px #fbbf2490; }
+      0%, 100% { box-shadow: 0 0 40px rgba(var(--bs-warning-rgb), 0.4); }
+      50%       { box-shadow: 0 0 70px rgba(var(--bs-warning-rgb), 0.7); }
     }
 
-    .result-value.critical-fail  { color: #f87171; }
-    .result-value.critical-success { color: #fcd34d; }
-
-    .result-label {
-      font-size: 0.75rem;
-      color: var(--accent);
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      min-height: 1rem;
-    }
+    .result-value.critical-fail    { color: var(--bs-danger) !important; }
+    .result-value.critical-success { color: var(--bs-warning) !important; }
 
     .result-value {
       font-size: 5rem;
-      font-weight: 800;
       line-height: 1.05;
       min-height: 5.5rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--accent2);
+      color: var(--bs-primary);
       transition: color 0.2s;
     }
 
     .result-value.rolling {
-      color: var(--accent);
       animation: flicker 0.08s infinite;
     }
 
@@ -112,67 +73,35 @@
       50%       { opacity: 0.25; }
     }
 
-    /* ── Dice grid ── */
-    .dice-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      width: 100%;
-      max-width: 360px;
-    }
-
+    /* ── Dice buttons ── */
     .die-btn {
-      background: var(--surface);
-      border: 2px solid var(--border);
-      border-radius: 14px;
-      color: var(--text);
+      padding: 20px 6px;
       font-size: 1.05rem;
       font-weight: 700;
-      padding: 20px 6px;
-      cursor: pointer;
       touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
-      transition: background 0.1s, border-color 0.1s, transform 0.1s;
       user-select: none;
-    }
-
-    .die-btn:active {
-      background: #2d1b69;
-      border-color: var(--accent);
-      transform: scale(0.93);
-    }
-
-    .die-btn.wide {
-      grid-column: span 2;
-    }
-
-    .die-btn.full {
-      grid-column: span 4;
+      transition: background-color 0.1s, border-color 0.1s, transform 0.1s, font-size 0.1s;
     }
 
     .die-btn.current {
+      background-color: var(--bs-primary);
+      border-color: var(--bs-primary);
+      color: var(--bs-white);
       font-size: 1.35rem;
-      border-color: #6d28d9;
-      background: #1e1b4b;
+    }
+
+    .die-btn:active {
+      transform: scale(0.93);
     }
 
     /* ── Reroll button ── */
     .reroll-btn {
-      width: 100%;
-      max-width: 360px;
-      background: #3b1264;
-      border: 2px solid var(--accent);
-      border-radius: 14px;
-      color: var(--accent2);
-      font-size: 1rem;
-      font-weight: 600;
-      padding: 16px;
-      cursor: pointer;
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
-      transition: background 0.1s, transform 0.1s;
       opacity: 0;
       pointer-events: none;
+      transition: opacity 0.2s, transform 0.1s;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .reroll-btn.visible {
@@ -181,41 +110,52 @@
     }
 
     .reroll-btn:active {
-      background: #5b21b6;
       transform: scale(0.97);
-    }
-
-    .hint {
-      font-size: 0.72rem;
-      color: var(--muted);
-      text-align: center;
-      max-width: 280px;
-      line-height: 1.5;
     }
   </style>
 </head>
-<body>
+<body class="d-flex flex-column align-items-center pt-4 pb-5 px-3">
 
-<h1>🎲 Dés Audio</h1>
+<div class="app w-100 d-flex flex-column align-items-center gap-3">
 
-<div class="result-panel" id="panel">
-  <div class="result-label" id="resultLabel">&nbsp;</div>
-  <div class="result-value" id="resultValue">?</div>
+  <h1 class="text-primary text-uppercase fw-semibold text-center mb-0" style="font-size:1.1rem; letter-spacing:.12em;">🎲 Dés Audio</h1>
+
+  <div class="card w-100 text-center result-panel" id="panel">
+    <div class="card-body py-4">
+      <div class="text-primary text-uppercase small fw-semibold mb-1" id="resultLabel">&nbsp;</div>
+      <div class="result-value fw-bold" id="resultValue">?</div>
+    </div>
+  </div>
+
+  <div class="row g-2 w-100">
+    <div class="col-6">
+      <button id="d20" class="btn btn-outline-primary w-100 die-btn" onclick="roll(20)">d20</button>
+    </div>
+    <div class="col-6">
+      <button id="d6" class="btn btn-outline-primary w-100 die-btn" onclick="roll(6)">d6</button>
+    </div>
+    <div class="col-3">
+      <button id="d4" class="btn btn-outline-primary w-100 die-btn" onclick="roll(4)">d4</button>
+    </div>
+    <div class="col-3">
+      <button id="d8" class="btn btn-outline-primary w-100 die-btn" onclick="roll(8)">d8</button>
+    </div>
+    <div class="col-3">
+      <button id="d10" class="btn btn-outline-primary w-100 die-btn" onclick="roll(10)">d10</button>
+    </div>
+    <div class="col-3">
+      <button id="d12" class="btn btn-outline-primary w-100 die-btn" onclick="roll(12)">d12</button>
+    </div>
+    <div class="col-12">
+      <button id="d100" class="btn btn-outline-primary w-100 die-btn" onclick="roll(100)">d100</button>
+    </div>
+  </div>
+
+  <button class="btn btn-secondary w-100 reroll-btn" id="rerollBtn" onclick="reroll()">↺ Relancer le même dé</button>
+
+  <p class="text-body-secondary small text-center mb-0" style="max-width:280px; line-height:1.5;">Appuie sur un dé — le résultat est annoncé à voix haute</p>
+
 </div>
-
-<div class="dice-grid">
-  <button id="d20" class="die-btn wide" onclick="roll(20)">d20</button>
-  <button id="d6" class="die-btn wide" onclick="roll(6)">d6</button>
-  <button id="d4" class="die-btn" onclick="roll(4)">d4</button>
-  <button id="d8" class="die-btn" onclick="roll(8)">d8</button>
-  <button id="d10" class="die-btn" onclick="roll(10)">d10</button>
-  <button id="d12" class="die-btn" onclick="roll(12)">d12</button>
-  <button id="d100" class="die-btn full" onclick="roll(100)">d100</button>
-</div>
-
-<button class="reroll-btn" id="rerollBtn" onclick="reroll()">↺ Relancer le même dé</button>
-
-<p class="hint">Appuie sur un dé — le résultat est annoncé à voix haute</p>
 
 <script>
   /* ── State ── */
@@ -515,8 +455,9 @@
     // Reset UI
     const panel = document.getElementById('panel');
     const valEl = document.getElementById('resultValue');
-    panel.className = 'result-panel active';
-    valEl.className = 'result-value';
+    panel.classList.remove('critical-fail', 'critical-success');
+    panel.classList.add('active');
+    valEl.classList.remove('critical-fail', 'critical-success', 'rolling');
     document.getElementById('resultLabel').textContent = `d${faces}`;
     valEl.textContent = '…';
     document.getElementById('rerollBtn').classList.remove('visible');
