@@ -5,5 +5,8 @@
   "description": "Tests pour la logique JS du site",
   "scripts": {
     "test": "node --test"
+  },
+  "dependencies": {
+    "puppeteer": "^25.3.0"
   }
 }
