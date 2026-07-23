@@ -49,28 +49,28 @@ body {
 
 /* HEADER */
 .header {
-    padding: 48px 56px 32px;
+    padding: 28px 56px 20px;
     border-bottom: 2px solid var(--gold);
     position: relative;
 }
 
 .header-photo {
-    width: 90px;
-    height: 90px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
     border: 2px solid var(--gold);
     float: right;
-    margin: 0 0 16px 24px;
+    margin: 0 0 12px 20px;
 }
 
 .name {
     font-family: 'Playfair Display', serif;
-    font-size: 48px;
+    font-size: 42px;
     font-weight: 900;
     color: var(--ink);
     line-height: 1;
     letter-spacing: -1px;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
 }
 
 .name span {
@@ -90,7 +90,7 @@ body {
     font-size: 13px;
     font-weight: 300;
     color: var(--ink);
-    margin-top: 0.6em;
+    margin-top: 0.4em;
     margin-bottom: 0;
     line-height: 1.5;
     max-width: 560px;
@@ -99,8 +99,8 @@ body {
 .contact-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px 24px;
-    margin-top: 14px;
+    gap: 4px 20px;
+    margin-top: 8px;
 }
 
 .contact-item {
@@ -133,11 +133,15 @@ body {
 
 /* MAIN */
 .main {
-    padding: 32px 56px 40px;
+    padding: 20px 56px 20px;
 }
 
 .section {
-    margin-bottom: 24px;
+    margin-bottom: 14px;
+}
+
+.section:last-child {
+    margin-bottom: 0;
 }
 
 .section-title {
@@ -147,7 +151,7 @@ body {
     color: var(--accent);
     letter-spacing: 3px;
     text-transform: uppercase;
-    margin-bottom: 14px;
+    margin-bottom: 8px;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -162,8 +166,8 @@ body {
 
 /* JOBS */
 .job {
-    margin-bottom: 14px;
-    padding-bottom: 14px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
     border-bottom: 1px solid var(--rule);
     position: relative;
     padding-left: 16px;
@@ -223,7 +227,7 @@ body {
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
-    margin: 6px 0;
+    margin: 4px 0;
 }
 
 .tech-tag {
@@ -258,7 +262,7 @@ body {
 
 /* EDUCATION */
 .edu-item {
-    margin-bottom: 10px;
+    margin-bottom: 6px;
     padding-left: 16px;
     position: relative;
 }
