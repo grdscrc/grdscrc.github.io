@@ -103,10 +103,10 @@ describe('buildAudioFileList', () => {
     [25,  ['./assets/audio/20.mp3', './assets/audio/05.mp3']],
     [61,  ['./assets/audio/60.mp3', './assets/audio/et.mp3', './assets/audio/01.mp3']],
     [69,  ['./assets/audio/60.mp3', './assets/audio/09.mp3']],
-    [71,  ['./assets/audio/60.mp3', './assets/audio/11.mp3']],
+    [71,  ['./assets/audio/60.mp3', './assets/audio/et.mp3', './assets/audio/11.mp3']],
     [76,  ['./assets/audio/60.mp3', './assets/audio/16.mp3']],
-    [77,  ['./assets/audio/60.mp3', './assets/audio/10.mp3', './assets/audio/07.mp3']],
-    [79,  ['./assets/audio/60.mp3', './assets/audio/10.mp3', './assets/audio/09.mp3']],
+    [77,  ['./assets/audio/70.mp3', './assets/audio/07.mp3']],
+    [79,  ['./assets/audio/70.mp3', './assets/audio/09.mp3']],
     [70,  ['./assets/audio/70.mp3']],
     [80,  ['./assets/audio/80.mp3']],
     [81,  ['./assets/audio/80.mp3', './assets/audio/01.mp3']],
@@ -125,19 +125,19 @@ describe('buildAudioFileList', () => {
   // 97-99 = "quatre-vingt-dix-{sept,huit,neuf}" = quatre-vingt + dix + {7,8,9}, fichiers à 2 chiffres
   test('97 → quatre-vingt + dix + sept', () => {
     assert.deepEqual(buildAudioFileList(97), [
-      './assets/audio/80.mp3', './assets/audio/10.mp3', './assets/audio/07.mp3',
+      './assets/audio/90.mp3', './assets/audio/07.mp3',
     ]);
   });
 
   test('98 → quatre-vingt + dix + huit', () => {
     assert.deepEqual(buildAudioFileList(98), [
-      './assets/audio/80.mp3', './assets/audio/10.mp3', './assets/audio/08.mp3',
+      './assets/audio/90.mp3', './assets/audio/08.mp3',
     ]);
   });
 
   test('99 → quatre-vingt + dix + neuf', () => {
     assert.deepEqual(buildAudioFileList(99), [
-      './assets/audio/80.mp3', './assets/audio/10.mp3', './assets/audio/09.mp3',
+      './assets/audio/90.mp3', './assets/audio/09.mp3',
     ]);
   });
 });
@@ -196,8 +196,7 @@ describe('buildRollAnnouncementSegments', () => {
       seg('d.mp3', WORD),
       seg('20.mp3', WORD),
       seg('resultat.mp3', WORD),
-      seg('80.mp3', WITHIN),
-      seg('10.mp3', WITHIN),
+      seg('90.mp3', WITHIN),
       seg('09.mp3', WORD), // dernière syllabe : silence normal avant la suite (ou la fin)
     ]);
   });
