@@ -28,59 +28,64 @@ function pushHistoryEntry(history, entry, maxItems = MAX_HISTORY) {
 
 /* ── Décompose un nombre (0-100) en liste de fichiers audio FR à enchaîner ── */
 function buildAudioFileList(number) {
-  const files = [];
-  if (number <= 16) {
-    files.push(`./assets/audio/${number.toString().padStart(2, '0')}.mp3`);
-  } else if (number % 10 === 0) {
-    files.push(`./assets/audio/${number}.mp3`);
-  } else {
-    let tenths = Math.floor(number / 10);
-    let units  = number % 10;
-    if (number >= 17 && number <= 19) {
-      files.push(`./assets/audio/10.mp3`);
-      files.push(`./assets/audio/${units.toString().padStart(2, '0')}.mp3`);
-    } else if (number >= 20 && number <= 69) {
-      files.push(`./assets/audio/${tenths.toString().padEnd(2, '0')}.mp3`);
-      if (units == 1) files.push(`./assets/audio/et.mp3`);
-      if (units >= 1) files.push(`./assets/audio/${units.toString().padStart(2, '0')}.mp3`);
-    } else if (number >= 70 && number <= 79) {
-      // number === 70 est intercepté plus haut : units va de 1 à 9 ici
-      if (units <= 6) {
-        files.push(`./assets/audio/60.mp3`);
-        if (units === 1) files.push(`./assets/audio/et.mp3`); // "soixante ET onze"
-        files.push(`./assets/audio/1${units}.mp3`);
-      } else {
-        files.push(`./assets/audio/70.mp3`);
-        files.push(`./assets/audio/0${units.toString()}.mp3`);
-      }
-    } else if (number >= 80 && number <= 99) {
-      // number === 80 et number === 90 sont interceptés plus haut
-      units = number - 80;
-      if (units >= 1 && units <= 16) {
-        files.push(`./assets/audio/80.mp3`);
-        files.push(`./assets/audio/${units.toString().padStart(2, '0')}.mp3`);
-      } else if (units >= 17) {
-        files.push(`./assets/audio/90.mp3`);
-        files.push(`./assets/audio/0${(units - 10).toString()}.mp3`);
-      }
-    }
+  if (number <= 16)
+    return [`./assets/audio/${number.toString().padStart(2, '0')}.mp3`];
+
+  if (number % 10 === 0)
+    return [`./assets/audio/${number}.mp3`];
+
+  let tenths = Math.floor(number / 10);
+  let units  = number % 10;
+  if (number >= 17 && number <= 19)
+    return [
+      `./assets/audio/10.mp3`,
+      `./assets/audio/${units.toString().padStart(2, '0')}.mp3`
+    ];
+
+  if (number >= 20 && number <= 69) {
+    const files = [`./assets/audio/${tenths.toString().padEnd(2, '0')}.mp3`];
+    if (units == 1) files.push(`./assets/audio/et.mp3`);
+    if (units >= 1) files.push(`./assets/audio/${units.toString().padStart(2, '0')}.mp3`);
+    return files;
   }
-  return files;
+
+  if (number >= 71 && number <= 76) {
+    const files = [`./assets/audio/60.mp3`];
+    if (units === 1) files.push(`./assets/audio/et.mp3`); // "soixante ET onze"
+    files.push(`./assets/audio/1${units}.mp3`);
+    return files;
+  }
+
+  if (number >= 77 && number <= 79)
+    return [`./assets/audio/70.mp3`, `./assets/audio/0${units.toString()}.mp3`];
+
+  if (number >= 81 && number <= 96)
+    return [
+      `./assets/audio/80.mp3`,
+      `./assets/audio/${(number - 80).toString().padStart(2, '0')}.mp3`
+    ];
+
+  if (number >= 97 && number <= 99)
+    return [
+      `./assets/audio/90.mp3`,
+      `./assets/audio/0${(number - 90).toString()}.mp3`
+    ];
+
+  throw new Exception("Unhandled number");
 }
 
 /* ── Décompose un nombre (0-100) en liste de fichiers audio EN à enchaîner ── */
 function buildAudioFileListEnglish(number) {
+  if (number <= 20)
+    return [`./assets/audio/english/${number.toString().padStart(2, '0')}.mp3`];
+  if (number == 100)
+    return [`./assets/audio/english/100.mp3`];
+
+  const tens  = Math.floor(number / 10) * 10;
+  const units = number % 10;
   const files = [];
-  if (number <= 20) {
-    files.push(`./assets/audio/english/${number.toString().padStart(2, '0')}.mp3`);
-  } else if (number == 100) {
-    files.push(`./assets/audio/english/100.mp3`);
-  } else {
-    const tens  = Math.floor(number / 10) * 10;
-    const units = number % 10;
-    files.push(`./assets/audio/english/${tens}.mp3`);
-    if (units >= 1) files.push(`./assets/audio/english/${units.toString().padStart(2, '0')}.mp3`);
-  }
+  files.push(`./assets/audio/english/${tens}.mp3`);
+  if (units >= 1) files.push(`./assets/audio/english/${units.toString().padStart(2, '0')}.mp3`);
   return files;
 }
 
