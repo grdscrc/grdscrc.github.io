@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="fr" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fiche de Personnage</title>
+  <link href="./assets/vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    .sheet {
+      max-width: 900px;
+    }
+
+    .section-title {
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+    }
+
+    .field label {
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--bs-secondary-color);
+    }
+
+    .field input,
+    .field textarea {
+      background-color: transparent;
+    }
+
+    /* ── Ability scores ── */
+    .ability-box {
+      text-align: center;
+      padding: 0.75rem 0.25rem;
+    }
+
+    .ability-box label {
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--bs-secondary-color);
+    }
+
+    .ability-score {
+      width: 4.5rem;
+      font-size: 1.6rem;
+      font-weight: 700;
+      text-align: center;
+      margin: 0.35rem auto 0.25rem;
+    }
+
+    .ability-mod {
+      font-size: 1rem;
+      color: var(--bs-primary);
+      font-weight: 600;
+    }
+
+    /* ── Skills / saves ── */
+    .skill-row,
+    .save-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.15rem 0;
+    }
+
+    .skill-row input[type="text"],
+    .save-row input[type="text"] {
+      width: 3rem;
+      text-align: center;
+      background-color: transparent;
+      padding: 0.1rem;
+    }
+
+    .skill-row .skill-name,
+    .save-row .save-name {
+      flex: 1;
+      font-size: 0.85rem;
+    }
+
+    .combat-box {
+      text-align: center;
+      padding: 0.6rem 0.25rem;
+    }
+
+    .combat-box label {
+      font-size: 0.65rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--bs-secondary-color);
+      display: block;
+    }
+
+    .combat-box input {
+      background-color: transparent;
+      text-align: center;
+      font-size: 1.25rem;
+      font-weight: 700;
+      width: 100%;
+    }
+
+    @media print {
+      body {
+        background: #fff !important;
+        color: #000 !important;
+      }
+
+      .noprint {
+        display: none !important;
+      }
+
+      .card {
+        border: 1px solid #999 !important;
+        background: #fff !important;
+        color: #000 !important;
+        break-inside: avoid;
+      }
+
+      input,
+      textarea {
+        color: #000 !important;
+      }
+
+      .ability-mod,
+      .text-primary {
+        color: #000 !important;
+      }
+    }
+  </style>
+</head>
+<body class="pb-5">
+
+<div class="d-flex justify-content-end gap-2 p-3 noprint">
+  <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resetSheet()">Réinitialiser</button>
+  <button type="button" class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Imprimer</button>
+</div>
+
+<div class="sheet w-100 mx-auto px-3 d-flex flex-column gap-3">
+
+  <h1 class="text-primary text-uppercase fw-semibold text-center mb-0">Fiche de Personnage</h1>
+
+  <!-- Identité -->
+  <div class="card">
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-4 field">
+          <label for="charName">Nom du personnage</label>
+          <input type="text" class="form-control" id="charName">
+        </div>
+        <div class="col-md-4 field">
+          <label for="playerName">Joueur</label>
+          <input type="text" class="form-control" id="playerName">
+        </div>
+        <div class="col-md-4 field">
+          <label for="classLevel">Classe &amp; niveau</label>
+          <input type="text" class="form-control" id="classLevel">
+        </div>
+        <div class="col-md-3 field">
+          <label for="race">Espèce / Race</label>
+          <input type="text" class="form-control" id="race">
+        </div>
+        <div class="col-md-3 field">
+          <label for="background">Historique</label>
+          <input type="text" class="form-control" id="background">
+        </div>
+        <div class="col-md-3 field">
+          <label for="alignment">Alignement</label>
+          <input type="text" class="form-control" id="alignment">
+        </div>
+        <div class="col-md-3 field">
+          <label for="xp">Expérience</label>
+          <input type="text" class="form-control" id="xp">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Caractéristiques -->
+  <div class="card">
+    <div class="card-body">
+      <div class="section-title text-primary text-uppercase fw-semibold mb-2">Caractéristiques</div>
+      <div class="row row-cols-3 row-cols-md-6 g-2">
+        <div class="col ability-box border rounded" data-ability>
+          <label>Force</label>
+          <input type="number" class="ability-score" value="10">
+          <div class="ability-mod">+0</div>
+        </div>
+        <div class="col ability-box border rounded" data-ability>
+          <label>Dextérité</label>
+          <input type="number" class="ability-score" value="10">
+          <div class="ability-mod">+0</div>
+        </div>
+        <div class="col ability-box border rounded" data-ability>
+          <label>Constitution</label>
+          <input type="number" class="ability-score" value="10">
+          <div class="ability-mod">+0</div>
+        </div>
+        <div class="col ability-box border rounded" data-ability>
+          <label>Intelligence</label>
+          <input type="number" class="ability-score" value="10">
+          <div class="ability-mod">+0</div>
+        </div>
+        <div class="col ability-box border rounded" data-ability>
+          <label>Sagesse</label>
+          <input type="number" class="ability-score" value="10">
+          <div class="ability-mod">+0</div>
+        </div>
+        <div class="col ability-box border rounded" data-ability>
+          <label>Charisme</label>
+          <input type="number" class="ability-score" value="10">
+          <div class="ability-mod">+0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <!-- Combat -->
+    <div class="col-md-7">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="section-title text-primary text-uppercase fw-semibold mb-2">Combat</div>
+          <div class="row row-cols-4 g-2 mb-2">
+            <div class="col combat-box border rounded">
+              <label>Classe d'armure</label>
+              <input type="text">
+            </div>
+            <div class="col combat-box border rounded">
+              <label>Initiative</label>
+              <input type="text">
+            </div>
+            <div class="col combat-box border rounded">
+              <label>Vitesse</label>
+              <input type="text">
+            </div>
+            <div class="col combat-box border rounded">
+              <label>Bonus maîtrise</label>
+              <input type="text">
+            </div>
+          </div>
+          <div class="row row-cols-3 g-2 mb-3">
+            <div class="col combat-box border rounded">
+              <label>PV max</label>
+              <input type="text">
+            </div>
+            <div class="col combat-box border rounded">
+              <label>PV actuels</label>
+              <input type="text">
+            </div>
+            <div class="col combat-box border rounded">
+              <label>PV temporaires</label>
+              <input type="text">
+            </div>
+          </div>
+          <div class="field mb-2">
+            <label for="hitDice">Dés de vie</label>
+            <input type="text" class="form-control" id="hitDice">
+          </div>
+          <div class="section-title text-primary text-uppercase fw-semibold mt-3 mb-2">Attaques &amp; sorts</div>
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th>Bonus</th>
+                <th>Dégâts / Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><input type="text" class="form-control form-control-sm"></td><td><input type="text" class="form-control form-control-sm"></td><td><input type="text" class="form-control form-control-sm"></td></tr>
+              <tr><td><input type="text" class="form-control form-control-sm"></td><td><input type="text" class="form-control form-control-sm"></td><td><input type="text" class="form-control form-control-sm"></td></tr>
+              <tr><td><input type="text" class="form-control form-control-sm"></td><td><input type="text" class="form-control form-control-sm"></td><td><input type="text" class="form-control form-control-sm"></td></tr>
+              <tr><td><input type="text" class="form-control form-control-sm"></td><td><input type="text" class="form-control form-control-sm"></td><td><input type="text" class="form-control form-control-sm"></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Jets de sauvegarde & compétences -->
+    <div class="col-md-5">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="section-title text-primary text-uppercase fw-semibold mb-2">Jets de sauvegarde</div>
+          <div class="save-row"><input type="checkbox"><span class="save-name">Force</span><input type="text"></div>
+          <div class="save-row"><input type="checkbox"><span class="save-name">Dextérité</span><input type="text"></div>
+          <div class="save-row"><input type="checkbox"><span class="save-name">Constitution</span><input type="text"></div>
+          <div class="save-row"><input type="checkbox"><span class="save-name">Intelligence</span><input type="text"></div>
+          <div class="save-row"><input type="checkbox"><span class="save-name">Sagesse</span><input type="text"></div>
+          <div class="save-row"><input type="checkbox"><span class="save-name">Charisme</span><input type="text"></div>
+
+          <div class="section-title text-primary text-uppercase fw-semibold mt-3 mb-2">Compétences</div>
+          <div class="skill-row"><input type="checkbox"><span class="skill-name">Acrobaties (Dex)</span><input type="text"></div>
+          <div class="skill-row"><input type="checkbox"><span class="skill-name">Arcanes (Int)</span><input type="text"></div>
+          <div class="skill-row"><input type="checkbox"><span class="skill-name">Athlétisme (For)</span><input type="text"></div>
+          <div class="skill-row"><input type="checkbox"><span class="skill-name">Discrétion (Dex)</span><input type="text"></div>
+          <div class="skill-row"><input type="checkbox"><span class="skill-name">Dressage (Sag)</span><input type="text"></div>
+          <div class="skill-row"><input type="checkbox"><span class="skill-name">Escamotage (Dex)</span><input type="text"></div>
+          <div class="skill-row"><input type="checkbox"><span class="skill-name">Histoire (Int)</span><input type="text"></div>
+          <div class="skill-row"><input type="checkbox"><span class="skill-name">Intimidation (Cha)</span><input type="text"></div>
+          <div class="skill-row"><input type="checkbox"><span class="skill-name">Intuition (Sag)</span><input type="text"></div>
+          <div class="skill-row"><input type="checkbox"><span class="skill-name">Investigation (Int)</span><input type="text"></div>
+          <div class="skill-row"><input type="checkbox"><span class="skill-name">Médecine (Sag)</span><input type="text"></div>
+          <div class="skill-row"><input type="checkbox"><span class="skill-name">Nature (Int)</span><input type="text"></div>
+          <div class="skill-row"><input type="checkbox"><span class="skill-name">Perception (Sag)</span><input type="text"></div>
+          <div class="skill-row"><input type="checkbox"><span class="skill-name">Persuasion (Cha)</span><input type="text"></div>
+          <div class="skill-row"><input type="checkbox"><span class="skill-name">Religion (Int)</span><input type="text"></div>
+          <div class="skill-row"><input type="checkbox"><span class="skill-name">Représentation (Cha)</span><input type="text"></div>
+          <div class="skill-row"><input type="checkbox"><span class="skill-name">Survie (Sag)</span><input type="text"></div>
+          <div class="skill-row"><input type="checkbox"><span class="skill-name">Tromperie (Cha)</span><input type="text"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Équipement -->
+  <div class="card">
+    <div class="card-body">
+      <div class="section-title text-primary text-uppercase fw-semibold mb-2">Équipement</div>
+      <textarea class="form-control" rows="4" placeholder="Armes, armure, objets, pièces d'or..."></textarea>
+    </div>
+  </div>
+
+  <!-- Traits de personnalité -->
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="section-title text-primary text-uppercase fw-semibold mb-2">Traits de personnalité</div>
+          <textarea class="form-control mb-3" rows="2"></textarea>
+          <div class="section-title text-primary text-uppercase fw-semibold mb-2">Idéaux</div>
+          <textarea class="form-control" rows="2"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="section-title text-primary text-uppercase fw-semibold mb-2">Liens</div>
+          <textarea class="form-control mb-3" rows="2"></textarea>
+          <div class="section-title text-primary text-uppercase fw-semibold mb-2">Défauts</div>
+          <textarea class="form-control" rows="2"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Capacités & Notes -->
+  <div class="card">
+    <div class="card-body">
+      <div class="section-title text-primary text-uppercase fw-semibold mb-2">Capacités, traits &amp; notes</div>
+      <textarea class="form-control" rows="6"></textarea>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const STORAGE_KEY = 'characterSheet';
+
+  function computeModifier(score) {
+    const mod = Math.floor((score - 10) / 2);
+    return (mod >= 0 ? '+' : '') + mod;
+  }
+
+  function updateAbilityMods() {
+    document.querySelectorAll('[data-ability]').forEach(box => {
+      const score = parseInt(box.querySelector('.ability-score').value, 10) || 10;
+      box.querySelector('.ability-mod').textContent = computeModifier(score);
+    });
+  }
+
+  function serialize() {
+    const data = { text: [], checked: [] };
+    document.querySelectorAll('input[type="text"], input[type="number"], textarea').forEach((el, i) => {
+      data.text[i] = el.value;
+    });
+    document.querySelectorAll('input[type="checkbox"]').forEach((el, i) => {
+      data.checked[i] = el.checked;
+    });
+    return data;
+  }
+
+  function saveSheet() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(serialize()));
+  }
+
+  function loadSheet() {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    try {
+      const data = JSON.parse(raw);
+      document.querySelectorAll('input[type="text"], input[type="number"], textarea').forEach((el, i) => {
+        if (data.text[i] !== undefined) el.value = data.text[i];
+      });
+      document.querySelectorAll('input[type="checkbox"]').forEach((el, i) => {
+        if (data.checked[i] !== undefined) el.checked = data.checked[i];
+      });
+    } catch (e) { /* ignore corrupted storage */ }
+    updateAbilityMods();
+  }
+
+  function resetSheet() {
+    if (!confirm('Effacer toute la fiche ?')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    document.querySelectorAll('input[type="text"], textarea').forEach(el => el.value = '');
+    document.querySelectorAll('input[type="number"]').forEach(el => el.value = 10);
+    document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
+    updateAbilityMods();
+  }
+
+  document.addEventListener('input', e => {
+    if (e.target.classList.contains('ability-score')) updateAbilityMods();
+    saveSheet();
+  });
+
+  loadSheet();
+</script>
+</body>
+</html>
