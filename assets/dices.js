@@ -45,21 +45,22 @@ function buildAudioFileList(number) {
       if (units >= 1) files.push(`./assets/audio/${units.toString().padStart(2, '0')}.mp3`);
     } else if (number >= 70 && number <= 79) {
       // number === 70 est intercepté plus haut : units va de 1 à 9 ici
-      files.push(`./assets/audio/60.mp3`);
       if (units <= 6) {
+        files.push(`./assets/audio/60.mp3`);
+        if (units === 1) files.push(`./assets/audio/et.mp3`); // "soixante ET onze"
         files.push(`./assets/audio/1${units}.mp3`);
       } else {
-        files.push(`./assets/audio/10.mp3`);
+        files.push(`./assets/audio/70.mp3`);
         files.push(`./assets/audio/0${units.toString()}.mp3`);
       }
     } else if (number >= 80 && number <= 99) {
       // number === 80 et number === 90 sont interceptés plus haut
       units = number - 80;
-      files.push(`./assets/audio/80.mp3`);
-      if (units >= 1 && units <= 16)
+      if (units >= 1 && units <= 16) {
+        files.push(`./assets/audio/80.mp3`);
         files.push(`./assets/audio/${units.toString().padStart(2, '0')}.mp3`);
-      else if (units >= 17) {
-        files.push(`./assets/audio/10.mp3`);
+      } else if (units >= 17) {
+        files.push(`./assets/audio/90.mp3`);
         files.push(`./assets/audio/0${(units - 10).toString()}.mp3`);
       }
     }
