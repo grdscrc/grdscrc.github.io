@@ -63,6 +63,14 @@ body {
     margin: 0 0 12px 20px;
 }
 
+@media (max-width: 480px) {
+    .header-photo {
+        float: none;
+        display: block;
+        margin: 0 0 12px 0;
+    }
+}
+
 .name {
     font-family: 'Playfair Display', serif;
     font-size: 42px;
