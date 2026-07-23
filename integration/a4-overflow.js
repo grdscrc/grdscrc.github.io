@@ -6,50 +6,71 @@ const PAGES = [
   { label: 'EN', url: 'http://localhost:3456/english/' },
 ];
 
+const SCENARIOS = [
+  {
+    label: 'desktop (1280px)',
+    viewport: { width: 1280, height: 1600 },
+    // Height constraint active: content must fit within A4
+    check: (contentBottom) => ({
+      pass: contentBottom <= A4_HEIGHT_PX,
+      message: (pass, overflow) =>
+        pass
+          ? `PASS — fits within A4 (${-overflow}px to spare)`
+          : `FAIL — overflows by ${overflow}px`,
+    }),
+  },
+  {
+    label: 'narrow (792px)',
+    viewport: { width: 792, height: 2000 },
+    // Height constraint inactive: page must expand to show all content (no clipping)
+    check: (contentBottom) => ({
+      pass: contentBottom > A4_HEIGHT_PX,
+      message: (pass) =>
+        pass
+          ? `PASS — page expands freely beyond A4 (no clipping)`
+          : `FAIL — height constraint still active at narrow viewport`,
+    }),
+  },
+];
+
 (async () => {
   const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
-  const tab = await browser.newPage();
-  await tab.setViewport({ width: 1280, height: 1600 });
-
   let failed = false;
 
-  for (const { label, url } of PAGES) {
-    await tab.goto(url, { waitUntil: 'networkidle0' });
+  for (const scenario of SCENARIOS) {
+    const tab = await browser.newPage();
+    await tab.setViewport(scenario.viewport);
 
-    const result = await tab.evaluate((a4Height) => {
-      const pageEl = document.querySelector('.page');
-      const mainEl = document.querySelector('.main');
-      if (!pageEl || !mainEl) return { error: 'Elements .page or .main not found' };
+    console.log(`\n── ${scenario.label} ──`);
 
-      const pageRect = pageEl.getBoundingClientRect();
-      const mainRect = mainEl.getBoundingClientRect();
+    for (const { label, url } of PAGES) {
+      await tab.goto(url, { waitUntil: 'networkidle0' });
 
-      const contentBottom = mainRect.bottom - pageRect.top;
-      const overflow = Math.round(contentBottom - a4Height);
+      const result = await tab.evaluate((a4Height) => {
+        const pageEl = document.querySelector('.page');
+        const mainEl = document.querySelector('.main');
+        if (!pageEl || !mainEl) return { error: 'Elements .page or .main not found' };
 
-      return {
-        a4Height,
-        contentBottom: Math.round(contentBottom),
-        overflow,
-        overflows: overflow > 0,
-      };
-    }, A4_HEIGHT_PX);
+        const pageRect = pageEl.getBoundingClientRect();
+        const mainRect = mainEl.getBoundingClientRect();
+        const contentBottom = Math.round(mainRect.bottom - pageRect.top);
+        const overflow = contentBottom - a4Height;
 
-    if (result.error) {
-      console.error(`[${label}] ERROR:`, result.error);
-      failed = true;
-      continue;
+        return { contentBottom, overflow };
+      }, A4_HEIGHT_PX);
+
+      if (result.error) {
+        console.error(`  [${label}] ERROR: ${result.error}`);
+        failed = true;
+        continue;
+      }
+
+      const { pass, message } = scenario.check(result.contentBottom);
+      console.log(`  [${label}] content ends at ${result.contentBottom}px — ${message(pass, result.overflow)}`);
+      if (!pass) failed = true;
     }
 
-    console.log(`[${label}] A4 height   : ${result.a4Height}px`);
-    console.log(`[${label}] Content ends: ${result.contentBottom}px`);
-
-    if (result.overflows) {
-      console.log(`[${label}] FAIL — content overflows by ${result.overflow}px`);
-      failed = true;
-    } else {
-      console.log(`[${label}] PASS — content fits within A4 (${-result.overflow}px to spare)`);
-    }
+    await tab.close();
   }
 
   await browser.close();
