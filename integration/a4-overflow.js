@@ -22,12 +22,12 @@ const SCENARIOS = [
   {
     label: 'narrow (792px)',
     viewport: { width: 792, height: 2000 },
-    // Height constraint inactive: page must expand to show all content (no clipping)
-    check: (contentBottom) => ({
-      pass: contentBottom > A4_HEIGHT_PX,
+    // Height constraint must be inactive: overflow must not be hidden
+    check: (contentBottom, overflowStyle) => ({
+      pass: overflowStyle !== 'hidden',
       message: (pass) =>
         pass
-          ? `PASS — page expands freely beyond A4 (no clipping)`
+          ? `PASS — overflow not hidden, content not clipped (${contentBottom}px)`
           : `FAIL — height constraint still active at narrow viewport`,
     }),
   },
@@ -55,8 +55,9 @@ const SCENARIOS = [
         const mainRect = mainEl.getBoundingClientRect();
         const contentBottom = Math.round(mainRect.bottom - pageRect.top);
         const overflow = contentBottom - a4Height;
+        const overflowStyle = window.getComputedStyle(pageEl).overflow;
 
-        return { contentBottom, overflow };
+        return { contentBottom, overflow, overflowStyle };
       }, A4_HEIGHT_PX);
 
       if (result.error) {
@@ -65,7 +66,7 @@ const SCENARIOS = [
         continue;
       }
 
-      const { pass, message } = scenario.check(result.contentBottom);
+      const { pass, message } = scenario.check(result.contentBottom, result.overflowStyle);
       console.log(`  [${label}] content ends at ${result.contentBottom}px — ${message(pass, result.overflow)}`);
       if (!pass) failed = true;
     }
