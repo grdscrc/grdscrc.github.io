@@ -63,8 +63,7 @@ function updateGrid(grid){
     for(let x = 0; x < cellsX; x+=1){
         for(let y = 0; y < cellsY; y+=1){
             grid2[x][y] = grid[x][y];
-            var n = neighbors(x, y).map(([a,b]) => grid[a][b]);
-            var living = n.reduce((a, e) => alive(e)?a+=1:a);
+            var living  = livingNeighbors(grid, x, y);
             if (!alive(grid[x][y]) && living === 3){
                 grid2[x][y] = 1;
             }
@@ -73,11 +72,7 @@ function updateGrid(grid){
             }
         }
     }
-    for(let x = 0; x < cellsX; x+=1){
-        for(let y = 0; y < cellsY; y+=1){
-            grid[x][y] = grid2[x][y];
-        }
-    }
+    [grid, grid2] = [grid2, grid];
     return grid;
 }
 
@@ -85,20 +80,20 @@ function alive(cell){
     return cell === 1;
 }
 
-function neighbors(x, y){
-    var n = [];
+function livingNeighbors(grid, x, y){
+    var n = 0;
     if (x>=1) {
-        n.push([x-1,y]);
-        if (y>=1) { n.push([x-1,y-1]); }
-        if (y<cellsY-1) { n.push([x-1,y+1]); }
+        n += grid[x-1][y];
+        if (y>=1) { n += grid[x-1][y-1]; }
+        if (y<cellsY-1) { n += grid[x-1][y+1]; }
     }
     if (x<cellsX-1) {
-        n.push([x+1,y]);
-        if (y>=1) { n.push([x+1,y-1]); }
-        if (y<cellsY-1) { n.push([x+1,y+1]); }
+        n += grid[x+1][y];
+        if (y>=1) { n += grid[x+1][y-1]; }
+        if (y<cellsY-1) { n += grid[x+1][y+1]; }
     }
-    if (y>=1) n.push([x,y-1]);
-    if (y<cellsY-1) n.push([x,y+1]);
+    if (y>=1) n += grid[x][y-1];
+    if (y<cellsY-1) n += grid[x][y+1];
     return n;
 }
 
