@@ -10,9 +10,9 @@ var ctx = canvas.getContext("2d");
 var cellsX = Math.floor(winw/boxWidth);
 var cellsY = Math.floor(winh/boxHeight);
 
-var rgrid = new Array(cellsX).fill(0).map(()=>new Array(cellsY).fill(0));
-var ggrid = new Array(cellsX).fill(0).map(()=>new Array(cellsY).fill(0));
-var bgrid = new Array(cellsX).fill(0).map(()=>new Array(cellsY).fill(0));
+var rgrid = new Int8Array(cellsX * cellsY).fill(0);
+var ggrid = new Int8Array(cellsX * cellsY).fill(0);
+var bgrid = new Int8Array(cellsX * cellsY).fill(0);
 
 function resizeCanvas() {
     canvas.width = winw;
@@ -44,10 +44,10 @@ function drawBoard(){
 
     for(let x = 0; x < cellsX; x+=1){
         for(let y = 0; y < cellsY; y+=1){
-            if (alive(rgrid[x][y]) || alive(ggrid[x][y]) || alive(bgrid[x][y])) {
-                var r = rgrid[x][y];
-                var g = ggrid[x][y];
-                var b = bgrid[x][y];
+            if (alive(rgrid[x + cellsX * y]) || alive(ggrid[x + cellsX * y]) || alive(bgrid[x + cellsX * y])) {
+                var r = rgrid[x + cellsX * y];
+                var g = ggrid[x + cellsX * y];
+                var b = bgrid[x + cellsX * y];
                 ctx.fillStyle = `rgb(${r*255} ${g*255} ${b*255})`;
                 ctx.fillRect(x*boxWidth+(boxWidth/10),
                     y*boxHeight+(boxHeight/10),
@@ -62,13 +62,13 @@ function updateGrid(grid){
     var grid2 = new Array(cellsX).fill(0).map(()=>new Array(cellsY).fill(0));
     for(let x = 0; x < cellsX; x+=1){
         for(let y = 0; y < cellsY; y+=1){
-            grid2[x][y] = grid[x][y];
+            grid2[x + cellsX * y] = grid[x + cellsX * y];
             var living  = livingNeighbors(grid, x, y);
-            if (!alive(grid[x][y]) && living === 3){
-                grid2[x][y] = 1;
+            if (!alive(grid[x + cellsX * y]) && living === 3){
+                grid2[x + cellsX * y] = 1;
             }
-            if (alive(grid[x][y]) && living !== 2 && living !== 3){
-                grid2[x][y] = 0;
+            if (alive(grid[x + cellsX * y]) && living !== 2 && living !== 3){
+                grid2[x + cellsX * y] = 0;
             }
         }
     }
@@ -83,24 +83,24 @@ function alive(cell){
 function livingNeighbors(grid, x, y){
     var n = 0;
     if (x>=1) {
-        n += grid[x-1][y];
-        if (y>=1) { n += grid[x-1][y-1]; }
-        if (y<cellsY-1) { n += grid[x-1][y+1]; }
+        n += grid[x-1 + cellsX * y];
+        if (y>=1) { n += grid[x-1 + cellsX * (y-1)]; }
+        if (y<cellsY-1) { n += grid[x-1 + cellsX * (y+1)]; }
     }
     if (x<cellsX-1) {
-        n += grid[x+1][y];
-        if (y>=1) { n += grid[x+1][y-1]; }
-        if (y<cellsY-1) { n += grid[x+1][y+1]; }
+        n += grid[x+1 + cellsX * y];
+        if (y>=1) { n += grid[x+1 + cellsX * (y-1)]; }
+        if (y<cellsY-1) { n += grid[x+1 + cellsX * (y+1)]; }
     }
-    if (y>=1) n += grid[x][y-1];
-    if (y<cellsY-1) n += grid[x][y+1];
+    if (y>=1) n += grid[x + cellsX * (y-1)];
+    if (y<cellsY-1) n += grid[x + cellsX * (y+1)];
     return n;
 }
 
 function randomizeGrid(grid){
     for(let x = 0; x < cellsX; x+=1){
         for(let y = 0; y < cellsY; y+=1){
-            grid[x][y] = Math.random() < 0.25 ? 1 : 0;
+            grid[x + cellsX * y] = Math.random() < 0.25 ? 1 : 0;
         }
     }
     return grid;
