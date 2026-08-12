@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="fr" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Billes Audio</title>
+  <link href="./assets/vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100dvh;
+    }
+
+    .app {
+      max-width: 400px;
+    }
+
+    .app-title {
+      font-size: 1.1rem;
+      letter-spacing: 0.12em;
+    }
+
+    .hint {
+      max-width: 280px;
+      line-height: 1.5;
+    }
+
+    /* ── Result panel ── */
+    .result-panel {
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .result-panel.active {
+      border-color: var(--bs-primary) !important;
+      box-shadow: 0 0 24px rgba(var(--bs-primary-rgb), 0.25);
+    }
+
+    .result-panel.critical-fail {
+      border-color: var(--bs-danger) !important;
+      box-shadow: 0 0 32px rgba(var(--bs-danger-rgb), 0.35);
+      animation: shake 0.4s ease;
+    }
+
+    .result-panel.critical-success {
+      border-color: var(--bs-warning) !important;
+      box-shadow: 0 0 40px rgba(var(--bs-warning-rgb), 0.4);
+      animation: glow-pulse 0.6s ease-in-out 2;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%       { transform: translateX(-6px); }
+      40%       { transform: translateX(6px); }
+      60%       { transform: translateX(-4px); }
+      80%       { transform: translateX(4px); }
+    }
+
+    @keyframes glow-pulse {
+      0%, 100% { box-shadow: 0 0 40px rgba(var(--bs-warning-rgb), 0.4); }
+      50%       { box-shadow: 0 0 70px rgba(var(--bs-warning-rgb), 0.7); }
+    }
+
+    .result-value.critical-fail    { color: var(--bs-danger) !important; }
+    .result-value.critical-success { color: var(--bs-warning) !important; }
+
+    .result-value {
+      font-size: 5rem;
+      line-height: 1.05;
+      min-height: 5.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--bs-primary);
+      transition: color 0.2s;
+    }
+
+    .result-value.rolling {
+      animation: flicker 0.08s infinite;
+    }
+
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.25; }
+    }
+
+    /* ── Bag buttons ── */
+    .die-btn {
+      position: relative;
+      padding: 20px 6px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      transition: background-color 0.1s, border-color 0.1s, transform 0.1s, font-size 0.1s;
+    }
+
+    .die-btn.current {
+      background-color: var(--bs-primary);
+      border-color: var(--bs-primary);
+      color: var(--bs-white);
+      font-size: 1.35rem;
+    }
+
+    .die-btn:active {
+      transform: scale(0.93);
+    }
+
+    .bag-count {
+      display: block;
+      font-size: 0.68rem;
+      font-weight: 400;
+      opacity: 0.75;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── Reroll button ── */
+    .reroll-btn {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s, transform 0.1s;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .reroll-btn.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .reroll-btn:active {
+      transform: scale(0.97);
+    }
+
+    .reset-btn {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .reset-btn:active {
+      transform: scale(0.97);
+    }
+
+    .lang-dropdown {
+      z-index: 10;
+    }
+
+    /* ── History ── */
+    .history-list {
+      max-height: 240px;
+      overflow-y: auto;
+    }
+
+    .history-list .list-group-item {
+      border-color: var(--bs-border-color-translucent);
+      padding: 0.4rem 0;
+    }
+  </style>
+</head>
+<body class="d-flex flex-column align-items-center pt-4 pb-5 px-3">
+
+<div class="dropdown lang-dropdown position-fixed top-0 end-0 m-3">
+  <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" id="langDropdownBtn" aria-expanded="false" onclick="toggleLangMenu(event)">
+    <span id="langDropdownLabel">🇫🇷 Français</span>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end" id="langDropdownMenu" aria-labelledby="langDropdownBtn">
+    <li><button type="button" class="dropdown-item" onclick="setLanguage('fr')">🇫🇷 Français</button></li>
+    <li><button type="button" class="dropdown-item" onclick="setLanguage('en')">🇬🇧 English</button></li>
+  </ul>
+</div>
+
+<div class="app w-100 d-flex flex-column align-items-center gap-3">
+
+  <h1 id="appTitle" class="app-title text-primary text-uppercase fw-semibold text-center mb-0">🔮 Billes Audio</h1>
+
+  <div class="card w-100 text-center result-panel" id="panel">
+    <div class="card-body py-4">
+      <div class="text-primary text-uppercase small fw-semibold mb-1" id="resultLabel">&nbsp;</div>
+      <div class="result-value fw-bold" id="resultValue">?</div>
+      <div class="text-body-secondary small" id="remainingLabel">&nbsp;</div>
+    </div>
+  </div>
+
+  <div class="row g-2 w-100">
+    <div class="col-6">
+      <button id="bag20" class="btn btn-outline-primary w-100 die-btn" onclick="draw(20)">1–20<span class="bag-count" id="remain20"></span></button>
+    </div>
+    <div class="col-6">
+      <button id="bag6" class="btn btn-outline-primary w-100 die-btn" onclick="draw(6)">1–6<span class="bag-count" id="remain6"></span></button>
+    </div>
+    <div class="col-3">
+      <button id="bag4" class="btn btn-outline-primary w-100 die-btn" onclick="draw(4)">1–4<span class="bag-count" id="remain4"></span></button>
+    </div>
+    <div class="col-3">
+      <button id="bag8" class="btn btn-outline-primary w-100 die-btn" onclick="draw(8)">1–8<span class="bag-count" id="remain8"></span></button>
+    </div>
+    <div class="col-3">
+      <button id="bag10" class="btn btn-outline-primary w-100 die-btn" onclick="draw(10)">1–10<span class="bag-count" id="remain10"></span></button>
+    </div>
+    <div class="col-3">
+      <button id="bag12" class="btn btn-outline-primary w-100 die-btn" onclick="draw(12)">1–12<span class="bag-count" id="remain12"></span></button>
+    </div>
+    <div class="col-12">
+      <button id="bag100" class="btn btn-outline-primary w-100 die-btn" onclick="draw(100)">1–100<span class="bag-count" id="remain100"></span></button>
+    </div>
+  </div>
+
+  <button class="btn btn-secondary w-100 reroll-btn" id="rerollBtn" onclick="reroll()">↺ Tirer une autre bille du même sac</button>
+
+  <p id="hintText" class="hint text-body-secondary small text-center mb-0">Appuie sur un sac — une bille en est tirée, le résultat est annoncé à voix haute</p>
+
+  <button class="btn btn-outline-danger btn-sm reset-btn" id="resetBtn" onclick="resetBags()">🔄 Réinitialiser les sacs</button>
+
+  <div class="card w-100 history-card">
+    <div class="card-body py-2 px-3">
+      <h2 id="historyTitle" class="text-primary text-uppercase small fw-semibold mb-2">Historique</h2>
+      <ul id="historyList" class="list-group list-group-flush small history-list"></ul>
+    </div>
+  </div>
+
+</div>
+
+<script src="./assets/marbles.js"></script>
+</body>
+</html>
