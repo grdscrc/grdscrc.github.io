@@ -300,6 +300,14 @@ body {
     margin-top: 2px;
 }
 
+.edu-year {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    margin-left: 6px;
+}
+
 /* SKILLS */
 .skills-list {
     display: flex;
