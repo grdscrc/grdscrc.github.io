@@ -66,12 +66,18 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(1.7rem,8vw,2.4rem)
 .splash small{display:block;font-family:var(--body);font-weight:800;font-size:.9rem;color:var(--ink);text-shadow:none;letter-spacing:.1em;text-transform:uppercase}
 @keyframes slam{0%{transform:scale(2.2);opacity:0}25%{transform:scale(1);opacity:1}80%{opacity:1}100%{opacity:0}}
 .react{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;z-index:4}
-.react div{font-family:var(--display);font-size:2rem;text-align:center;text-shadow:0 3px 0 rgba(0,0,0,.6);animation:pop 2.3s ease-out forwards;
-  background:rgba(20,6,11,.75);padding:14px 20px;border-radius:16px}
+.react div{font-family:var(--display);font-size:2rem;text-align:center;text-shadow:0 3px 0 rgba(0,0,0,.6);animation:pop .45s ease-out forwards;
+  background:rgba(20,6,11,.94);padding:14px 20px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.6)}
 .react span{display:block;font-size:4rem}
 .punch{font-family:var(--body);font-weight:800;font-size:1.35rem;color:var(--ink);text-shadow:none;margin:0 0 10px;max-width:16em;overflow-wrap:anywhere}
+.react .next{display:block;width:100%;margin-top:14px;pointer-events:auto;font-size:1rem;text-shadow:none}
+.react .next:disabled{opacity:.5}
+.mute{position:fixed;bottom:calc(8px + env(safe-area-inset-bottom,0px));right:max(8px,env(safe-area-inset-right,0px));z-index:10;width:40px;height:40px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.55);color:var(--ink);font-size:1.1rem;line-height:1;padding:0}
+.mute:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.hint{padding-inline:44px}
 .react em{display:block;font-family:var(--body);font-style:normal;font-weight:600;font-size:.85rem;color:var(--ink);text-shadow:none;margin-top:6px}
-@keyframes pop{0%{transform:scale(.4);opacity:0}15%{transform:scale(1.08);opacity:1}85%{opacity:1}100%{transform:scale(1);opacity:0}}
+@keyframes pop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.06);opacity:1}100%{transform:scale(1);opacity:1}}
 .menu{display:flex;flex-direction:column;gap:10px;margin-block:auto}
 .menu p{margin:0;text-align:center;color:var(--muted);line-height:1.45}
 .howto{display:grid;grid-template-columns:1fr auto 1fr;grid-template-rows:auto auto auto;gap:6px;align-items:center;justify-items:center;font-weight:800;font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);white-space:nowrap}
@@ -126,6 +132,7 @@ button{font:inherit;cursor:pointer}
 <body>
 
 <div id="app"><div class="wrap" id="root"></div></div>
+<button class="mute" id="mute" type="button" aria-label="Couper le son">🔊</button>
 
 <script src="./assets/stand-upper-simulator.js"></script>
 </body>

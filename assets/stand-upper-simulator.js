@@ -47,7 +47,8 @@ const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math
 
 /* ---------- Audio ---------- */
 let AC=null;
-function ac(){ if(!AC){ try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } if(AC&&AC.state==="suspended") AC.resume(); return AC; }
+let MUTED=false; try{ MUTED=localStorage.getItem("sus-muted")==="1"; }catch(e){}
+function ac(){ if(MUTED) return null; if(!AC){ try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } if(AC&&AC.state==="suspended") AC.resume(); return AC; }
 function noise(dur){ const a=ac(); const b=a.createBuffer(1,a.sampleRate*dur,a.sampleRate); const d=b.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1; const s=a.createBufferSource(); s.buffer=b; return s; }
 function env(g,t,at,peak,rel){ g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(peak,t+at); g.gain.exponentialRampToValueAtTime(.001,t+at+rel); }
 function tone(freq,dur,type="sine",vol=.15,delay=0){ const a=ac(); if(!a) return; const t=a.currentTime+delay; const o=a.createOscillator(),g=a.createGain(); o.type=type; o.frequency.value=freq; env(g,t,.005,vol,dur); o.connect(g).connect(a.destination); o.start(t); o.stop(t+dur+.05); }
@@ -334,7 +335,7 @@ const GAMES={
       const w2=i==null?"rien":opts[i];
       PUNCH=ok?pick([`Ô ${word}, ta splendeur est celle ${deIndef(w2)}`,`${word}, ${word}, ${word}… Ne serait-ce donc que l'ombre ${deIndef(w2)} ?`,`À la gloire ${deDef(word)}, j'invoque le courroux ${deIndef(w2)}`]):`${word} tralala ${w2}`;
       setTimeout(()=>done(ok?(el2/T<.4?1:.7):0, ok?"":i==null?"Trop lent, le silence s'installe":`« ${opts[i]} » ne rimait pas`),350); };
-    el.querySelectorAll(".opt").forEach(b=>b.onclick=()=>end(+b.dataset.i));
+    el.querySelectorAll(".opt").forEach(b=>b.onpointerdown=e=>{ e.preventDefault(); end(+b.dataset.i); });
     const kd=e=>{ const k=+e.key; if(k>=1&&k<=n) end(k-1); }; document.addEventListener("keydown",kd);
     const loop=now=>{ const el2=(now-t0)/1000; $("tm").style.width=clamp(100-el2/T*100,0,100)+"%"; if(el2>=T){ end(null); return; } raf=requestAnimationFrame(loop); };
     raf=requestAnimationFrame(loop);
@@ -368,9 +369,19 @@ function finish(note,detail=""){
   const tip="";
   $("stage").insertAdjacentHTML("beforeend",`<div class="react"><div style="color:${r.c}">${punch?`<p class="punch">${punch}</p>`:""}<span>${r.e}</span>${r.t}${detail?`<em>${detail}</em>`:""}${tip?`<em>${tip}</em>`:""}${crowd?`<em>${crowd}</em>`:""}</div></div>`);
   $("mood").style.width=S.mood+"%";
-  setTimeout(()=>{ S.i++; if(empty()||S.i>=JOKES) end(); else { S.phase="swipe"; render(); } },2400);
+  const g=$("game"); if(g) g.style.opacity=".12";
+  const last=empty()||S.i+1>=JOKES, nb=document.createElement("button");
+  nb.className="big next"; nb.id="next"; nb.textContent=last?"Voir le bilan":"Blague suivante"; nb.disabled=true; nb.onclick=nextJoke;
+  document.querySelector(".react div").appendChild(nb); setTimeout(()=>{ nb.disabled=false; },450);
 }
 function empty(){ return S.seat.every(o=>!o)&&!S.stand.length; }
+function nextJoke(){
+  const nb=$("next"); if(S.phase!=="react"||!nb||nb.disabled) return; S.phase="next";
+  S.i++; if(empty()||S.i>=JOKES) end(); else { S.phase="swipe"; render(); }
+}
+function updateMute(){ const b=$("mute"); if(!b) return; b.textContent=MUTED?"🔇":"🔊"; b.setAttribute("aria-label",MUTED?"Activer le son":"Couper le son"); b.setAttribute("aria-pressed",MUTED?"true":"false"); }
+$("mute").onclick=()=>{ MUTED=!MUTED; try{ localStorage.setItem("sus-muted",MUTED?"1":"0"); }catch(e){} if(MUTED&&AC) AC.suspend(); updateMute(); };
+updateMute();
 function end(){
   S.phase="end"; const off=empty();
   const cnt=k=>S.results.filter(x=>x===k).length, ratio=(cnt("applause")*2+cnt("laugh"))/(2*JOKES);
@@ -389,6 +400,7 @@ function end(){
   const pub=S.pub; $("again").onclick=()=>start(pub); $("back").onclick=menu;
 }
 document.addEventListener("keydown",e=>{
+  if(S.phase==="react"&&(e.key==="Enter"||e.key===" ")){ e.preventDefault(); nextJoke(); return; }
   const m={ArrowLeft:"l",ArrowRight:"r",ArrowUp:"u",ArrowDown:"d"};
   if(S.phase==="swipe"&&m[e.key]){ e.preventDefault(); ac(); choose(m[e.key]); }
 });
