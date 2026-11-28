@@ -3,7 +3,7 @@ const ORDER = {l:"DOSE !", r:"TRACE !", u:"LA RIME !", d:"VISE !"};
 const SUB = {l:"pause, puis chute", r:"redessine de mémoire", u:"trouve la rime", d:"billard"};
 const PUBLICS = [
   {id:"ehpad", name:"Thé dansant à l'EHPAD", desc:"Vous allez bien vous entendre, ce public est appareillé", w:{l:1.6,r:1,u:1.3,d:1}},
-  {id:"bar", name:"Bar à 2h du mat'", desc:"Vous pouvez boire avant votre passage, mais il reste seulement un fond de virgin ti-punch", w:{l:.7,r:.5,u:.5,d:1.7}},
+  {id:"bar", name:"Bar à 2h du mat'", desc:"Le pied de micro est à droite, à gauche c'est le narguilé", w:{l:.7,r:.5,u:.5,d:1.7}},
   {id:"rh", name:"Séminaire RH", desc:"#opentolaugh", w:{l:.5,r:1.6,u:.9,d:.35}},
 ];
 const RHYMES = {
