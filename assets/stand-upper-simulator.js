@@ -178,15 +178,16 @@ function bindSwipe(card,tag,can,onSwipe){
 // carte d'exemple de l'accueil : se swipe sans lancer de mini-jeu
 const DEMO_WORDS=["Un autre mot","Un autre autre mot","Mot 2","Mot 3","Mot 4 : word reborn","Mot 5 : rise of the motus","Mot 6 : j'en ai pas marre","Mot",
   "Mot #j'ai perdu le compte","¡ Una palabra !","Allez","Un mot","Votre doigt est musclé"];
-let demoI=0;
+let demoI=0, demoGo=null;
 function bindDemo(){
   const card=$("democard"), tag=$("dtag"), w=$("dword"); let busy=false;
-  bindSwipe(card,tag,()=>S.phase==="menu"&&!busy,dir=>{ busy=true; SFX.swish();
+  demoGo=dir=>{ if(S.phase!=="menu"||busy) return; busy=true; SFX.swish();
     const v={l:[-1,0],r:[1,0],u:[0,-1],d:[0,1]}[dir];
     card.style.transition="transform .25s, opacity .25s"; card.style.transform=`translate(${v[0]*220}px,${v[1]*220}px) rotate(${v[0]*20}deg)`; card.style.opacity=0;
     setTimeout(()=>{ w.textContent=demoI<DEMO_WORDS.length?DEMO_WORDS[demoI]:"…"; demoI++; tag.style.opacity=0;
       card.style.transition="none"; card.style.transform="scale(.85)";
-      requestAnimationFrame(()=>{ card.style.transition="transform .2s, opacity .2s"; card.style.transform=""; card.style.opacity=1; busy=false; }); },260); });
+      requestAnimationFrame(()=>{ card.style.transition="transform .2s, opacity .2s"; card.style.transform=""; card.style.opacity=1; busy=false; }); },260); };
+  bindSwipe(card,tag,()=>S.phase==="menu"&&!busy,demoGo);
 }
 function choose(dir){
   if(S.phase!=="swipe") return; S.phase="intro"; SFX.swish(); setFaces(null); root.classList.add("playing");
@@ -453,6 +454,8 @@ function end(){
   const pub=S.pub; $("again").onclick=()=>start(pub); $("back").onclick=menu;
 }
 document.addEventListener("keydown",e=>{
+  const ka={ArrowLeft:"l",ArrowRight:"r",ArrowUp:"u",ArrowDown:"d"}[e.key];
+  if(S.phase==="menu"&&ka&&demoGo&&!e.target.closest?.("button")){ e.preventDefault(); ac(); demoGo(ka); return; }
   if(S.phase==="react"&&(e.key==="Enter"||e.key===" ")){ e.preventDefault(); nextJoke(); return; }
   const m={ArrowLeft:"l",ArrowRight:"r",ArrowUp:"u",ArrowDown:"d"};
   if(S.phase==="swipe"&&m[e.key]){ e.preventDefault(); ac(); choose(m[e.key]); }
