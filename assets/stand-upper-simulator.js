@@ -82,10 +82,10 @@ function menu(){
   root.innerHTML=`<h1>Stand-upper Simulator</h1>
   <div class="menu">
     <span class="lbl" style="text-align:center">Choisis ta salle</span>
-    ${PUBLICS.map((p,i)=>`<button class="pub" id="pub-${p.id}" data-i="${i}"><strong>${p.name}</strong><small>${p.desc}</small></button>`).join("")}
+    ${PUBLICS.map((p,i)=>`<button class="pub" id="pub-${p.id}" data-i="${i}"><strong>${p.name}</strong><small>${p.desc}</small><em class="hard">Angle difficile : ${hardOf(p).map(k=>REG[k]).join(", ")}</em></button>`).join("")}
     <span class="lbl" style="text-align:center;margin-top:8px">Comment jouer</span>
     <div class="swipe demo">${dirLabel("u",1)}${dirLabel("l",1)}<div class="card mini" id="democard"><span class="word" id="dword">Un mot</span><span class="tag" id="dtag"></span></div>${dirLabel("r",1)}${dirLabel("d",1)}</div>
-    <p>Un mot tombe. <b>Swipe</b> pour choisir l'angle de ta vanne, puis réussis le mini-jeu de cet angle. L'angle que ton public aime est en mode facile, celui qu'il déteste en mode difficile.</p>
+    <p>Un mot tombe. <b>Swipe</b> pour choisir l'angle de ta vanne, puis réussis le mini-jeu de cet angle. Chaque salle déteste un angle : son mini-jeu passe en mode difficile.</p>
   </div>`;
   root.querySelectorAll(".pub").forEach(b=>b.onclick=()=>{ ac(); start(PUBLICS[+b.dataset.i]); });
   demoI=0; bindDemo();
@@ -144,8 +144,9 @@ function join(){
 function prefChips(w){
   return Object.keys(REG).map(k=>{ const c=w[k]>=1.5?"love":w[k]<=.5?"hate":""; return `<span class="chip ${c}">${c==="love"?"♥ ":c==="hate"?"✕ ":""}${REG[k]}</span>`; }).join("");
 }
-function dirLabel(k,plain){ const w=plain?1:S.pub.w[k], c=w>=1.5?"love":w<=.5?"hate":""; const arrow={u:"↑",d:"↓",l:"←",r:"→"}[k];
-  const txt=plain?REG[k]:`${REG[k]}${c==="love"?" ♥ facile":c==="hate"?" ✕ difficile":" · normal"}`;
+const hardOf=p=>Object.keys(p.w).filter(k=>p.w[k]<=.5);
+function dirLabel(k,plain){ const w=plain?1:S.pub.w[k], c=w<=.5?"hate":""; const arrow={u:"↑",d:"↓",l:"←",r:"→"}[k];
+  const txt=plain?REG[k]:`${REG[k]}${c==="hate"?" ✕ difficile":""}`;
   return k==="l"||k==="r" ? `<div class="dl ${k} ${c}"><b>${arrow}</b><span>${txt}</span></div>` : `<div class="dl ${k} ${c}">${arrow} ${txt}</div>`; }
 function render(){
   root.classList.remove("scroll","end");
@@ -190,7 +191,7 @@ function bindDemo(){
 function choose(dir){
   if(S.phase!=="swipe") return; S.phase="intro"; SFX.swish(); setFaces(null); root.classList.add("playing");
   const [word,fit,rh]=S.deck[S.i];
-  S.dir=dir; const w=S.pub.w[dir]; const lvl=w>=1.5?0:w<=.5?2:1; S.lvl=lvl; S.fit=fit===dir;
+  S.dir=dir; const w=S.pub.w[dir]; const lvl=w<=.5?2:1; S.lvl=lvl; S.fit=fit===dir;
   const speed=1+S.combo*.05+S.i*.02;
   const stage=$("stage");
   stage.innerHTML=`<div class="splash"><div>${ORDER[dir]}<small>${["facile","normal","difficile"][lvl]} · ${SUB[dir]}</small></div></div><div class="game" id="game"></div>`;
