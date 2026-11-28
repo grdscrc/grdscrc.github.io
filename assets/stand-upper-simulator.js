@@ -367,12 +367,12 @@ function finish(note,detail=""){
   if(r.k==="boo"&&++S.boos%2===0){ const here=S.seat.filter(Boolean).length+S.stand.length; const n=leave(Math.max(3,Math.round(here*(.4+Math.random()*.2)))); crowd=`${n} spectateur·ices quittent la salle`; }
   if(r.k==="applause"&&++S.ovs%2===0){ join(); crowd=`Salle comble : ${S.stand.length} personnes debout au fond`; }
   const tip="";
-  $("stage").insertAdjacentHTML("beforeend",`<div class="react"><div style="color:${r.c}">${punch?`<p class="punch">${punch}</p>`:""}<span>${r.e}</span>${r.t}${detail?`<em>${detail}</em>`:""}${tip?`<em>${tip}</em>`:""}${crowd?`<em>${crowd}</em>`:""}</div></div>`);
+  $("stage").insertAdjacentHTML("beforeend",`<div class="react"><b class="rt" style="color:${r.c}">${r.t}</b>${detail?`<em>${detail}</em>`:""}${tip?`<em>${tip}</em>`:""}${crowd?`<em>${crowd}</em>`:""}${punch?`<div class="bubble">${punch}</div>`:""}</div>`);
   $("mood").style.width=S.mood+"%";
   const g=$("game"); if(g) g.style.opacity=".12";
   const last=empty()||S.i+1>=JOKES, nb=document.createElement("button");
   nb.className="big next"; nb.id="next"; nb.textContent=last?"Voir le bilan":"Blague suivante"; nb.disabled=true; nb.onclick=nextJoke;
-  document.querySelector(".react div").appendChild(nb); setTimeout(()=>{ nb.disabled=false; },450);
+  document.querySelector(".react").appendChild(nb); setTimeout(()=>{ nb.disabled=false; },450);
 }
 function empty(){ return S.seat.every(o=>!o)&&!S.stand.length; }
 function nextJoke(){
