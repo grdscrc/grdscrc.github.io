@@ -38,7 +38,12 @@ const indef=w=>w==="Afrique"?"l'Afrique":(FEM.has(w)?"une ":"un ")+low(w);
 const deIndef=w=>w==="Afrique"?"de l'Afrique":"d'"+indef(w);
 const def=w=>{ const a=ART[w]??""; return a===""?w:a==="l'"?"l'"+low(w):a+" "+low(w); };
 const deDef=w=>{ const a=ART[w]??""; return a==="le"?"du "+low(w):a==="les"?"des "+low(w):a==="la"?"de la "+low(w):a==="l'"?"de l'"+low(w):(vowel(w)?"d'":"de ")+w; };
-const SHAPE_ART={"spirale":"une spirale","étoile":"une étoile","cœur":"un cœur","éclair":"un éclair","infini":"l'infini","vague":"une vague"};
+const SHAPE_ART={"spirale":"une spirale","étoile":"une étoile","cœur":"un cœur","éclair":"un éclair","infini":"l'infini","vague":"une vague","triangle":"un triangle","tasse":"une tasse"};
+const SHAPE_FEM=new Set(["spirale","étoile","vague","tasse"]);
+const que=x=>vowel(x)?"qu'"+x:"que "+x;
+// « mon citron éternel » / « ma tortue éternelle »
+const poss=(w,fem,adj)=>{ if(w==="Afrique"){ fem=true; } const n=w==="Afrique"?w:low(w);
+  return (fem?(vowel(w)?"mon ":"ma "):"mon ")+n+" "+(fem?(adj.endsWith("el")?adj+"le":adj+"e"):adj); };
 const QUALS=["bien","super","top","pas terrible","dispensable","correct","sympa","moyen"]; const root = document.getElementById("root");
 const $ = id => document.getElementById(id);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -47,7 +52,8 @@ const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math
 
 /* ---------- Audio ---------- */
 let AC=null;
-function ac(){ if(!AC){ try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } if(AC&&AC.state==="suspended") AC.resume(); return AC; }
+let MUTED=false; try{ MUTED=localStorage.getItem("sus-muted")==="1"; }catch(e){}
+function ac(){ if(MUTED) return null; if(!AC){ try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } if(AC&&AC.state==="suspended") AC.resume(); return AC; }
 function noise(dur){ const a=ac(); const b=a.createBuffer(1,a.sampleRate*dur,a.sampleRate); const d=b.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1; const s=a.createBufferSource(); s.buffer=b; return s; }
 function env(g,t,at,peak,rel){ g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(peak,t+at); g.gain.exponentialRampToValueAtTime(.001,t+at+rel); }
 function tone(freq,dur,type="sine",vol=.15,delay=0){ const a=ac(); if(!a) return; const t=a.currentTime+delay; const o=a.createOscillator(),g=a.createGain(); o.type=type; o.frequency.value=freq; env(g,t,.005,vol,dur); o.connect(g).connect(a.destination); o.start(t); o.stop(t+dur+.05); }
@@ -193,7 +199,8 @@ const GAMES={
       const endG=acc=>{ if(over) return; over=true; cancelAnimationFrame(raf); off();
         const pd=Math.abs(power-tc)/(tw/2), ad=Math.abs(acc-ac0)/(aw/2); notes.push((q(pd)+q(ad))/2); errs.push((power-tc)/(tw/2)); k++;
         if(k<n) setTimeout(gauge,350); else { const avg=notes.reduce((a,b)=>a+b,0)/n, e=errs.reduce((a,b)=>a+b,0)/n;
-          const pause=e>1?"<br><br>":e<-1?"":avg>=.6?"… ":" "; PUNCH=`${word}${pause}${pick(QUALS)}`; done(avg, n>1?`${n} jauges, précision ${Math.round(avg*100)} %`:power>=.99?"Pause interminable…":""); } };
+          const pause=e>1?"<br><br>":e<-1?"":avg>=.6?"… ":" "; const q=pick(QUALS);
+          PUNCH=pause==="… "?pick([`${word}… ${q}`,`${word}. Bon. … ${q}`,`J'ai essayé ${def(word)}… ${q}`,`${word}… ${q}, sans plus`]):`${word}${pause}${q}`; done(avg, n>1?`${n} jauges, précision ${Math.round(avg*100)} %`:power>=.99?"Pause interminable…":""); } };
       const hit=()=>{ const d=$("drum"); d.classList.remove("hit"); void d.offsetWidth; d.classList.add("hit"); };
       const tap=()=>{ if(over) return; hit(); if(phase==="power"){ power=pos; phase="back"; SFX.badum(); $("drum").textContent="🥁…"; $("gf").style.width=(power*100)+"%"; hint.textContent="…et tape « Tss ! » sur la zone dorée"; } else { SFX.tss(); $("drum").textContent="🥁💥"; endG(pos); } };
       const loop=now=>{ const dt=(now-last)/1000; last=now;
@@ -219,6 +226,8 @@ const GAMES={
       "éclair":poly([[.62,.06],[.3,.52],[.58,.5],[.36,.94]]),
       "infini":t=>{const a=t*Math.PI*2,s=1+Math.sin(a)**2;return[.5+.42*Math.cos(a)/s,.5+.42*Math.sin(a)*Math.cos(a)/s];},
       "vague":t=>[.08+.84*t,.5+.25*Math.sin(t*Math.PI*3)],
+      "triangle":poly([[.5,.08],[.92,.86],[.08,.86],[.5,.08]]),
+      "tasse":poly([[.1,.2],[.16,.84],[.58,.84],[.62,.66],[.76,.72],[.9,.64],[.93,.48],[.86,.36],[.74,.34],[.64,.4],[.66,.2]]),
     };
     const n=lvl+1, names=shuffle(Object.keys(SH)).slice(0,n), tpls=names.map(nm=>[...Array(80)].map((_,i)=>SH[nm](i/79)));
     el.innerHTML=`<div class="gtitle" id="gt">✍️ Mémorise ${n>1?`ces ${n} symboles`:"ce symbole"}…</div><canvas id="cv"></canvas><div class="timer"><i id="tm"></i></div>`;
@@ -247,7 +256,11 @@ const GAMES={
     const end=()=>{ if(over) return; over=true; cancelAnimationFrame(raf);
       while(notes.length<n) notes.push(grade(tpls[notes.length],strokes[notes.length]||[]));
       const avg=notes.reduce((a,b)=>a+b,0)/n; const obj=names.map((nm,i)=>notes[i]>=.35?SHAPE_ART[nm]:"un gribouillis").join(" et "), W=cap(def(word));
-      PUNCH=pick([`${W}, c'est comme ${obj}`,`${W} n'a rien à voir avec ${obj}`,`${W} est ${obj} avec un chapeau rigolo`])+(avg<.35?", j'ai pas raison ?":""); done(avg, `Ressemblance : ${Math.round(avg*100)} %`); };
+      const d=def(word), tpl=[`${W}, c'est comme ${obj}`,`${W} n'a rien à voir avec ${obj}`,`${W} est ${obj} avec un chapeau rigolo`,
+        `On m'a dit ${que(d)} était ${obj}. Je ne l'ai jamais oublié`,`Sans ${obj}, ${d} ne serait rien`,
+        `Personne ne parle du lien entre ${d} et ${obj}. Moi si`,`${W} le matin, ${obj} le soir`];
+      if(n===1){ const ok1=notes[0]>=.35, nm=ok1?names[0]:"gribouillis"; tpl.push(`Mon psy dit ${que(d)}, c'est ${poss(nm,ok1&&SHAPE_FEM.has(nm),"intérieur")}`); }
+      PUNCH=pick(tpl)+(avg<.35?pick([", j'ai pas raison ?",", vous voyez ce que je veux dire ?","… Bon. Passons.",", c'était mieux dans ma tête"]):""); done(avg, `Ressemblance : ${Math.round(avg*100)} %`); };
     const toU=e=>{const r=cv.getBoundingClientRect();return[(e.clientX-r.left-ox)/side,(e.clientY-r.top-oy)/side];};
     cv.onpointerdown=e=>{ if(over||memo) return; cv.setPointerCapture(e.pointerId); cur=[toU(e)]; };
     cv.onpointermove=e=>{ if(cur) cur.push(toU(e)); };
@@ -304,12 +317,12 @@ const GAMES={
                 hitB=h; tHit=now; if(lvl<2) setTimeout(resolve,650); } } }
           else if(!hitB&&(Math.hypot(cue.vx,cue.vy)<60*u||now-tShot>2500)) resolve(); } } }
       if(lvl===2&&hitB&&!potted&&(now-tHit>3500||(hitB.vx===0&&hitB.vy===0&&now-tHit>300))) resolve();
-      if(!shot){ $("tm").style.width=clamp(100-(now-t0)/1000/T*100,0,100)+"%"; if((now-t0)/1000>=T){ over=true; PUNCH=`${word} 😇`; done(0,"Tu as hésité, ils t'ont oublié"); return; } }
+      if(!shot){ $("tm").style.width=clamp(100-(now-t0)/1000/T*100,0,100)+"%"; if((now-t0)/1000>=T){ over=true; PUNCH=pick([`${word} 😇`,`Ah, ${def(word)}… 😇`]); done(0,"Tu as hésité, ils t'ont oublié"); return; } }
       if(over) return; raf=requestAnimationFrame(loop); };
     raf=requestAnimationFrame(loop);
     let resolved=false;
     function resolve(){ if(resolved) return; resolved=true; setTimeout(()=>{ over=true; cancelAnimationFrame(raf);
-      const P=e=>PUNCH=`${word} ${e}`;
+      const P=e=>PUNCH=pick([`${word} ${e}`,`${word}, si vous voyez ce que je veux dire ${e}`,`Ah, ${def(word)}… ${e}`,`Parlons ${deDef(word)} ${e}`]);
       if(scratch) return P("😈😈😈"),done(0,"Faute : la blanche est tombée dans un trou");
       if(!hitB) return P("😇"),done(0,"Aucune boule touchée : bide");
       if(lvl===0) return P(hitOff<.35?"🤤":"😏"),done(hitOff<.35?1:.7, hitOff<.35?"En plein centre !":"Touchée, de biais");
@@ -332,9 +345,20 @@ const GAMES={
       el.querySelectorAll(".opt").forEach((b,j)=>{ if(opts[j]===good) b.classList.add("ok"); else if(j===i) b.classList.add("ko"); });
       const ok=i!=null&&opts[i]===good;
       const w2=i==null?"rien":opts[i];
-      PUNCH=ok?pick([`Ô ${word}, ta splendeur est celle ${deIndef(w2)}`,`${word}, ${word}, ${word}… Ne serait-ce donc que l'ombre ${deIndef(w2)} ?`,`À la gloire ${deDef(word)}, j'invoque le courroux ${deIndef(w2)}`]):`${word} tralala ${w2}`;
+      // deux vers : le setup finit le premier, la rime finit le second
+      const d=def(word), lw=(ART[word]??"")===""?word:low(word), iw=indef(w2), mw=i==null?"rien":low(w2);
+      PUNCH=ok?pick([
+          `Ô divine splendeur ${deDef(word)},<br>Tu as l'éclat ${deIndef(w2)} !`,
+          `${word}, ${lw}, ${lw}…<br>N'es-tu que l'ombre ${deIndef(w2)} ?`,
+          `À la gloire ${deDef(word)},<br>J'invoque le courroux ${deIndef(w2)}`,
+          `Mon amour, ô ${lw},<br>Je t'offre ${iw}`,
+          `Le soir tombe sur ${d},<br>L'aube se lève sur ${iw}`,
+          `J'ai traversé les mers pour ${d},<br>Je n'ai trouvé ${que(iw)}`,
+          `Qu'on grave dans le marbre ${d},<br>Pour l'éternité, ${iw}`,
+          `Ô muse, chante ${d},<br>Chante aussi ${iw} !`])
+        :pick([`${word} tralala ${mw}`,`Non attendez… ${lw}… euh… ${mw} ?`,`J'ai vérifié : ${lw} rime avec ${mw}`,`C'est de la poésie : ${lw}… ${mw}`]);
       setTimeout(()=>done(ok?(el2/T<.4?1:.7):0, ok?"":i==null?"Trop lent, le silence s'installe":`« ${opts[i]} » ne rimait pas`),350); };
-    el.querySelectorAll(".opt").forEach(b=>b.onclick=()=>end(+b.dataset.i));
+    el.querySelectorAll(".opt").forEach(b=>b.onpointerdown=e=>{ e.preventDefault(); end(+b.dataset.i); });
     const kd=e=>{ const k=+e.key; if(k>=1&&k<=n) end(k-1); }; document.addEventListener("keydown",kd);
     const loop=now=>{ const el2=(now-t0)/1000; $("tm").style.width=clamp(100-el2/T*100,0,100)+"%"; if(el2>=T){ end(null); return; } raf=requestAnimationFrame(loop); };
     raf=requestAnimationFrame(loop);
@@ -366,11 +390,21 @@ function finish(note,detail=""){
   if(r.k==="boo"&&++S.boos%2===0){ const here=S.seat.filter(Boolean).length+S.stand.length; const n=leave(Math.max(3,Math.round(here*(.4+Math.random()*.2)))); crowd=`${n} spectateur·ices quittent la salle`; }
   if(r.k==="applause"&&++S.ovs%2===0){ join(); crowd=`Salle comble : ${S.stand.length} personnes debout au fond`; }
   const tip="";
-  $("stage").insertAdjacentHTML("beforeend",`<div class="react"><div style="color:${r.c}">${punch?`<p class="punch">${punch}</p>`:""}<span>${r.e}</span>${r.t}${detail?`<em>${detail}</em>`:""}${tip?`<em>${tip}</em>`:""}${crowd?`<em>${crowd}</em>`:""}</div></div>`);
+  $("stage").insertAdjacentHTML("beforeend",`<div class="react"><b class="rt" style="color:${r.c}">${r.t}</b>${detail?`<em>${detail}</em>`:""}${tip?`<em>${tip}</em>`:""}${crowd?`<em>${crowd}</em>`:""}${punch?`<div class="bubble">${punch}</div>`:""}</div>`);
   $("mood").style.width=S.mood+"%";
-  setTimeout(()=>{ S.i++; if(empty()||S.i>=JOKES) end(); else { S.phase="swipe"; render(); } },2400);
+  const g=$("game"); if(g) g.style.opacity=".12";
+  const last=empty()||S.i+1>=JOKES, nb=document.createElement("button");
+  nb.className="big next"; nb.id="next"; nb.textContent=last?"Voir le bilan":"Blague suivante"; nb.disabled=true; nb.onclick=nextJoke;
+  document.querySelector(".react").appendChild(nb); setTimeout(()=>{ nb.disabled=false; },450);
 }
 function empty(){ return S.seat.every(o=>!o)&&!S.stand.length; }
+function nextJoke(){
+  const nb=$("next"); if(S.phase!=="react"||!nb||nb.disabled) return; S.phase="next";
+  S.i++; if(empty()||S.i>=JOKES) end(); else { S.phase="swipe"; render(); }
+}
+function updateMute(){ const b=$("mute"); if(!b) return; b.textContent=MUTED?"🔇":"🔊"; b.setAttribute("aria-label",MUTED?"Activer le son":"Couper le son"); b.setAttribute("aria-pressed",MUTED?"true":"false"); }
+$("mute").onclick=()=>{ MUTED=!MUTED; try{ localStorage.setItem("sus-muted",MUTED?"1":"0"); }catch(e){} if(MUTED&&AC) AC.suspend(); updateMute(); };
+updateMute();
 function end(){
   S.phase="end"; const off=empty();
   const cnt=k=>S.results.filter(x=>x===k).length, ratio=(cnt("applause")*2+cnt("laugh"))/(2*JOKES);
@@ -389,6 +423,7 @@ function end(){
   const pub=S.pub; $("again").onclick=()=>start(pub); $("back").onclick=menu;
 }
 document.addEventListener("keydown",e=>{
+  if(S.phase==="react"&&(e.key==="Enter"||e.key===" ")){ e.preventDefault(); nextJoke(); return; }
   const m={ArrowLeft:"l",ArrowRight:"r",ArrowUp:"u",ArrowDown:"d"};
   if(S.phase==="swipe"&&m[e.key]){ e.preventDefault(); ac(); choose(m[e.key]); }
 });
