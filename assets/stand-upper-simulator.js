@@ -274,10 +274,10 @@ const GAMES={
     raf=requestAnimationFrame(draw);
     const end=()=>{ if(over) return; over=true; cancelAnimationFrame(raf);
       while(notes.length<n) notes.push(grade(tpls[notes.length],strokes[notes.length]||[]));
-      const avg=notes.reduce((a,b)=>a+b,0)/n; const obj=names.map((nm,i)=>notes[i]>=.35?SHAPE_ART[nm]:"un gribouillis").join(" et "), W=cap(def(word));
+      const avg=notes.reduce((a,b)=>a+b,0)/n; const objs=names.map((nm,i)=>notes[i]>=.35?SHAPE_ART[nm]:"un gribouillis"), obj=objs.length>1?objs.slice(0,-1).join(", ")+" et "+objs[objs.length-1]:objs[0], W=cap(def(word));
       const d=def(word), tpl=[`${W}, c'est comme ${obj}`,`${W} n'a rien à voir avec ${obj}`,`${W} est ${obj} avec un chapeau rigolo`,
         `On m'a dit ${que(d)} était ${obj}. Je ne l'ai jamais oublié`,`Sans ${obj}, ${d} ne serait rien`,
-        `Personne ne parle du lien entre ${d} et ${obj}. Moi si`,`${W} le matin, ${obj} le soir`];
+        ...(n===1?[`Personne ne parle du lien entre ${d} et ${obj}. Moi si`]:[`Personne ne parle du lien entre ${d}, ${obj}. Moi si`]),`${W} le matin, ${obj} le soir`];
       if(n===1){ const ok1=notes[0]>=.35, nm=ok1?names[0]:"gribouillis"; tpl.push(`Mon psy dit ${que(d)}, c'est ${poss(nm,ok1&&SHAPE_FEM.has(nm),"intérieur")}`); }
       PUNCH=pick(tpl)+(avg<.35?pick([", j'ai pas raison ?",", vous voyez ce que je veux dire ?","… Bon. Passons.",", c'était mieux dans ma tête"]):""); done(avg, `Ressemblance : ${Math.round(avg*100)} %`); };
     const toU=e=>{const r=cv.getBoundingClientRect();return[(e.clientX-r.left-ox)/side,(e.clientY-r.top-oy)/side];};
@@ -466,7 +466,7 @@ function end(){
     <div class="set">${S.results.map(k=>`<i class="${k}"></i>`).join("")}</div>
     <details class="setlist"><summary>Ton set, vanne par vanne</summary><ol>${S.punches.map(p=>`<li><span class="k">${KEMO[p.k]}</span><span>${p.punch||"<em>(pas de punch)</em>"}</span></li>`).join("")}</ol></details>
     <button class="big" id="share">Partager mon set</button><p class="shared" id="shared" hidden></p>
-    <button class="pub" id="again"><strong>Rejouer ce public</strong><small>Même salle, nouveaux mots</small></button>Rejouer ce public</button><button class="pub" id="back"><strong>Changer de public</strong><small>Retour au choix de salle</small></button></div>`;
+    <button class="pub" id="again"><strong>Rejouer ce public</strong><small>Même salle, nouveaux mots</small></button><button class="pub" id="back"><strong>Changer de public</strong><small>Retour au choix de salle</small></button></div>`;
   const pub=S.pub; $("again").onclick=()=>start(pub); $("back").onclick=menu;
   $("share").onclick=()=>shareSet(rank);
 }
