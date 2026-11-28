@@ -38,7 +38,12 @@ const indef=w=>w==="Afrique"?"l'Afrique":(FEM.has(w)?"une ":"un ")+low(w);
 const deIndef=w=>w==="Afrique"?"de l'Afrique":"d'"+indef(w);
 const def=w=>{ const a=ART[w]??""; return a===""?w:a==="l'"?"l'"+low(w):a+" "+low(w); };
 const deDef=w=>{ const a=ART[w]??""; return a==="le"?"du "+low(w):a==="les"?"des "+low(w):a==="la"?"de la "+low(w):a==="l'"?"de l'"+low(w):(vowel(w)?"d'":"de ")+w; };
-const SHAPE_ART={"spirale":"une spirale","étoile":"une étoile","cœur":"un cœur","éclair":"un éclair","infini":"l'infini","vague":"une vague"};
+const SHAPE_ART={"spirale":"une spirale","étoile":"une étoile","cœur":"un cœur","éclair":"un éclair","infini":"l'infini","vague":"une vague","poisson":"un poisson"};
+const SHAPE_FEM=new Set(["spirale","étoile","vague"]);
+const que=x=>vowel(x)?"qu'"+x:"que "+x;
+// « mon citron éternel » / « ma tortue éternelle »
+const poss=(w,fem,adj)=>{ if(w==="Afrique"){ fem=true; } const n=w==="Afrique"?w:low(w);
+  return (fem?(vowel(w)?"mon ":"ma "):"mon ")+n+" "+(fem?(adj.endsWith("el")?adj+"le":adj+"e"):adj); };
 const QUALS=["bien","super","top","pas terrible","dispensable","correct","sympa","moyen"]; const root = document.getElementById("root");
 const $ = id => document.getElementById(id);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -194,7 +199,8 @@ const GAMES={
       const endG=acc=>{ if(over) return; over=true; cancelAnimationFrame(raf); off();
         const pd=Math.abs(power-tc)/(tw/2), ad=Math.abs(acc-ac0)/(aw/2); notes.push((q(pd)+q(ad))/2); errs.push((power-tc)/(tw/2)); k++;
         if(k<n) setTimeout(gauge,350); else { const avg=notes.reduce((a,b)=>a+b,0)/n, e=errs.reduce((a,b)=>a+b,0)/n;
-          const pause=e>1?"<br><br>":e<-1?"":avg>=.6?"… ":" "; PUNCH=`${word}${pause}${pick(QUALS)}`; done(avg, n>1?`${n} jauges, précision ${Math.round(avg*100)} %`:power>=.99?"Pause interminable…":""); } };
+          const pause=e>1?"<br><br>":e<-1?"":avg>=.6?"… ":" "; const q=pick(QUALS);
+          PUNCH=pause==="… "?pick([`${word}… ${q}`,`${word}. Bon. … ${q}`,`J'ai essayé ${def(word)}… ${q}`,`${word}… ${q}, sans plus`]):`${word}${pause}${q}`; done(avg, n>1?`${n} jauges, précision ${Math.round(avg*100)} %`:power>=.99?"Pause interminable…":""); } };
       const hit=()=>{ const d=$("drum"); d.classList.remove("hit"); void d.offsetWidth; d.classList.add("hit"); };
       const tap=()=>{ if(over) return; hit(); if(phase==="power"){ power=pos; phase="back"; SFX.badum(); $("drum").textContent="🥁…"; $("gf").style.width=(power*100)+"%"; hint.textContent="…et tape « Tss ! » sur la zone dorée"; } else { SFX.tss(); $("drum").textContent="🥁💥"; endG(pos); } };
       const loop=now=>{ const dt=(now-last)/1000; last=now;
@@ -220,6 +226,7 @@ const GAMES={
       "éclair":poly([[.62,.06],[.3,.52],[.58,.5],[.36,.94]]),
       "infini":t=>{const a=t*Math.PI*2,s=1+Math.sin(a)**2;return[.5+.42*Math.cos(a)/s,.5+.42*Math.sin(a)*Math.cos(a)/s];},
       "vague":t=>[.08+.84*t,.5+.25*Math.sin(t*Math.PI*3)],
+      "poisson":poly([[.08,.25],[.28,.5],[.45,.3],[.65,.27],[.82,.36],[.92,.5],[.82,.64],[.65,.73],[.45,.7],[.28,.5],[.08,.75]]),
     };
     const n=lvl+1, names=shuffle(Object.keys(SH)).slice(0,n), tpls=names.map(nm=>[...Array(80)].map((_,i)=>SH[nm](i/79)));
     el.innerHTML=`<div class="gtitle" id="gt">✍️ Mémorise ${n>1?`ces ${n} symboles`:"ce symbole"}…</div><canvas id="cv"></canvas><div class="timer"><i id="tm"></i></div>`;
@@ -248,7 +255,11 @@ const GAMES={
     const end=()=>{ if(over) return; over=true; cancelAnimationFrame(raf);
       while(notes.length<n) notes.push(grade(tpls[notes.length],strokes[notes.length]||[]));
       const avg=notes.reduce((a,b)=>a+b,0)/n; const obj=names.map((nm,i)=>notes[i]>=.35?SHAPE_ART[nm]:"un gribouillis").join(" et "), W=cap(def(word));
-      PUNCH=pick([`${W}, c'est comme ${obj}`,`${W} n'a rien à voir avec ${obj}`,`${W} est ${obj} avec un chapeau rigolo`])+(avg<.35?", j'ai pas raison ?":""); done(avg, `Ressemblance : ${Math.round(avg*100)} %`); };
+      const d=def(word), tpl=[`${W}, c'est comme ${obj}`,`${W} n'a rien à voir avec ${obj}`,`${W} est ${obj} avec un chapeau rigolo`,
+        `On m'a dit ${que(d)} était ${obj}. Je ne l'ai jamais oublié`,`Sans ${obj}, ${d} ne serait rien`,
+        `Personne ne parle du lien entre ${d} et ${obj}. Moi si`,`${W} le matin, ${obj} le soir`];
+      if(n===1){ const ok1=notes[0]>=.35, nm=ok1?names[0]:"gribouillis"; tpl.push(`Mon psy dit ${que(d)}, c'est ${poss(nm,ok1&&SHAPE_FEM.has(nm),"intérieur")}`); }
+      PUNCH=pick(tpl)+(avg<.35?pick([", j'ai pas raison ?",", vous voyez ce que je veux dire ?","… Bon. Passons.",", c'était mieux dans ma tête"]):""); done(avg, `Ressemblance : ${Math.round(avg*100)} %`); };
     const toU=e=>{const r=cv.getBoundingClientRect();return[(e.clientX-r.left-ox)/side,(e.clientY-r.top-oy)/side];};
     cv.onpointerdown=e=>{ if(over||memo) return; cv.setPointerCapture(e.pointerId); cur=[toU(e)]; };
     cv.onpointermove=e=>{ if(cur) cur.push(toU(e)); };
@@ -305,12 +316,12 @@ const GAMES={
                 hitB=h; tHit=now; if(lvl<2) setTimeout(resolve,650); } } }
           else if(!hitB&&(Math.hypot(cue.vx,cue.vy)<60*u||now-tShot>2500)) resolve(); } } }
       if(lvl===2&&hitB&&!potted&&(now-tHit>3500||(hitB.vx===0&&hitB.vy===0&&now-tHit>300))) resolve();
-      if(!shot){ $("tm").style.width=clamp(100-(now-t0)/1000/T*100,0,100)+"%"; if((now-t0)/1000>=T){ over=true; PUNCH=`${word} 😇`; done(0,"Tu as hésité, ils t'ont oublié"); return; } }
+      if(!shot){ $("tm").style.width=clamp(100-(now-t0)/1000/T*100,0,100)+"%"; if((now-t0)/1000>=T){ over=true; PUNCH=pick([`${word} 😇`,`Ah, ${def(word)}… 😇`]); done(0,"Tu as hésité, ils t'ont oublié"); return; } }
       if(over) return; raf=requestAnimationFrame(loop); };
     raf=requestAnimationFrame(loop);
     let resolved=false;
     function resolve(){ if(resolved) return; resolved=true; setTimeout(()=>{ over=true; cancelAnimationFrame(raf);
-      const P=e=>PUNCH=`${word} ${e}`;
+      const P=e=>PUNCH=pick([`${word} ${e}`,`${word}, si vous voyez ce que je veux dire ${e}`,`Ah, ${def(word)}… ${e}`,`Parlons ${deDef(word)} ${e}`]);
       if(scratch) return P("😈😈😈"),done(0,"Faute : la blanche est tombée dans un trou");
       if(!hitB) return P("😇"),done(0,"Aucune boule touchée : bide");
       if(lvl===0) return P(hitOff<.35?"🤤":"😏"),done(hitOff<.35?1:.7, hitOff<.35?"En plein centre !":"Touchée, de biais");
@@ -333,7 +344,11 @@ const GAMES={
       el.querySelectorAll(".opt").forEach((b,j)=>{ if(opts[j]===good) b.classList.add("ok"); else if(j===i) b.classList.add("ko"); });
       const ok=i!=null&&opts[i]===good;
       const w2=i==null?"rien":opts[i];
-      PUNCH=ok?pick([`Ô ${word}, ta splendeur est celle ${deIndef(w2)}`,`${word}, ${word}, ${word}… Ne serait-ce donc que l'ombre ${deIndef(w2)} ?`,`À la gloire ${deDef(word)}, j'invoque le courroux ${deIndef(w2)}`]):`${word} tralala ${w2}`;
+      const d=def(word), iw=i==null?"rien":indef(w2);
+      PUNCH=ok?pick([`Ô ${word}, ta splendeur est celle ${deIndef(w2)}`,`${word}, ${word}, ${word}… Ne serait-ce donc que l'ombre ${deIndef(w2)} ?`,`À la gloire ${deDef(word)}, j'invoque le courroux ${deIndef(w2)}`,
+          `${word}, mon amour, ${poss(w2,FEM.has(w2),"éternel")}`,`Le soir tombe sur ${d}, et l'aube se lève sur ${iw}`,`J'ai traversé les mers pour ${d}, je n'ai trouvé ${que(iw)}`,
+          `Qu'on grave dans le marbre : ${d} et ${iw}, à jamais`,`Ô muse, chante ${d}, chante ${iw} !`])
+        :pick([`${word} tralala ${w2}`,`${word}… euh… ${w2} ? Non attendez`,`${word} rime avec ${w2}, j'ai vérifié`,`${word}, ${w2}, voilà, c'est de la poésie`]);
       setTimeout(()=>done(ok?(el2/T<.4?1:.7):0, ok?"":i==null?"Trop lent, le silence s'installe":`« ${opts[i]} » ne rimait pas`),350); };
     el.querySelectorAll(".opt").forEach(b=>b.onpointerdown=e=>{ e.preventDefault(); end(+b.dataset.i); });
     const kd=e=>{ const k=+e.key; if(k>=1&&k<=n) end(k-1); }; document.addEventListener("keydown",kd);
