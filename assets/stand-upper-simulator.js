@@ -78,7 +78,7 @@ const SFX={
 
 /* ---------- Écrans ---------- */
 function menu(){
-  S={phase:"menu"}; root.classList.add("scroll"); root.scrollTop=0;
+  S={phase:"menu"}; root.classList.remove("end"); root.classList.add("scroll"); root.scrollTop=0;
   root.innerHTML=`<h1>Stand-upper Simulator</h1>
   <div class="menu">
     <span class="lbl" style="text-align:center">Choisis ta salle</span>
@@ -148,7 +148,7 @@ function dirLabel(k,plain){ const w=plain?1:S.pub.w[k], c=w>=1.5?"love":w<=.5?"h
   const txt=plain?REG[k]:`${REG[k]}${c==="love"?" ♥ facile":c==="hate"?" ✕ difficile":" · normal"}`;
   return k==="l"||k==="r" ? `<div class="dl ${k} ${c}"><b>${arrow}</b><span>${txt}</span></div>` : `<div class="dl ${k} ${c}">${arrow} ${txt}</div>`; }
 function render(){
-  root.classList.remove("scroll");
+  root.classList.remove("scroll","end");
   const [word]=S.deck[S.i];
   root.innerHTML=`
   <div class="hud"><span class="lbl">Ambiance</span><div class="meter"><i id="mood" style="width:${S.mood}%"></i></div></div>
@@ -435,11 +435,19 @@ function end(){
     :ratio>=.3?["Belle soirée sur scène","Des vrais rires et quelques moments en or."]
     :ratio>=.15?["Des pépites à polir","Le matériau est là, le timing viendra."]
     :["Set de rodage","Chaque bide nourrit le prochain set."];
-  const tally=[["applause","👏"],["laugh","😂"],["awkward","😬"],["crickets","🦗"],["boo","🍅"]].filter(([k])=>cnt(k)).map(([k,e])=>`${e} ${cnt(k)}`).join(" · ");
-  root.innerHTML=`<h1>Stand-upper Simulator</h1><div class="menu">
-    <p>${S.pub.name}</p><div class="rank">${rank}</div><p>${sub}</p>
+  // camembert des réactions (couleurs de la barre du set)
+  const KINDS=[["applause","👏","Ovations","#ffc23d"],["laugh","😂","Rires","#5ee08a"],["awkward","😬","Sourires gênés","#9aa3b5"],["crickets","🦗","Silences","#5b6272"],["boo","🍅","Huées","#ff5a4e"]].filter(([k])=>cnt(k));
+  const tot=S.results.length||1; let acc=0;
+  const arc=(f0,f1)=>{ const p=f=>[50+46*Math.sin(2*Math.PI*f),50-46*Math.cos(2*Math.PI*f)]; const [x0,y0]=p(f0),[x1,y1]=p(f1);
+    return f1-f0>=.999?`<circle cx="50" cy="50" r="46"`:`<path d="M50 50L${x0.toFixed(2)} ${y0.toFixed(2)}A46 46 0 ${f1-f0>.5?1:0} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}Z"`; };
+  const pie=KINDS.map(([k,,,c])=>{ const f0=acc/tot; acc+=cnt(k); return `${arc(f0,acc/tot)} fill="${c}" stroke="#14060b" stroke-width="1.5"/>`; }).join("");
+  const legend=KINDS.map(([k,e,l,c])=>`<li><i style="background:${c}"></i>${e} ${l}<b>${cnt(k)}</b></li>`).join("");
+  root.classList.add("end");
+  root.innerHTML=`<h1>Stand-upper Simulator</h1><div class="menu recap">
+    <p class="lbl" style="text-align:center">${S.pub.name}</p>
+    <div class="rank">${rank}</div><p class="sub">${sub}</p>
+    <div class="pie"><svg viewBox="0 0 100 100" role="img" aria-label="Répartition des réactions">${pie}</svg><ul>${legend}</ul></div>
     <div class="set">${S.results.map(k=>`<i class="${k}"></i>`).join("")}</div>
-    <p>${tally}</p>
     <button class="big" id="again">Rejouer ce public</button><button class="pub" id="back"><strong>Changer de public</strong><small>Retour au choix de salle</small></button></div>`;
   const pub=S.pub; $("again").onclick=()=>start(pub); $("back").onclick=menu;
 }
