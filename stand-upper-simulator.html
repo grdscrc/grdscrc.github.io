@@ -120,6 +120,9 @@ button{font:inherit;cursor:pointer}
 .seat{position:relative;width:var(--s);height:calc(var(--s)*1.05);display:grid;place-items:start center}
 .seat::before{content:"";position:absolute;left:8%;right:8%;top:22%;bottom:0;background:#7b1e2b;border-radius:30% 30% 8% 8%;box-shadow:inset 0 -4px 0 #4a0f19}
 .seat.st::before{display:none}
+.swipe.demo{height:auto}
+.swipe.demo .card{height:auto;width:72px;aspect-ratio:3/4;padding:6px;cursor:default}
+.swipe.demo .card .word{font-size:.85rem}
 .hall{transition:height .3s ease}
 .playing .hall{height:clamp(64px,10vh,96px)}
 .playing .hall .row{zoom:.45}

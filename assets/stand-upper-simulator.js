@@ -84,7 +84,7 @@ function menu(){
     <span class="lbl" style="text-align:center">Choisis ta salle</span>
     ${PUBLICS.map((p,i)=>`<button class="pub" id="pub-${p.id}" data-i="${i}"><strong>${p.name}</strong><small>${p.desc}</small></button>`).join("")}
     <span class="lbl" style="text-align:center;margin-top:8px">Comment jouer</span>
-    <div class="howto"><span class="hu">↑ ${REG.u}</span><span class="hl">← ${REG.l}</span><span class="hc">Un mot</span><span class="hr">${REG.r} →</span><span class="hd">↓ ${REG.d}</span></div>
+    <div class="swipe demo">${dirLabel("u",1)}${dirLabel("l",1)}<div class="card mini"><span class="word">Un mot</span></div>${dirLabel("r",1)}${dirLabel("d",1)}</div>
     <p>Un mot tombe. <b>Swipe</b> pour choisir l'angle de ta vanne, puis réussis le mini-jeu de cet angle. L'angle que ton public aime est en mode facile, celui qu'il déteste en mode difficile.</p>
   </div>`;
   root.querySelectorAll(".pub").forEach(b=>b.onclick=()=>{ ac(); start(PUBLICS[+b.dataset.i]); });
@@ -143,8 +143,8 @@ function join(){
 function prefChips(w){
   return Object.keys(REG).map(k=>{ const c=w[k]>=1.5?"love":w[k]<=.5?"hate":""; return `<span class="chip ${c}">${c==="love"?"♥ ":c==="hate"?"✕ ":""}${REG[k]}</span>`; }).join("");
 }
-function dirLabel(k){ const w=S.pub.w[k], c=w>=1.5?"love":w<=.5?"hate":""; const arrow={u:"↑",d:"↓",l:"←",r:"→"}[k];
-  const txt=`${REG[k]}${c==="love"?" ♥ facile":c==="hate"?" ✕ difficile":" · normal"}`;
+function dirLabel(k,plain){ const w=plain?1:S.pub.w[k], c=w>=1.5?"love":w<=.5?"hate":""; const arrow={u:"↑",d:"↓",l:"←",r:"→"}[k];
+  const txt=plain?REG[k]:`${REG[k]}${c==="love"?" ♥ facile":c==="hate"?" ✕ difficile":" · normal"}`;
   return k==="l"||k==="r" ? `<div class="dl ${k} ${c}"><b>${arrow}</b><span>${txt}</span></div>` : `<div class="dl ${k} ${c}">${arrow} ${txt}</div>`; }
 function render(){
   const [word]=S.deck[S.i];
@@ -303,19 +303,22 @@ const GAMES={
         if(!b.gone) ball(b.x,b.y,R,b.c,b.n); }
       if(aim&&!shot){ ctx.strokeStyle="rgba(255,255,255,.7)"; ctx.setLineDash([6,8]); ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(L.x,L.y); ctx.lineTo(L.x+aim.dx*140*u,L.y+aim.dy*140*u); ctx.stroke(); ctx.setLineDash([]); }
       if(!shot) ball(L.x,L.y,r,"#f5f5f0");
-      if(cue){ cue.x+=cue.vx*dt; cue.y+=cue.vy*dt; const f=Math.pow(.55,dt); cue.vx*=f; cue.vy*=f;
-        if(cue.x<r+B){cue.x=r+B;cue.vx*=-.9;} if(cue.x>W-r-B){cue.x=W-r-B;cue.vx*=-.9;} if(cue.y<r+B){cue.y=r+B;cue.vy*=-.9;} if(cue.y>H-r-B){cue.y=H-r-B;cue.vy*=-.9;}
-        if(Math.hypot(cue.vx,cue.vy)<10*u){ cue.vx=cue.vy=0; }
-        if(pockets.some(([x,y])=>Math.hypot(cue.x-x,cue.y-y)<P)){ scratch=true; cue=null; SFX.awkward(); resolve(); } else {
-        ball(cue.x,cue.y,r,"#f5f5f0");
-        { const h=balls.find(b=>!b.gone&&Math.hypot(b.x-cue.x,b.y-cue.y)<R+r);
+      if(cue){ const f=Math.pow(.55,dt); cue.vx*=f; cue.vy*=f;
+        // sous-pas : la blanche n'avance jamais de plus d'un demi-rayon à la fois, pour ne pas traverser une boule
+        const steps=Math.max(1,Math.ceil(Math.hypot(cue.vx,cue.vy)*dt/(r*.5)));
+        for(let st=0;st<steps&&cue;st++){ cue.x+=cue.vx*dt/steps; cue.y+=cue.vy*dt/steps;
+          if(cue.x<r+B){cue.x=r+B;cue.vx*=-.9;} if(cue.x>W-r-B){cue.x=W-r-B;cue.vx*=-.9;} if(cue.y<r+B){cue.y=r+B;cue.vy*=-.9;} if(cue.y>H-r-B){cue.y=H-r-B;cue.vy*=-.9;}
+          if(pockets.some(([x,y])=>Math.hypot(cue.x-x,cue.y-y)<P)){ scratch=true; cue=null; SFX.awkward(); resolve(); break; }
+          const h=balls.find(b=>!b.gone&&Math.hypot(b.x-cue.x,b.y-cue.y)<R+r);
           if(h){ const dd=Math.hypot(h.x-cue.x,h.y-cue.y)||1, nx=(h.x-cue.x)/dd, ny=(h.y-cue.y)/dd;
             const vrel=(cue.vx-h.vx)*nx+(cue.vy-h.vy)*ny;
             cue.x=h.x-nx*(R+r); cue.y=h.y-ny*(R+r);
             if(vrel>0){ const k=hitB?1:1.15; cue.vx-=vrel*nx; cue.vy-=vrel*ny; h.vx+=vrel*nx*k; h.vy+=vrel*ny*k; SFX.tick();
               if(!hitB){ const sp=Math.hypot(cue.vx+vrel*nx,cue.vy+vrel*ny)||1; hitOff=Math.abs(((cue.vx+vrel*nx)*ny-(cue.vy+vrel*ny)*nx)/sp);
-                hitB=h; tHit=now; if(lvl<2) setTimeout(resolve,650); } } }
-          else if(!hitB&&(Math.hypot(cue.vx,cue.vy)<60*u||now-tShot>2500)) resolve(); } } }
+                hitB=h; tHit=now; if(lvl<2) setTimeout(resolve,650); } } } }
+        if(cue){ if(Math.hypot(cue.vx,cue.vy)<10*u){ cue.vx=cue.vy=0; }
+          ball(cue.x,cue.y,r,"#f5f5f0");
+          if(!hitB&&(Math.hypot(cue.vx,cue.vy)<60*u||now-tShot>2500)) resolve(); } }
       if(lvl===2&&hitB&&!potted&&(now-tHit>3500||(hitB.vx===0&&hitB.vy===0&&now-tHit>300))) resolve();
       if(!shot){ $("tm").style.width=clamp(100-(now-t0)/1000/T*100,0,100)+"%"; if((now-t0)/1000>=T){ over=true; PUNCH=pick([`${word} 😇`,`Ah, ${def(word)}… 😇`]); done(0,"Tu as hésité, ils t'ont oublié"); return; } }
       if(over) return; raf=requestAnimationFrame(loop); };
