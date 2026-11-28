@@ -2,9 +2,9 @@ const REG = {l:"🪊 Pince-sans-rire", r:"🐟 Absurde", u:"🎻 Lyrique", d:"�
 const ORDER = {l:"DOSE !", r:"TRACE !", u:"LA RIME !", d:"VISE !"};
 const SUB = {l:"pause, puis chute", r:"redessine de mémoire", u:"trouve la rime", d:"billard"};
 const PUBLICS = [
-  {id:"ehpad", name:"Thé dansant à l'EHPAD", desc:"Public fidèle, ouïe variable.", w:{l:1.6,r:1,u:1.3,d:.4}},
-  {id:"bar", name:"Bar à 2h du mat'", desc:"Ils ont bu. Toi aussi, un peu.", w:{l:.7,r:1.3,u:.5,d:1.7}},
-  {id:"rh", name:"Séminaire RH", desc:"Team building obligatoire, sourires crispés.", w:{l:1.2,r:1.6,u:.9,d:.35}},
+  {id:"ehpad", name:"Thé dansant à l'EHPAD", desc:"Vous allez bien vous entendre, ce public est appareillé", w:{l:1.6,r:1,u:1.3,d:1}},
+  {id:"bar", name:"Bar à 2h du mat'", desc:"Le pied de micro est à droite, à gauche c'est le narguilé", w:{l:.7,r:.5,u:.5,d:1.7}},
+  {id:"rh", name:"Séminaire RH", desc:"#opentolaugh", w:{l:.5,r:1.6,u:.9,d:.35}},
 ];
 const RHYMES = {
   er:["Verre","Guerre","Cuillère","Dromadaire","Notaire","Sorcière"],
@@ -78,16 +78,17 @@ const SFX={
 
 /* ---------- Écrans ---------- */
 function menu(){
-  S={phase:"menu"};
+  S={phase:"menu"}; root.classList.remove("end"); root.classList.add("scroll"); root.scrollTop=0;
   root.innerHTML=`<h1>Stand-upper Simulator</h1>
   <div class="menu">
     <span class="lbl" style="text-align:center">Choisis ta salle</span>
-    ${PUBLICS.map((p,i)=>`<button class="pub" id="pub-${p.id}" data-i="${i}"><strong>${p.name}</strong><small>${p.desc}</small></button>`).join("")}
+    ${PUBLICS.map((p,i)=>`<button class="pub" id="pub-${p.id}" data-i="${i}"><strong>${p.name}</strong><small>${p.desc}</small>${hardOf(p).length?`<em class="hard">${hardOf(p).length>1?"Angles difficiles":"Angle difficile"} : ${hardOf(p).map(k=>REG[k]).join(", ")}</em>`:""}</button>`).join("")}
     <span class="lbl" style="text-align:center;margin-top:8px">Comment jouer</span>
-    <div class="howto"><span class="hu">↑ ${REG.u}</span><span class="hl">← ${REG.l}</span><span class="hc">Un mot</span><span class="hr">${REG.r} →</span><span class="hd">↓ ${REG.d}</span></div>
-    <p>Un mot tombe. <b>Swipe</b> pour choisir l'angle de ta vanne, puis réussis le mini-jeu de cet angle. L'angle que ton public aime est en mode facile, celui qu'il déteste en mode difficile.</p>
+    <div class="swipe demo">${dirLabel("u",1)}${dirLabel("l",1)}<div class="card mini" id="democard"><span class="word" id="dword">Un mot</span><span class="tag" id="dtag"></span></div>${dirLabel("r",1)}${dirLabel("d",1)}</div>
+    <p>Un mot tombe. <b>Swipe</b> pour choisir l'angle de ta vanne, puis réussis le mini-jeu de cet angle.</p>
   </div>`;
   root.querySelectorAll(".pub").forEach(b=>b.onclick=()=>{ ac(); start(PUBLICS[+b.dataset.i]); });
+  demoI=0; bindDemo();
 }
 function start(pub){
   S={phase:"swipe",pub,deck:shuffle(WORDS).slice(0,JOKES),i:0,score:0,combo:0,mood:50};
@@ -143,10 +144,12 @@ function join(){
 function prefChips(w){
   return Object.keys(REG).map(k=>{ const c=w[k]>=1.5?"love":w[k]<=.5?"hate":""; return `<span class="chip ${c}">${c==="love"?"♥ ":c==="hate"?"✕ ":""}${REG[k]}</span>`; }).join("");
 }
-function dirLabel(k){ const w=S.pub.w[k], c=w>=1.5?"love":w<=.5?"hate":""; const arrow={u:"↑",d:"↓",l:"←",r:"→"}[k];
-  const txt=`${REG[k]}${c==="love"?" ♥ facile":c==="hate"?" ✕ difficile":" · normal"}`;
+const hardOf=p=>Object.keys(p.w).filter(k=>p.w[k]<=.5);
+function dirLabel(k,plain){ const w=plain?1:S.pub.w[k], c=w<=.5?"hate":""; const arrow={u:"↑",d:"↓",l:"←",r:"→"}[k];
+  const txt=plain?REG[k]:`${REG[k]}${c==="hate"?" ✕ difficile":""}`;
   return k==="l"||k==="r" ? `<div class="dl ${k} ${c}"><b>${arrow}</b><span>${txt}</span></div>` : `<div class="dl ${k} ${c}">${arrow} ${txt}</div>`; }
 function render(){
+  root.classList.remove("scroll","end");
   const [word]=S.deck[S.i];
   root.innerHTML=`
   <div class="hud"><span class="lbl">Ambiance</span><div class="meter"><i id="mood" style="width:${S.mood}%"></i></div></div>
@@ -161,19 +164,35 @@ function render(){
   <div class="hint" id="hint">Swipe la carte pour choisir ton angle</div>`;
   bindCard();
 }
-function bindCard(){
-  const card=$("card"),tag=$("tag"); let x0=0,y0=0,drag=false;
+function bindCard(){ bindSwipe($("card"),$("tag"),()=>S.phase==="swipe",choose); }
+// swipe générique : onSwipe(direction) au-delà de 70 px, sinon la carte revient
+function bindSwipe(card,tag,can,onSwipe){
+  let x0=0,y0=0,drag=false;
   const dirOf=(dx,dy)=>Math.abs(dx)>Math.abs(dy)?(dx<0?"l":"r"):(dy<0?"u":"d");
-  card.onpointerdown=e=>{ if(S.phase!=="swipe") return; ac(); drag=true; x0=e.clientX; y0=e.clientY; card.setPointerCapture(e.pointerId); card.style.transition="none"; };
+  card.onpointerdown=e=>{ if(!can()) return; ac(); drag=true; x0=e.clientX; y0=e.clientY; card.setPointerCapture(e.pointerId); card.style.transition="none"; };
   card.onpointermove=e=>{ if(!drag) return; const dx=e.clientX-x0,dy=e.clientY-y0; card.style.transform=`translate(${dx}px,${dy}px) rotate(${dx/18}deg)`;
     const far=Math.hypot(dx,dy)>50; tag.textContent=far?REG[dirOf(dx,dy)]:""; tag.style.opacity=far?1:0; };
   card.onpointerup=card.onpointercancel=e=>{ if(!drag) return; drag=false; const dx=e.clientX-x0,dy=e.clientY-y0;
-    if(Math.hypot(dx,dy)>70) choose(dirOf(dx,dy)); else { card.style.transition="transform .2s"; card.style.transform=""; tag.style.opacity=0; } };
+    if(Math.hypot(dx,dy)>70) onSwipe(dirOf(dx,dy)); else { card.style.transition="transform .2s"; card.style.transform=""; tag.style.opacity=0; } };
+}
+// carte d'exemple de l'accueil : se swipe sans lancer de mini-jeu
+const DEMO_WORDS=["Un autre mot","Un autre autre mot","Mot 2","Mot 3","Mot 4 : word reborn","Mot 5 : rise of the motus","Mot 6 : j'en ai pas marre","Mot",
+  "Mot #j'ai perdu le compte","¡ Una palabra !","Allez","Un mot","Votre doigt est musclé"];
+let demoI=0, demoGo=null;
+function bindDemo(){
+  const card=$("democard"), tag=$("dtag"), w=$("dword"); let busy=false;
+  demoGo=dir=>{ if(S.phase!=="menu"||busy) return; busy=true; SFX.swish();
+    const v={l:[-1,0],r:[1,0],u:[0,-1],d:[0,1]}[dir];
+    card.style.transition="transform .25s, opacity .25s"; card.style.transform=`translate(${v[0]*220}px,${v[1]*220}px) rotate(${v[0]*20}deg)`; card.style.opacity=0;
+    setTimeout(()=>{ w.textContent=demoI<DEMO_WORDS.length?DEMO_WORDS[demoI]:"…"; demoI++; tag.style.opacity=0;
+      card.style.transition="none"; card.style.transform="scale(.85)";
+      requestAnimationFrame(()=>{ card.style.transition="transform .2s, opacity .2s"; card.style.transform=""; card.style.opacity=1; busy=false; }); },260); };
+  bindSwipe(card,tag,()=>S.phase==="menu"&&!busy,demoGo);
 }
 function choose(dir){
   if(S.phase!=="swipe") return; S.phase="intro"; SFX.swish(); setFaces(null); root.classList.add("playing");
   const [word,fit,rh]=S.deck[S.i];
-  S.dir=dir; const w=S.pub.w[dir]; const lvl=w>=1.5?0:w<=.5?2:1; S.lvl=lvl; S.fit=fit===dir;
+  S.dir=dir; const w=S.pub.w[dir]; const lvl=w<=.5?2:1; S.lvl=lvl; S.fit=fit===dir;
   const speed=1+S.combo*.05+S.i*.02;
   const stage=$("stage");
   stage.innerHTML=`<div class="splash"><div>${ORDER[dir]}<small>${["facile","normal","difficile"][lvl]} · ${SUB[dir]}</small></div></div><div class="game" id="game"></div>`;
@@ -303,19 +322,22 @@ const GAMES={
         if(!b.gone) ball(b.x,b.y,R,b.c,b.n); }
       if(aim&&!shot){ ctx.strokeStyle="rgba(255,255,255,.7)"; ctx.setLineDash([6,8]); ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(L.x,L.y); ctx.lineTo(L.x+aim.dx*140*u,L.y+aim.dy*140*u); ctx.stroke(); ctx.setLineDash([]); }
       if(!shot) ball(L.x,L.y,r,"#f5f5f0");
-      if(cue){ cue.x+=cue.vx*dt; cue.y+=cue.vy*dt; const f=Math.pow(.55,dt); cue.vx*=f; cue.vy*=f;
-        if(cue.x<r+B){cue.x=r+B;cue.vx*=-.9;} if(cue.x>W-r-B){cue.x=W-r-B;cue.vx*=-.9;} if(cue.y<r+B){cue.y=r+B;cue.vy*=-.9;} if(cue.y>H-r-B){cue.y=H-r-B;cue.vy*=-.9;}
-        if(Math.hypot(cue.vx,cue.vy)<10*u){ cue.vx=cue.vy=0; }
-        if(pockets.some(([x,y])=>Math.hypot(cue.x-x,cue.y-y)<P)){ scratch=true; cue=null; SFX.awkward(); resolve(); } else {
-        ball(cue.x,cue.y,r,"#f5f5f0");
-        { const h=balls.find(b=>!b.gone&&Math.hypot(b.x-cue.x,b.y-cue.y)<R+r);
+      if(cue){ const f=Math.pow(.55,dt); cue.vx*=f; cue.vy*=f;
+        // sous-pas : la blanche n'avance jamais de plus d'un demi-rayon à la fois, pour ne pas traverser une boule
+        const steps=Math.max(1,Math.ceil(Math.hypot(cue.vx,cue.vy)*dt/(r*.5)));
+        for(let st=0;st<steps&&cue;st++){ cue.x+=cue.vx*dt/steps; cue.y+=cue.vy*dt/steps;
+          if(cue.x<r+B){cue.x=r+B;cue.vx*=-.9;} if(cue.x>W-r-B){cue.x=W-r-B;cue.vx*=-.9;} if(cue.y<r+B){cue.y=r+B;cue.vy*=-.9;} if(cue.y>H-r-B){cue.y=H-r-B;cue.vy*=-.9;}
+          if(pockets.some(([x,y])=>Math.hypot(cue.x-x,cue.y-y)<P)){ scratch=true; cue=null; SFX.awkward(); resolve(); break; }
+          const h=balls.find(b=>!b.gone&&Math.hypot(b.x-cue.x,b.y-cue.y)<R+r);
           if(h){ const dd=Math.hypot(h.x-cue.x,h.y-cue.y)||1, nx=(h.x-cue.x)/dd, ny=(h.y-cue.y)/dd;
             const vrel=(cue.vx-h.vx)*nx+(cue.vy-h.vy)*ny;
             cue.x=h.x-nx*(R+r); cue.y=h.y-ny*(R+r);
             if(vrel>0){ const k=hitB?1:1.15; cue.vx-=vrel*nx; cue.vy-=vrel*ny; h.vx+=vrel*nx*k; h.vy+=vrel*ny*k; SFX.tick();
               if(!hitB){ const sp=Math.hypot(cue.vx+vrel*nx,cue.vy+vrel*ny)||1; hitOff=Math.abs(((cue.vx+vrel*nx)*ny-(cue.vy+vrel*ny)*nx)/sp);
-                hitB=h; tHit=now; if(lvl<2) setTimeout(resolve,650); } } }
-          else if(!hitB&&(Math.hypot(cue.vx,cue.vy)<60*u||now-tShot>2500)) resolve(); } } }
+                hitB=h; tHit=now; if(lvl<2) setTimeout(resolve,650); } } } }
+        if(cue){ if(Math.hypot(cue.vx,cue.vy)<10*u){ cue.vx=cue.vy=0; }
+          ball(cue.x,cue.y,r,"#f5f5f0");
+          if(!hitB&&(Math.hypot(cue.vx,cue.vy)<60*u||now-tShot>2500)) resolve(); } }
       if(lvl===2&&hitB&&!potted&&(now-tHit>3500||(hitB.vx===0&&hitB.vy===0&&now-tHit>300))) resolve();
       if(!shot){ $("tm").style.width=clamp(100-(now-t0)/1000/T*100,0,100)+"%"; if((now-t0)/1000>=T){ over=true; PUNCH=pick([`${word} 😇`,`Ah, ${def(word)}… 😇`]); done(0,"Tu as hésité, ils t'ont oublié"); return; } }
       if(over) return; raf=requestAnimationFrame(loop); };
@@ -406,6 +428,7 @@ function updateMute(){ const b=$("mute"); if(!b) return; b.textContent=MUTED?"�
 $("mute").onclick=()=>{ MUTED=!MUTED; try{ localStorage.setItem("sus-muted",MUTED?"1":"0"); }catch(e){} if(MUTED&&AC) AC.suspend(); updateMute(); };
 updateMute();
 function end(){
+  root.classList.add("scroll"); root.scrollTop=0;
   S.phase="end"; const off=empty();
   const cnt=k=>S.results.filter(x=>x===k).length, ratio=(cnt("applause")*2+cnt("laugh"))/(2*JOKES);
   const [rank,sub]=off?["Salle vidée","Le public est parti avant la fin du set. Ça arrive aux meilleur·es."]
@@ -414,15 +437,25 @@ function end(){
     :ratio>=.3?["Belle soirée sur scène","Des vrais rires et quelques moments en or."]
     :ratio>=.15?["Des pépites à polir","Le matériau est là, le timing viendra."]
     :["Set de rodage","Chaque bide nourrit le prochain set."];
-  const tally=[["applause","👏"],["laugh","😂"],["awkward","😬"],["crickets","🦗"],["boo","🍅"]].filter(([k])=>cnt(k)).map(([k,e])=>`${e} ${cnt(k)}`).join(" · ");
-  root.innerHTML=`<h1>Stand-upper Simulator</h1><div class="menu">
-    <p>${S.pub.name}</p><div class="rank">${rank}</div><p>${sub}</p>
+  // camembert des réactions (couleurs de la barre du set)
+  const KINDS=[["applause","👏","Ovations","#ffc23d"],["laugh","😂","Rires","#5ee08a"],["awkward","😬","Sourires gênés","#9aa3b5"],["crickets","🦗","Silences","#5b6272"],["boo","🍅","Huées","#ff5a4e"]].filter(([k])=>cnt(k));
+  const tot=S.results.length||1; let acc=0;
+  const arc=(f0,f1)=>{ const p=f=>[50+46*Math.sin(2*Math.PI*f),50-46*Math.cos(2*Math.PI*f)]; const [x0,y0]=p(f0),[x1,y1]=p(f1);
+    return f1-f0>=.999?`<circle cx="50" cy="50" r="46"`:`<path d="M50 50L${x0.toFixed(2)} ${y0.toFixed(2)}A46 46 0 ${f1-f0>.5?1:0} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}Z"`; };
+  const pie=KINDS.map(([k,,,c])=>{ const f0=acc/tot; acc+=cnt(k); return `${arc(f0,acc/tot)} fill="${c}" stroke="#14060b" stroke-width="1.5"/>`; }).join("");
+  const legend=KINDS.map(([k,e,l,c])=>`<li><i style="background:${c}"></i>${e} ${l}<b>${cnt(k)}</b></li>`).join("");
+  root.classList.add("end");
+  root.innerHTML=`<h1>Stand-upper Simulator</h1><div class="menu recap">
+    <p class="lbl" style="text-align:center">${S.pub.name}</p>
+    <div class="rank">${rank}</div><p class="sub">${sub}</p>
+    <div class="pie"><svg viewBox="0 0 100 100" role="img" aria-label="Répartition des réactions">${pie}</svg><ul>${legend}</ul></div>
     <div class="set">${S.results.map(k=>`<i class="${k}"></i>`).join("")}</div>
-    <p>${tally}</p>
     <button class="big" id="again">Rejouer ce public</button><button class="pub" id="back"><strong>Changer de public</strong><small>Retour au choix de salle</small></button></div>`;
   const pub=S.pub; $("again").onclick=()=>start(pub); $("back").onclick=menu;
 }
 document.addEventListener("keydown",e=>{
+  const ka={ArrowLeft:"l",ArrowRight:"r",ArrowUp:"u",ArrowDown:"d"}[e.key];
+  if(S.phase==="menu"&&ka&&demoGo&&!e.target.closest?.("button")){ e.preventDefault(); ac(); demoGo(ka); return; }
   if(S.phase==="react"&&(e.key==="Enter"||e.key===" ")){ e.preventDefault(); nextJoke(); return; }
   const m={ArrowLeft:"l",ArrowRight:"r",ArrowUp:"u",ArrowDown:"d"};
   if(S.phase==="swipe"&&m[e.key]){ e.preventDefault(); ac(); choose(m[e.key]); }

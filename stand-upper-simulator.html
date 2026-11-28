@@ -92,6 +92,7 @@ button{font:inherit;cursor:pointer}
 .pub{display:flex;flex-direction:column;gap:2px;text-align:left;padding:12px 14px;border-radius:12px;border:2px solid rgba(255,255,255,.18);background:rgba(0,0,0,.45);color:var(--ink)}
 .pub strong{font-family:var(--display);font-weight:400;font-size:1.1rem;color:var(--gold)}
 .pub small{color:var(--muted)}
+.pub .hard{font-style:normal;font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--bad);margin-top:2px;align-self:flex-end;text-align:right}
 .pub:hover,.pub:focus-visible{border-color:var(--gold);outline:none}
 .big{font-family:var(--display);font-size:1.2rem;padding:14px;border-radius:12px;border:0;background:var(--gold);color:#2a0d16}
 .big:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
@@ -120,6 +121,22 @@ button{font:inherit;cursor:pointer}
 .seat{position:relative;width:var(--s);height:calc(var(--s)*1.05);display:grid;place-items:start center}
 .seat::before{content:"";position:absolute;left:8%;right:8%;top:22%;bottom:0;background:#7b1e2b;border-radius:30% 30% 8% 8%;box-shadow:inset 0 -4px 0 #4a0f19}
 .seat.st::before{display:none}
+.wrap.scroll{overflow-y:auto;touch-action:pan-y;-webkit-overflow-scrolling:touch}
+.wrap.scroll .menu{margin-block:0 56px}
+.wrap.end .menu{margin-block:auto;padding-bottom:48px}
+.recap{gap:14px}
+.recap .sub{max-width:24em;margin-inline:auto;text-wrap:balance}
+.set i.crickets{background:#5b6272}
+.pie{display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap}
+.pie svg{width:132px;height:132px;flex:none;filter:drop-shadow(0 6px 12px rgba(0,0,0,.5))}
+.pie ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:.85rem;min-width:0}
+.pie li{display:flex;align-items:center;gap:8px}
+.pie li i{width:12px;height:12px;border-radius:3px;flex:none}
+.pie li b{margin-left:auto;padding-left:10px;font-variant-numeric:tabular-nums;color:var(--gold)}
+.swipe.demo{height:auto}
+.swipe.demo .card{height:auto;width:120px;aspect-ratio:3/4;padding:10px;cursor:grab}
+.swipe.demo .card .word{font-size:1.1rem;overflow-wrap:anywhere}
+.swipe.demo .card .tag{font-size:.8rem;inset:auto 0 12% 0}
 .hall{transition:height .3s ease}
 .playing .hall{height:clamp(64px,10vh,96px)}
 .playing .hall .row{zoom:.45}
