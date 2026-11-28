@@ -38,8 +38,8 @@ const indef=w=>w==="Afrique"?"l'Afrique":(FEM.has(w)?"une ":"un ")+low(w);
 const deIndef=w=>w==="Afrique"?"de l'Afrique":"d'"+indef(w);
 const def=w=>{ const a=ART[w]??""; return a===""?w:a==="l'"?"l'"+low(w):a+" "+low(w); };
 const deDef=w=>{ const a=ART[w]??""; return a==="le"?"du "+low(w):a==="les"?"des "+low(w):a==="la"?"de la "+low(w):a==="l'"?"de l'"+low(w):(vowel(w)?"d'":"de ")+w; };
-const SHAPE_ART={"spirale":"une spirale","étoile":"une étoile","cœur":"un cœur","éclair":"un éclair","infini":"l'infini","vague":"une vague","triangle":"un triangle","bonheur":"le bonheur","malheur":"le malheur","surprise":"la surprise","tasse":"une tasse"};
-const SHAPE_FEM=new Set(["spirale","étoile","vague","surprise","tasse"]);
+const SHAPE_ART={"spirale":"une spirale","étoile":"une étoile","cœur":"un cœur","éclair":"un éclair","infini":"l'infini","vague":"une vague","triangle":"un triangle","tasse":"une tasse"};
+const SHAPE_FEM=new Set(["spirale","étoile","vague","tasse"]);
 const que=x=>vowel(x)?"qu'"+x:"que "+x;
 // « mon citron éternel » / « ma tortue éternelle »
 const poss=(w,fem,adj)=>{ if(w==="Afrique"){ fem=true; } const n=w==="Afrique"?w:low(w);
@@ -227,9 +227,6 @@ const GAMES={
       "infini":t=>{const a=t*Math.PI*2,s=1+Math.sin(a)**2;return[.5+.42*Math.cos(a)/s,.5+.42*Math.sin(a)*Math.cos(a)/s];},
       "vague":t=>[.08+.84*t,.5+.25*Math.sin(t*Math.PI*3)],
       "triangle":poly([[.5,.08],[.92,.86],[.08,.86],[.5,.08]]),
-      "bonheur":t=>[.1+.8*t,.3+.4*Math.sin(Math.PI*t)],
-      "malheur":t=>[.1+.8*t,.7-.4*Math.sin(Math.PI*t)],
-      "surprise":poly([[.5,.04],[.5,.7],...[...Array(13)].map((_,k)=>{const a=-Math.PI/2+k/12*Math.PI*2;return[.5+.08*Math.cos(a),.86+.08*Math.sin(a)];})]),
       "tasse":poly([[.1,.2],[.16,.84],[.58,.84],[.62,.66],[.76,.72],[.9,.64],[.93,.48],[.86,.36],[.74,.34],[.64,.4],[.66,.2]]),
     };
     const n=lvl+1, names=shuffle(Object.keys(SH)).slice(0,n), tpls=names.map(nm=>[...Array(80)].map((_,i)=>SH[nm](i/79)));
