@@ -344,11 +344,18 @@ const GAMES={
       el.querySelectorAll(".opt").forEach((b,j)=>{ if(opts[j]===good) b.classList.add("ok"); else if(j===i) b.classList.add("ko"); });
       const ok=i!=null&&opts[i]===good;
       const w2=i==null?"rien":opts[i];
-      const d=def(word), iw=i==null?"rien":indef(w2);
-      PUNCH=ok?pick([`Ô ${word}, ta splendeur est celle ${deIndef(w2)}`,`${word}, ${word}, ${word}… Ne serait-ce donc que l'ombre ${deIndef(w2)} ?`,`À la gloire ${deDef(word)}, j'invoque le courroux ${deIndef(w2)}`,
-          `${word}, mon amour, ${poss(w2,FEM.has(w2),"éternel")}`,`Le soir tombe sur ${d}, et l'aube se lève sur ${iw}`,`J'ai traversé les mers pour ${d}, je n'ai trouvé ${que(iw)}`,
-          `Qu'on grave dans le marbre : ${d} et ${iw}, à jamais`,`Ô muse, chante ${d}, chante ${iw} !`])
-        :pick([`${word} tralala ${w2}`,`${word}… euh… ${w2} ? Non attendez`,`${word} rime avec ${w2}, j'ai vérifié`,`${word}, ${w2}, voilà, c'est de la poésie`]);
+      // deux vers : le setup finit le premier, la rime finit le second
+      const d=def(word), lw=(ART[word]??"")===""?word:low(word), iw=indef(w2), mw=i==null?"rien":low(w2);
+      PUNCH=ok?pick([
+          `Ô divine splendeur ${deDef(word)},<br>Tu as l'éclat ${deIndef(w2)} !`,
+          `${word}, ${lw}, ${lw}…<br>N'es-tu que l'ombre ${deIndef(w2)} ?`,
+          `À la gloire ${deDef(word)},<br>J'invoque le courroux ${deIndef(w2)}`,
+          `Mon amour, ô ${lw},<br>Je t'offre ${iw}`,
+          `Le soir tombe sur ${d},<br>L'aube se lève sur ${iw}`,
+          `J'ai traversé les mers pour ${d},<br>Je n'ai trouvé ${que(iw)}`,
+          `Qu'on grave dans le marbre ${d},<br>Pour l'éternité, ${iw}`,
+          `Ô muse, chante ${d},<br>Chante aussi ${iw} !`])
+        :pick([`${word} tralala ${mw}`,`Non attendez… ${lw}… euh… ${mw} ?`,`J'ai vérifié : ${lw} rime avec ${mw}`,`C'est de la poésie : ${lw}… ${mw}`]);
       setTimeout(()=>done(ok?(el2/T<.4?1:.7):0, ok?"":i==null?"Trop lent, le silence s'installe":`« ${opts[i]} » ne rimait pas`),350); };
     el.querySelectorAll(".opt").forEach(b=>b.onpointerdown=e=>{ e.preventDefault(); end(+b.dataset.i); });
     const kd=e=>{ const k=+e.key; if(k>=1&&k<=n) end(k-1); }; document.addEventListener("keydown",kd);
