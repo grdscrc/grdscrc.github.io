@@ -38,7 +38,7 @@ const indef=w=>w==="Afrique"?"l'Afrique":(FEM.has(w)?"une ":"un ")+low(w);
 const deIndef=w=>w==="Afrique"?"de l'Afrique":"d'"+indef(w);
 const def=w=>{ const a=ART[w]??""; return a===""?w:a==="l'"?"l'"+low(w):a+" "+low(w); };
 const deDef=w=>{ const a=ART[w]??""; return a==="le"?"du "+low(w):a==="les"?"des "+low(w):a==="la"?"de la "+low(w):a==="l'"?"de l'"+low(w):(vowel(w)?"d'":"de ")+w; };
-const SHAPE_ART={"spirale":"une spirale","étoile":"une étoile","cœur":"un cœur","éclair":"un éclair","infini":"l'infini","vague":"une vague","poisson":"un poisson"};
+const SHAPE_ART={"spirale":"une spirale","étoile":"une étoile","cœur":"un cœur","éclair":"un éclair","infini":"l'infini","vague":"une vague"};
 const SHAPE_FEM=new Set(["spirale","étoile","vague"]);
 const que=x=>vowel(x)?"qu'"+x:"que "+x;
 // « mon citron éternel » / « ma tortue éternelle »
@@ -226,7 +226,6 @@ const GAMES={
       "éclair":poly([[.62,.06],[.3,.52],[.58,.5],[.36,.94]]),
       "infini":t=>{const a=t*Math.PI*2,s=1+Math.sin(a)**2;return[.5+.42*Math.cos(a)/s,.5+.42*Math.sin(a)*Math.cos(a)/s];},
       "vague":t=>[.08+.84*t,.5+.25*Math.sin(t*Math.PI*3)],
-      "poisson":poly([[.08,.25],[.28,.5],[.45,.3],[.65,.27],[.82,.36],[.92,.5],[.82,.64],[.65,.73],[.45,.7],[.28,.5],[.08,.75]]),
     };
     const n=lvl+1, names=shuffle(Object.keys(SH)).slice(0,n), tpls=names.map(nm=>[...Array(80)].map((_,i)=>SH[nm](i/79)));
     el.innerHTML=`<div class="gtitle" id="gt">✍️ Mémorise ${n>1?`ces ${n} symboles`:"ce symbole"}…</div><canvas id="cv"></canvas><div class="timer"><i id="tm"></i></div>`;
