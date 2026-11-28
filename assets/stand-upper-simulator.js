@@ -2,7 +2,7 @@ const REG = {l:"🪊 Pince-sans-rire", r:"🐟 Absurde", u:"🎻 Lyrique", d:"�
 const ORDER = {l:"DOSE !", r:"TRACE !", u:"LA RIME !", d:"VISE !"};
 const SUB = {l:"pause, puis chute", r:"redessine de mémoire", u:"trouve la rime", d:"billard"};
 const PUBLICS = [
-  {id:"ehpad", name:"Thé dansant à l'EHPAD", desc:"Public fidèle, ouïe variable.", w:{l:1.6,r:1,u:1.3,d:.4}},
+  {id:"ehpad", name:"Thé dansant à l'EHPAD", desc:"Public fidèle, ouïe variable.", w:{l:1.6,r:1,u:1.3,d:1}},
   {id:"bar", name:"Bar à 2h du mat'", desc:"Ils ont bu. Toi aussi, un peu.", w:{l:.7,r:1.3,u:.5,d:1.7}},
   {id:"rh", name:"Séminaire RH", desc:"Team building obligatoire, sourires crispés.", w:{l:1.2,r:1.6,u:.9,d:.35}},
 ];
@@ -82,10 +82,10 @@ function menu(){
   root.innerHTML=`<h1>Stand-upper Simulator</h1>
   <div class="menu">
     <span class="lbl" style="text-align:center">Choisis ta salle</span>
-    ${PUBLICS.map((p,i)=>`<button class="pub" id="pub-${p.id}" data-i="${i}"><strong>${p.name}</strong><small>${p.desc}</small><em class="hard">Angle difficile : ${hardOf(p).map(k=>REG[k]).join(", ")}</em></button>`).join("")}
+    ${PUBLICS.map((p,i)=>`<button class="pub" id="pub-${p.id}" data-i="${i}"><strong>${p.name}</strong><small>${p.desc}</small>${hardOf(p).length?`<em class="hard">Angle difficile : ${hardOf(p).map(k=>REG[k]).join(", ")}</em>`:""}</button>`).join("")}
     <span class="lbl" style="text-align:center;margin-top:8px">Comment jouer</span>
     <div class="swipe demo">${dirLabel("u",1)}${dirLabel("l",1)}<div class="card mini" id="democard"><span class="word" id="dword">Un mot</span><span class="tag" id="dtag"></span></div>${dirLabel("r",1)}${dirLabel("d",1)}</div>
-    <p>Un mot tombe. <b>Swipe</b> pour choisir l'angle de ta vanne, puis réussis le mini-jeu de cet angle. Chaque salle déteste un angle : son mini-jeu passe en mode difficile.</p>
+    <p>Un mot tombe. <b>Swipe</b> pour choisir l'angle de ta vanne, puis réussis le mini-jeu de cet angle.</p>
   </div>`;
   root.querySelectorAll(".pub").forEach(b=>b.onclick=()=>{ ac(); start(PUBLICS[+b.dataset.i]); });
   demoI=0; bindDemo();
