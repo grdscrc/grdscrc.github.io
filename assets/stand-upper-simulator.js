@@ -3,8 +3,8 @@ const ORDER = {l:"DOSE !", r:"TRACE !", u:"LA RIME !", d:"VISE !"};
 const SUB = {l:"pause, puis chute", r:"redessine de mémoire", u:"trouve la rime", d:"billard"};
 const PUBLICS = [
   {id:"ehpad", name:"Thé dansant à l'EHPAD", desc:"Vous allez bien vous entendre, ce public est appareillé", w:{l:1.6,r:1,u:1.3,d:1}},
-  {id:"bar", name:"Bar à 2h du mat'", desc:"Vous pouvez boire avant votre passage, mais il reste seulement un fond de virgin ti-punch", w:{l:.7,r:1.3,u:.5,d:1.7}},
-  {id:"rh", name:"Séminaire RH", desc:"#opentolaugh", w:{l:1.2,r:1.6,u:.9,d:.35}},
+  {id:"bar", name:"Bar à 2h du mat'", desc:"Vous pouvez boire avant votre passage, mais il reste seulement un fond de virgin ti-punch", w:{l:.7,r:.5,u:.5,d:1.7}},
+  {id:"rh", name:"Séminaire RH", desc:"#opentolaugh", w:{l:.5,r:1.6,u:.9,d:.35}},
 ];
 const RHYMES = {
   er:["Verre","Guerre","Cuillère","Dromadaire","Notaire","Sorcière"],
@@ -82,7 +82,7 @@ function menu(){
   root.innerHTML=`<h1>Stand-upper Simulator</h1>
   <div class="menu">
     <span class="lbl" style="text-align:center">Choisis ta salle</span>
-    ${PUBLICS.map((p,i)=>`<button class="pub" id="pub-${p.id}" data-i="${i}"><strong>${p.name}</strong><small>${p.desc}</small>${hardOf(p).length?`<em class="hard">Angle difficile : ${hardOf(p).map(k=>REG[k]).join(", ")}</em>`:""}</button>`).join("")}
+    ${PUBLICS.map((p,i)=>`<button class="pub" id="pub-${p.id}" data-i="${i}"><strong>${p.name}</strong><small>${p.desc}</small>${hardOf(p).length?`<em class="hard">${hardOf(p).length>1?"Angles difficiles":"Angle difficile"} : ${hardOf(p).map(k=>REG[k]).join(", ")}</em>`:""}</button>`).join("")}
     <span class="lbl" style="text-align:center;margin-top:8px">Comment jouer</span>
     <div class="swipe demo">${dirLabel("u",1)}${dirLabel("l",1)}<div class="card mini" id="democard"><span class="word" id="dword">Un mot</span><span class="tag" id="dtag"></span></div>${dirLabel("r",1)}${dirLabel("d",1)}</div>
     <p>Un mot tombe. <b>Swipe</b> pour choisir l'angle de ta vanne, puis réussis le mini-jeu de cet angle.</p>
