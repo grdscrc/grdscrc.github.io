@@ -78,16 +78,17 @@ const SFX={
 
 /* ---------- Écrans ---------- */
 function menu(){
-  S={phase:"menu"};
+  S={phase:"menu"}; root.classList.add("scroll"); root.scrollTop=0;
   root.innerHTML=`<h1>Stand-upper Simulator</h1>
   <div class="menu">
     <span class="lbl" style="text-align:center">Choisis ta salle</span>
     ${PUBLICS.map((p,i)=>`<button class="pub" id="pub-${p.id}" data-i="${i}"><strong>${p.name}</strong><small>${p.desc}</small></button>`).join("")}
     <span class="lbl" style="text-align:center;margin-top:8px">Comment jouer</span>
-    <div class="swipe demo">${dirLabel("u",1)}${dirLabel("l",1)}<div class="card mini"><span class="word">Un mot</span></div>${dirLabel("r",1)}${dirLabel("d",1)}</div>
+    <div class="swipe demo">${dirLabel("u",1)}${dirLabel("l",1)}<div class="card mini" id="democard"><span class="word" id="dword">Un mot</span><span class="tag" id="dtag"></span></div>${dirLabel("r",1)}${dirLabel("d",1)}</div>
     <p>Un mot tombe. <b>Swipe</b> pour choisir l'angle de ta vanne, puis réussis le mini-jeu de cet angle. L'angle que ton public aime est en mode facile, celui qu'il déteste en mode difficile.</p>
   </div>`;
   root.querySelectorAll(".pub").forEach(b=>b.onclick=()=>{ ac(); start(PUBLICS[+b.dataset.i]); });
+  demoI=0; bindDemo();
 }
 function start(pub){
   S={phase:"swipe",pub,deck:shuffle(WORDS).slice(0,JOKES),i:0,score:0,combo:0,mood:50};
@@ -147,6 +148,7 @@ function dirLabel(k,plain){ const w=plain?1:S.pub.w[k], c=w>=1.5?"love":w<=.5?"h
   const txt=plain?REG[k]:`${REG[k]}${c==="love"?" ♥ facile":c==="hate"?" ✕ difficile":" · normal"}`;
   return k==="l"||k==="r" ? `<div class="dl ${k} ${c}"><b>${arrow}</b><span>${txt}</span></div>` : `<div class="dl ${k} ${c}">${arrow} ${txt}</div>`; }
 function render(){
+  root.classList.remove("scroll");
   const [word]=S.deck[S.i];
   root.innerHTML=`
   <div class="hud"><span class="lbl">Ambiance</span><div class="meter"><i id="mood" style="width:${S.mood}%"></i></div></div>
@@ -161,14 +163,29 @@ function render(){
   <div class="hint" id="hint">Swipe la carte pour choisir ton angle</div>`;
   bindCard();
 }
-function bindCard(){
-  const card=$("card"),tag=$("tag"); let x0=0,y0=0,drag=false;
+function bindCard(){ bindSwipe($("card"),$("tag"),()=>S.phase==="swipe",choose); }
+// swipe générique : onSwipe(direction) au-delà de 70 px, sinon la carte revient
+function bindSwipe(card,tag,can,onSwipe){
+  let x0=0,y0=0,drag=false;
   const dirOf=(dx,dy)=>Math.abs(dx)>Math.abs(dy)?(dx<0?"l":"r"):(dy<0?"u":"d");
-  card.onpointerdown=e=>{ if(S.phase!=="swipe") return; ac(); drag=true; x0=e.clientX; y0=e.clientY; card.setPointerCapture(e.pointerId); card.style.transition="none"; };
+  card.onpointerdown=e=>{ if(!can()) return; ac(); drag=true; x0=e.clientX; y0=e.clientY; card.setPointerCapture(e.pointerId); card.style.transition="none"; };
   card.onpointermove=e=>{ if(!drag) return; const dx=e.clientX-x0,dy=e.clientY-y0; card.style.transform=`translate(${dx}px,${dy}px) rotate(${dx/18}deg)`;
     const far=Math.hypot(dx,dy)>50; tag.textContent=far?REG[dirOf(dx,dy)]:""; tag.style.opacity=far?1:0; };
   card.onpointerup=card.onpointercancel=e=>{ if(!drag) return; drag=false; const dx=e.clientX-x0,dy=e.clientY-y0;
-    if(Math.hypot(dx,dy)>70) choose(dirOf(dx,dy)); else { card.style.transition="transform .2s"; card.style.transform=""; tag.style.opacity=0; } };
+    if(Math.hypot(dx,dy)>70) onSwipe(dirOf(dx,dy)); else { card.style.transition="transform .2s"; card.style.transform=""; tag.style.opacity=0; } };
+}
+// carte d'exemple de l'accueil : se swipe sans lancer de mini-jeu
+const DEMO_WORDS=["Un autre mot","Un autre autre mot","Mot 2","Mot 3","Mot 4 : word reborn","Mot 5 : rise of the motus","Mot 6 : j'en ai pas marre","Mot",
+  "Mot #j'ai perdu le compte","¡ Una palabra !","Allez","Un mot","Votre doigt est musclé"];
+let demoI=0;
+function bindDemo(){
+  const card=$("democard"), tag=$("dtag"), w=$("dword"); let busy=false;
+  bindSwipe(card,tag,()=>S.phase==="menu"&&!busy,dir=>{ busy=true; SFX.swish();
+    const v={l:[-1,0],r:[1,0],u:[0,-1],d:[0,1]}[dir];
+    card.style.transition="transform .25s, opacity .25s"; card.style.transform=`translate(${v[0]*220}px,${v[1]*220}px) rotate(${v[0]*20}deg)`; card.style.opacity=0;
+    setTimeout(()=>{ w.textContent=demoI<DEMO_WORDS.length?DEMO_WORDS[demoI]:"…"; demoI++; tag.style.opacity=0;
+      card.style.transition="none"; card.style.transform="scale(.85)";
+      requestAnimationFrame(()=>{ card.style.transition="transform .2s, opacity .2s"; card.style.transform=""; card.style.opacity=1; busy=false; }); },260); });
 }
 function choose(dir){
   if(S.phase!=="swipe") return; S.phase="intro"; SFX.swish(); setFaces(null); root.classList.add("playing");
@@ -409,6 +426,7 @@ function updateMute(){ const b=$("mute"); if(!b) return; b.textContent=MUTED?"�
 $("mute").onclick=()=>{ MUTED=!MUTED; try{ localStorage.setItem("sus-muted",MUTED?"1":"0"); }catch(e){} if(MUTED&&AC) AC.suspend(); updateMute(); };
 updateMute();
 function end(){
+  root.classList.add("scroll"); root.scrollTop=0;
   S.phase="end"; const off=empty();
   const cnt=k=>S.results.filter(x=>x===k).length, ratio=(cnt("applause")*2+cnt("laugh"))/(2*JOKES);
   const [rank,sub]=off?["Salle vidée","Le public est parti avant la fin du set. Ça arrive aux meilleur·es."]
