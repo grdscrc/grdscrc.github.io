@@ -93,7 +93,7 @@ function menu(){
 function start(pub){
   S={phase:"swipe",pub,deck:shuffle(WORDS).slice(0,JOKES),i:0,score:0,combo:0,mood:50};
   const [lo,hi]={ehpad:[10,15],bar:[8,14],rh:[12,17]}[pub.id]; const occ=lo+Math.floor(Math.random()*(hi-lo+1));
-  S.seat=shuffle([...Array(20)].map((_,i)=>i<occ)); S.stand=[]; S.boos=0; S.ovs=0; S.results=[];
+  S.seat=shuffle([...Array(20)].map((_,i)=>i<occ)); S.stand=[]; S.boos=0; S.ovs=0; S.results=[]; S.punches=[];
   S.faces=idleFaces(); render();
 }
 /* ---------- Salle : 5 rangées de 4 chaises + micro ---------- */
@@ -407,7 +407,7 @@ function finish(note,detail=""){
   if(r.pts>=150) S.combo++; else S.combo=0;
   const lm=[1,1.5,2][S.lvl];
   S.score+=Math.round(r.pts*lm*(1+Math.max(0,S.combo-1)*.5)); S.mood=clamp(S.mood+r.mood,0,100);
-  SFX[r.k](); setFaces(r.k); S.results[S.i]=r.k; const sg=$("sg"+S.i); if(sg) sg.className=r.k;
+  SFX[r.k](); setFaces(r.k); S.results[S.i]=r.k; S.punches[S.i]={word:S.deck[S.i][0],dir:S.dir,punch,k:r.k}; const sg=$("sg"+S.i); if(sg) sg.className=r.k;
   let crowd="";
   if(r.k==="boo"&&++S.boos%2===0){ const here=S.seat.filter(Boolean).length+S.stand.length; const n=leave(Math.max(3,Math.round(here*(.4+Math.random()*.2)))); crowd=`${n} spectateur·ices quittent la salle`; }
   if(r.k==="applause"&&++S.ovs%2===0){ join(); crowd=`Salle comble : ${S.stand.length} personnes debout au fond`; }
@@ -427,6 +427,20 @@ function nextJoke(){
 function updateMute(){ const b=$("mute"); if(!b) return; b.textContent=MUTED?"🔇":"🔊"; b.setAttribute("aria-label",MUTED?"Activer le son":"Couper le son"); b.setAttribute("aria-pressed",MUTED?"true":"false"); }
 $("mute").onclick=()=>{ MUTED=!MUTED; try{ localStorage.setItem("sus-muted",MUTED?"1":"0"); }catch(e){} if(MUTED&&AC) AC.suspend(); updateMute(); };
 updateMute();
+const KEMO={applause:"👏",laugh:"😂",awkward:"😬",crickets:"🦗",boo:"🍅"};
+const plain=h=>h.replace(/<br\s*\/?>/g," / ").replace(/<[^>]+>/g,"").replace(/\s+/g," ").trim();
+// texte du set à partager : titre, réactions et punchs
+function setText(rank){
+  const lines=S.punches.map((p,i)=>`${i+1}. ${KEMO[p.k]} ${p.punch?plain(p.punch):"…"}`);
+  return `🎤 Mon set au ${S.pub.name} : ${rank}\n${S.results.map(k=>KEMO[k]).join("")}\n\n${lines.join("\n")}\n\nStand-upper Simulator : https://grdscrc.github.io/stand-upper-simulator.html`;
+}
+async function shareSet(rank){
+  const text=setText(rank), msg=$("shared");
+  const show=t=>{ msg.textContent=t; msg.hidden=false; };
+  try{ if(navigator.share){ await navigator.share({title:"Mon set de stand-up",text}); return; } }catch(e){ if(e&&e.name==="AbortError") return; }
+  try{ await navigator.clipboard.writeText(text); show("Set copié : colle-le où tu veux."); }
+  catch(e){ show("Copie impossible ici. Sélectionne le texte du set ci-dessus."); const d=document.querySelector(".setlist"); if(d) d.open=true; }
+}
 function end(){
   root.classList.add("scroll"); root.scrollTop=0;
   S.phase="end"; const off=empty();
@@ -450,8 +464,11 @@ function end(){
     <div class="rank">${rank}</div><p class="sub">${sub}</p>
     <div class="pie"><svg viewBox="0 0 100 100" role="img" aria-label="Répartition des réactions">${pie}</svg><ul>${legend}</ul></div>
     <div class="set">${S.results.map(k=>`<i class="${k}"></i>`).join("")}</div>
-    <button class="big" id="again">Rejouer ce public</button><button class="pub" id="back"><strong>Changer de public</strong><small>Retour au choix de salle</small></button></div>`;
+    <details class="setlist"><summary>Ton set, vanne par vanne</summary><ol>${S.punches.map(p=>`<li><span class="k">${KEMO[p.k]}</span><span>${p.punch||"<em>(pas de punch)</em>"}</span></li>`).join("")}</ol></details>
+    <button class="big" id="share">Partager mon set</button><p class="shared" id="shared" hidden></p>
+    <button class="pub" id="again"><strong>Rejouer ce public</strong><small>Même salle, nouveaux mots</small></button>Rejouer ce public</button><button class="pub" id="back"><strong>Changer de public</strong><small>Retour au choix de salle</small></button></div>`;
   const pub=S.pub; $("again").onclick=()=>start(pub); $("back").onclick=menu;
+  $("share").onclick=()=>shareSet(rank);
 }
 document.addEventListener("keydown",e=>{
   const ka={ArrowLeft:"l",ArrowRight:"r",ArrowUp:"u",ArrowDown:"d"}[e.key];
